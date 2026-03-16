@@ -64,7 +64,7 @@ const hasConfirmError = () => touched.registerConfirmation && registerForm.value
             <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" />
             <div class="relative z-10 flex h-full flex-col justify-between p-6">
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl">🏸</span>
+                    <img src="/images/logo_mybad.png" alt="MyBAD" class="h-8 w-8 rounded-md" />
                     <span class="text-lg font-bold text-white">MyBAD</span>
                 </div>
                 <div>
@@ -339,7 +339,7 @@ const hasConfirmError = () => touched.registerConfirmation && registerForm.value
             <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30" />
             <div class="relative z-10 flex h-full flex-col justify-between p-10">
                 <div class="flex items-center gap-2">
-                    <span class="text-3xl">🏸</span>
+                    <img src="/images/logo_mybad.png" alt="MyBAD" class="h-10 w-10 rounded-md" />
                     <span class="text-xl font-bold text-white">MyBAD</span>
                 </div>
                 <div class="mb-16">
@@ -358,7 +358,7 @@ const hasConfirmError = () => touched.registerConfirmation && registerForm.value
         <div class="flex w-3/5 flex-col items-center justify-start overflow-y-auto px-8 py-10">
             <div class="w-full max-w-md">
                 <Tabs v-model="activeTab" class="w-full">
-                    <div class="flex justify-end">
+                    <div class="flex justify-center">
                         <TabsList class="grid w-64 grid-cols-2">
                             <TabsTrigger value="login">Connexion</TabsTrigger>
                             <TabsTrigger value="register">Inscription</TabsTrigger>
