@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/Components/ui/tabs';
 import { Button } from '@/Components/ui/button';
@@ -89,9 +89,9 @@ const showRegisterConfirmation = ref(false);
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
                                 <Label for="login-password">Mot de passe</Label>
-                                <button class="text-sm font-medium text-primary hover:underline">
+                                <Link :href="route('password.request')" class="text-sm font-medium text-primary hover:underline">
                                     Oublié ?
-                                </button>
+                                </Link>
                             </div>
                             <div class="relative">
                                 <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -352,9 +352,9 @@ const showRegisterConfirmation = ref(false);
                                     <div class="space-y-2">
                                         <div class="flex items-center justify-between">
                                             <Label for="desktop-login-password">Mot de passe</Label>
-                                            <button class="text-sm font-medium text-primary hover:underline">
+                                            <Link :href="route('password.request')" class="text-sm font-medium text-primary hover:underline">
                                                 Mot de passe oublié ?
-                                            </button>
+                                            </Link>
                                         </div>
                                         <div class="relative">
                                             <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
