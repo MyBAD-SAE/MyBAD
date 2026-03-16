@@ -26,7 +26,8 @@ php artisan test --filter=ExampleTest
 
 - **Backend**: Laravel 12, PHP 8.2+
 - **Frontend**: Vue 3.4 + Inertia.js 2 (SPA mode, no SSR)
-- **Styling**: Tailwind CSS 4 with `@tailwindcss/forms` plugin
+- **Styling**: Tailwind CSS 4 with `@tailwindcss/forms` plugin + **shadcn-vue** (UI components)
+- **UI Components**: shadcn-vue (new-york style) — add components via `npx shadcn-vue@latest add <component>`
 - **Build**: Vite 7
 - **Database**: SQLite (default), sessions/cache/queue all database-backed
 - **Auth**: Laravel Breeze (session-based)
@@ -48,12 +49,13 @@ Controllers return `Inertia::render('Page/Name', $data)` → Vue page receives d
 - **Pages**: `resources/js/Pages/` — Auth/ (Breeze auth pages), Dashboard, Welcome, Profile/
 - **Layouts**: `AuthenticatedLayout.vue` (nav + user dropdown), `GuestLayout.vue` (centered card for auth)
 - **Components**: `resources/js/Components/` — Breeze defaults (PrimaryButton, SecondaryButton, DangerButton, TextInput, InputLabel, InputError, Checkbox, Modal, Dropdown, DropdownLink, NavLink, ResponsiveNavLink, ApplicationLogo)
+- **shadcn-vue UI**: `resources/js/Components/ui/` — shadcn-vue components (Button, etc.). Config in `components.json`
 
 ### CSS Tokens
-`resources/css/app.css` uses CSS custom properties via `@theme`. Primary color is emerald green (`--color-primary-50` through `--color-primary-950`).
+`resources/css/app.css` uses shadcn-vue CSS variables (oklch) via `@theme inline`. **Couleur principale : `#27BDAE`** (vert turquoise MyBAD), utilisée pour `--primary` et `--ring`. Semantic tokens: `--background`, `--foreground`, `--card`, `--popover`, `--muted`, `--accent`, `--destructive`, `--border`, `--input`, `--ring`.
 
 ### Alias
-`@` resolves to `resources/js/` (configured in vite.config.js and jsconfig.json).
+`@` resolves to `resources/js/` (configured in vite.config.js and tsconfig.json).
 
 ## Git
 
