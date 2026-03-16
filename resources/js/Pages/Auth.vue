@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/Components/ui/tabs';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
@@ -30,6 +30,23 @@ const registerForm = ref({
 const showLoginPassword = ref(false);
 const showRegisterPassword = ref(false);
 const showRegisterConfirmation = ref(false);
+
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const touched = reactive({
+    loginEmail: false,
+    loginPassword: false,
+    registerFirstName: false,
+    registerLastName: false,
+    registerEmail: false,
+    registerPassword: false,
+    registerConfirmation: false,
+});
+
+const hasError = (field, value) => touched[field] && !value;
+const hasEmailError = (field, value) => touched[field] && value && !isValidEmail(value);
+const hasPasswordMinError = (field, value) => touched[field] && value && value.length < 8;
+const hasConfirmError = () => touched.registerConfirmation && registerForm.value.passwordConfirmation && registerForm.value.passwordConfirmation !== registerForm.value.password;
 </script>
 
 <template>
@@ -82,8 +99,12 @@ const showRegisterConfirmation = ref(false);
                                     type="email"
                                     placeholder="nom@exemple.com"
                                     class="pl-10"
+                                    :aria-invalid="hasEmailError('loginEmail', loginForm.email) || hasError('loginEmail', loginForm.email)"
+                                    @blur="touched.loginEmail = true"
                                 />
                             </div>
+                            <p v-if="hasError('loginEmail', loginForm.email)" class="text-sm text-destructive">L'email est requis.</p>
+                            <p v-else-if="hasEmailError('loginEmail', loginForm.email)" class="text-sm text-destructive">Format d'email invalide.</p>
                         </div>
 
                         <div class="space-y-2">
@@ -101,6 +122,8 @@ const showRegisterConfirmation = ref(false);
                                     :type="showLoginPassword ? 'text' : 'password'"
                                     placeholder="Votre mot de passe"
                                     class="pl-10 pr-10"
+                                    :aria-invalid="hasError('loginPassword', loginForm.password)"
+                                    @blur="touched.loginPassword = true"
                                 />
                                 <button
                                     type="button"
@@ -173,8 +196,11 @@ const showRegisterConfirmation = ref(false);
                                         v-model="registerForm.firstName"
                                         placeholder="Lucas"
                                         class="pl-10"
+                                        :aria-invalid="hasError('registerFirstName', registerForm.firstName)"
+                                        @blur="touched.registerFirstName = true"
                                     />
                                 </div>
+                                <p v-if="hasError('registerFirstName', registerForm.firstName)" class="text-sm text-destructive">Le prénom est requis.</p>
                             </div>
                             <div class="space-y-2">
                                 <Label for="register-lastname">Nom</Label>
@@ -182,7 +208,10 @@ const showRegisterConfirmation = ref(false);
                                     id="register-lastname"
                                     v-model="registerForm.lastName"
                                     placeholder="Torres"
+                                    :aria-invalid="hasError('registerLastName', registerForm.lastName)"
+                                    @blur="touched.registerLastName = true"
                                 />
+                                <p v-if="hasError('registerLastName', registerForm.lastName)" class="text-sm text-destructive">Le nom est requis.</p>
                             </div>
                         </div>
 
@@ -196,8 +225,12 @@ const showRegisterConfirmation = ref(false);
                                     type="email"
                                     placeholder="nom@exemple.com"
                                     class="pl-10"
+                                    :aria-invalid="hasEmailError('registerEmail', registerForm.email) || hasError('registerEmail', registerForm.email)"
+                                    @blur="touched.registerEmail = true"
                                 />
                             </div>
+                            <p v-if="hasError('registerEmail', registerForm.email)" class="text-sm text-destructive">L'email est requis.</p>
+                            <p v-else-if="hasEmailError('registerEmail', registerForm.email)" class="text-sm text-destructive">Format d'email invalide.</p>
                         </div>
 
                         <div class="space-y-2">
@@ -210,6 +243,8 @@ const showRegisterConfirmation = ref(false);
                                     :type="showRegisterPassword ? 'text' : 'password'"
                                     placeholder="Min. 8 caractères"
                                     class="pl-10 pr-10"
+                                    :aria-invalid="hasPasswordMinError('registerPassword', registerForm.password)"
+                                    @blur="touched.registerPassword = true"
                                 />
                                 <button
                                     type="button"
@@ -220,6 +255,7 @@ const showRegisterConfirmation = ref(false);
                                     <Eye v-else class="h-4 w-4" />
                                 </button>
                             </div>
+                            <p v-if="hasPasswordMinError('registerPassword', registerForm.password)" class="text-sm text-destructive">Le mot de passe doit contenir au moins 8 caractères.</p>
                         </div>
 
                         <div class="space-y-2">
@@ -232,6 +268,8 @@ const showRegisterConfirmation = ref(false);
                                     :type="showRegisterConfirmation ? 'text' : 'password'"
                                     placeholder="Retapez le mot de passe"
                                     class="pl-10 pr-10"
+                                    :aria-invalid="hasConfirmError()"
+                                    @blur="touched.registerConfirmation = true"
                                 />
                                 <button
                                     type="button"
@@ -242,6 +280,7 @@ const showRegisterConfirmation = ref(false);
                                     <Eye v-else class="h-4 w-4" />
                                 </button>
                             </div>
+                            <p v-if="hasConfirmError()" class="text-sm text-destructive">Les mots de passe ne correspondent pas.</p>
                         </div>
 
                         <div class="flex items-start gap-2">
@@ -345,8 +384,12 @@ const showRegisterConfirmation = ref(false);
                                                 type="email"
                                                 placeholder="nom@exemple.com"
                                                 class="pl-10"
+                                                :aria-invalid="hasEmailError('loginEmail', loginForm.email) || hasError('loginEmail', loginForm.email)"
+                                                @blur="touched.loginEmail = true"
                                             />
                                         </div>
+                                        <p v-if="hasError('loginEmail', loginForm.email)" class="text-sm text-destructive">L'email est requis.</p>
+                                        <p v-else-if="hasEmailError('loginEmail', loginForm.email)" class="text-sm text-destructive">Format d'email invalide.</p>
                                     </div>
 
                                     <div class="space-y-2">
@@ -364,6 +407,8 @@ const showRegisterConfirmation = ref(false);
                                                 :type="showLoginPassword ? 'text' : 'password'"
                                                 placeholder="Entrez votre mot de passe"
                                                 class="pl-10 pr-10"
+                                                :aria-invalid="hasError('loginPassword', loginForm.password)"
+                                                @blur="touched.loginPassword = true"
                                             />
                                             <button
                                                 type="button"
@@ -437,8 +482,11 @@ const showRegisterConfirmation = ref(false);
                                                     v-model="registerForm.firstName"
                                                     placeholder="Jean"
                                                     class="pl-10"
+                                                    :aria-invalid="hasError('registerFirstName', registerForm.firstName)"
+                                                    @blur="touched.registerFirstName = true"
                                                 />
                                             </div>
+                                            <p v-if="hasError('registerFirstName', registerForm.firstName)" class="text-sm text-destructive">Le prénom est requis.</p>
                                         </div>
                                         <div class="space-y-2">
                                             <Label for="desktop-register-lastname">Nom</Label>
@@ -446,7 +494,10 @@ const showRegisterConfirmation = ref(false);
                                                 id="desktop-register-lastname"
                                                 v-model="registerForm.lastName"
                                                 placeholder="DUPONT"
+                                                :aria-invalid="hasError('registerLastName', registerForm.lastName)"
+                                                @blur="touched.registerLastName = true"
                                             />
+                                            <p v-if="hasError('registerLastName', registerForm.lastName)" class="text-sm text-destructive">Le nom est requis.</p>
                                         </div>
                                     </div>
 
@@ -460,8 +511,12 @@ const showRegisterConfirmation = ref(false);
                                                 type="email"
                                                 placeholder="nom@exemple.com"
                                                 class="pl-10"
+                                                :aria-invalid="hasEmailError('registerEmail', registerForm.email) || hasError('registerEmail', registerForm.email)"
+                                                @blur="touched.registerEmail = true"
                                             />
                                         </div>
+                                        <p v-if="hasError('registerEmail', registerForm.email)" class="text-sm text-destructive">L'email est requis.</p>
+                                        <p v-else-if="hasEmailError('registerEmail', registerForm.email)" class="text-sm text-destructive">Format d'email invalide.</p>
                                     </div>
 
                                     <div class="space-y-2">
@@ -474,6 +529,8 @@ const showRegisterConfirmation = ref(false);
                                                 :type="showRegisterPassword ? 'text' : 'password'"
                                                 placeholder="Minimum 8 caractères"
                                                 class="pl-10 pr-10"
+                                                :aria-invalid="hasPasswordMinError('registerPassword', registerForm.password)"
+                                                @blur="touched.registerPassword = true"
                                             />
                                             <button
                                                 type="button"
@@ -484,6 +541,7 @@ const showRegisterConfirmation = ref(false);
                                                 <Eye v-else class="h-4 w-4" />
                                             </button>
                                         </div>
+                                        <p v-if="hasPasswordMinError('registerPassword', registerForm.password)" class="text-sm text-destructive">Le mot de passe doit contenir au moins 8 caractères.</p>
                                     </div>
 
                                     <div class="space-y-2">
@@ -496,6 +554,8 @@ const showRegisterConfirmation = ref(false);
                                                 :type="showRegisterConfirmation ? 'text' : 'password'"
                                                 placeholder="Confirmez votre mot de passe"
                                                 class="pl-10 pr-10"
+                                                :aria-invalid="hasConfirmError()"
+                                                @blur="touched.registerConfirmation = true"
                                             />
                                             <button
                                                 type="button"
@@ -506,6 +566,7 @@ const showRegisterConfirmation = ref(false);
                                                 <Eye v-else class="h-4 w-4" />
                                             </button>
                                         </div>
+                                        <p v-if="hasConfirmError()" class="text-sm text-destructive">Les mots de passe ne correspondent pas.</p>
                                     </div>
                                 </div>
 

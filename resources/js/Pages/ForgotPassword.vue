@@ -5,14 +5,19 @@ import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { Card, CardContent } from '@/Components/ui/card';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Mail, ArrowLeft, ArrowRight, CheckCircle, RefreshCw } from 'lucide-vue-next';
 
 const email = ref('');
 const emailSent = ref(false);
+const emailTouched = ref(false);
+
+const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+const emailEmpty = () => emailTouched.value && !email.value;
+const emailInvalid = () => emailTouched.value && email.value && !isValidEmail(email.value);
 
 function handleSubmit() {
-    if (email.value) {
+    emailTouched.value = true;
+    if (email.value && isValidEmail(email.value)) {
         emailSent.value = true;
     }
 }
@@ -81,8 +86,12 @@ function maskedEmail(addr) {
                             type="email"
                             placeholder="nom@exemple.com"
                             class="pl-10"
+                            :aria-invalid="emailEmpty() || emailInvalid()"
+                            @blur="emailTouched = true"
                         />
                     </div>
+                    <p v-if="emailEmpty()" class="text-sm text-destructive">L'email est requis.</p>
+                    <p v-else-if="emailInvalid()" class="text-sm text-destructive">Format d'email invalide.</p>
                 </div>
 
                 <Button class="w-full" size="lg" @click="handleSubmit">
@@ -90,11 +99,9 @@ function maskedEmail(addr) {
                     <ArrowRight class="ml-2 h-4 w-4" />
                 </Button>
 
-                <Alert class="border-primary/20 bg-primary/5">
-                    <AlertDescription class="text-sm text-muted-foreground">
-                        Le lien de réinitialisation expirera après <strong class="text-foreground">15 minutes</strong>. Pensez aussi à vérifier vos spams.
-                    </AlertDescription>
-                </Alert>
+                <div class="rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground">
+                    Le lien de réinitialisation expirera après <strong class="font-semibold text-foreground">15 minutes</strong>. Pensez aussi à vérifier vos spams.
+                </div>
 
                 <p class="text-xs text-muted-foreground">
                     En continuant, vous acceptez nos
@@ -201,8 +208,12 @@ function maskedEmail(addr) {
                                     type="email"
                                     placeholder="nom@exemple.com"
                                     class="pl-10"
+                                    :aria-invalid="emailEmpty() || emailInvalid()"
+                                    @blur="emailTouched = true"
                                 />
                             </div>
+                            <p v-if="emailEmpty()" class="text-sm text-destructive">L'email est requis.</p>
+                            <p v-else-if="emailInvalid()" class="text-sm text-destructive">Format d'email invalide.</p>
                         </div>
 
                         <Button class="w-full" size="lg" @click="handleSubmit">
