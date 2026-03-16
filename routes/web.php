@@ -10,3 +10,15 @@ Route::get('/', function () {
 Route::get('/mot-de-passe-oublie', function () {
     return Inertia::render('ForgotPassword');
 })->name('password.request');
+
+Route::get('/conditions-utilisation', function () {
+    return Inertia::render('Terms');
+})->name('terms');
+
+Route::get('/politique-de-confidentialite', function () {
+    return Inertia::render('Privacy');
+})->name('privacy');
+
+Route::get('/admin', function () {
+    return Inertia::render('AdminAuth');
+})->name('admin.auth');

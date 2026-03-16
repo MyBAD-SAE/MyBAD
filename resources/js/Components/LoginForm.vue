@@ -22,7 +22,7 @@ const passwordError = () => touched.password && !form.value.password;
 
 <template>
     <div class="space-y-6">
-        <div>
+        <div class="lg:hidden">
             <h2 class="text-xl font-bold">Connexion</h2>
             <p class="mt-1 text-sm text-muted-foreground">Connectez-vous pour retrouver votre dashboard</p>
         </div>
