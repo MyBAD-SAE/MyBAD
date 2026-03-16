@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         // Laravel utilise déjà une table "sessions" par défaut 
@@ -14,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->boolean('is_active')->default(false);
-            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
+            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
             $table->timestamps();
         });
     }

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('class_participants', function (Blueprint $table) {
@@ -14,7 +13,7 @@ return new class extends Migration
             $table->string('participantable_type');
             $table->string('participantable_id');
             $table->decimal('elo_rating', 8, 2)->default(100);
-            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
+            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
             $table->timestamps();
 
             // Index pour la relation polymorphique
