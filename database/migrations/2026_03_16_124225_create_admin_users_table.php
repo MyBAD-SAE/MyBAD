@@ -8,6 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('admin_users', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->foreignUuid('user_id')
                 ->primary()
                 ->constrained('users')
