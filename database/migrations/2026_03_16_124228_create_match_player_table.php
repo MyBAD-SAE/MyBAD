@@ -8,12 +8,12 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('match_player', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('match_id')->constrained('matches')->onDelete('restrict');
-            $table->uuid('player_id');
-            $table->foreign('player_id')->references('id')->on('players')->onDelete('restrict');
+            $table->foreignId('game_match_id')->constrained('game_matches')->onDelete('cascade');
+            $table->foreignUuid('player_id')->constrained('players')->onDelete('cascade');
+
             $table->integer('score')->default(0);
             $table->boolean('validated')->default(false);
+
             $table->timestamps();
         });
     }

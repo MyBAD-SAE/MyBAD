@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('matches', function (Blueprint $table) {
+        Schema::create('game_matches', function (Blueprint $table) {
             $table->id();
             $table->foreignId('class_session_id')->constrained('class_sessions')->onDelete('restrict');
             $table->timestamps();
@@ -16,6 +16,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('matches');
+        Schema::dropIfExists('game_matches');
     }
 };

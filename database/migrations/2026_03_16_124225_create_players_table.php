@@ -9,7 +9,9 @@ return new class extends Migration {
     {
         Schema::create('players', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreign('id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreignUuid('user_id')
+                ->constrained('users')
+                ->onDelete('restrict');
             $table->string('pin'); // hashed
             $table->string('code')->unique();
             $table->timestamps();

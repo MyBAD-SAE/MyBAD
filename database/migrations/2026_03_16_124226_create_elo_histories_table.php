@@ -9,10 +9,9 @@ return new class extends Migration {
     {
         Schema::create('elo_histories', function (Blueprint $table) {
             $table->id();
-            $table->float('elo_before');
-            $table->float('elo_after');
-            $table->uuid('player_id');
-            $table->foreign('player_id')->references('id')->on('players')->onDelete('restrict');
+            $table->foreignUuid('player_id')->constrained('players')->onDelete('restrict');
+            $table->decimal('elo_before', 5, 2);
+            $table->decimal('elo_after', 5, 2);
             $table->timestamps();
         });
     }

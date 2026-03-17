@@ -21,7 +21,7 @@ class AlgorithmParametersSeeder extends Seeder
         ];
 
         DB::table('algorithm_parameters')->insert(
-            array_map(fn($p) => [...$p, 'class_id' => $classId], $defaultParams)
+            array_map(fn($p) => [...$p, 'school_class_id' => $classId], $defaultParams)
         );
     }
 }

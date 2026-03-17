@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('public_views', function (Blueprint $table) {
             $table->id();
             $table->string('access_token')->unique();
-            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
+            $table->foreignId('school_class_id')->constrained('school_classes')->onDelete('restrict');
             $table->timestamps();
         });
     }

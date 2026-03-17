@@ -7,13 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // Laravel utilise déjà une table "sessions" par défaut 
-        // donc on utilise "class_sessions" pour éviter les conflits
         Schema::create('class_sessions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('school_class_id')->constrained('school_classes')->onDelete('restrict');
             $table->date('date');
-            $table->boolean('is_active')->default(false);
-            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

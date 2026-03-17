@@ -12,7 +12,9 @@ return new class extends Migration {
             $table->integer('min_diff');
             $table->integer('max_diff');
             $table->float('winner_points');
-            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
+            $table->foreignId('school_class_id')
+                ->constrained('school_classes')
+                ->onDelete('restrict');
             $table->timestamps();
         });
     }
