@@ -24,3 +24,6 @@ Homestead.yaml
 Thumbs.db
 CLAUDE.md
 GEMINI.md
+.claude/
+_ide_helper.php
+/Helpers/ModelHelper.php

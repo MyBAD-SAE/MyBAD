@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
+/**
+ * @mixin IdeHelperMatchPlayer
+ */
 class MatchPlayer extends Pivot
 {
     protected $table = 'match_player';
