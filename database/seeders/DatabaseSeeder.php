@@ -2,159 +2,332 @@
 
 namespace Database\Seeders;
 
-use App\Models\GameMatch;
-use App\Models\User;
-use App\Services\EloService;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Seed the application's database.
+     */
     public function run(): void
     {
-        $elo = new EloService();
-
-        // Create test users with known passwords
-        $users = collect();
-
-        $users->push(User::factory()->create([
-            'name' => 'Lucas Martin',
-            'email' => 'lucas@mybad.test',
-            'elo_rating' => 1000,
-        ]));
-
-        $users->push(User::factory()->create([
-            'name' => 'Emma Dupont',
-            'email' => 'emma@mybad.test',
-            'elo_rating' => 1000,
-        ]));
-
-        $names = [
-            'Thomas Bernard', 'Lea Petit', 'Hugo Moreau',
-            'Chloe Laurent', 'Nathan Leroy', 'Manon Roux',
-            'Enzo Garcia', 'Camille David', 'Louis Bertrand',
-            'Jade Fournier', 'Arthur Girard',
+        // 1. Création des Utilisateurs (1 Admin, 10 Joueurs)
+        $users = [];
+        
+        // --- Admin ---
+        $adminId = Str::uuid()->toString();
+        $users[] = [
+            'id' => $adminId,
+            'first_name' => 'Admin',
+            'last_name' => 'MyBAD',
+            'email' => 'admin@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnRDZVtztZF0WEWoye99mHe-3E6iGqNPmsw&s",
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
 
-        foreach ($names as $name) {
-            $users->push(User::factory()->create([
-                'name' => $name,
-                'elo_rating' => 1000,
-            ]));
+        // --- Joueurs ---
+        $playerIds = [];
+
+        $id1 = Str::uuid()->toString();
+        $playerIds[] = $id1;
+        $users[] = [
+            'id' => $id1,
+            'first_name' => 'Lucas',
+            'last_name' => 'Torres',
+            'email' => 'lucas.torres@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/32.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id2 = Str::uuid()->toString();
+        $playerIds[] = $id2;
+        $users[] = [
+            'id' => $id2,
+            'first_name' => 'Victor',
+            'last_name' => 'Roué',
+            'email' => 'victor.roue@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/44.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id3 = Str::uuid()->toString();
+        $playerIds[] = $id3;
+        $users[] = [
+            'id' => $id3,
+            'first_name' => 'Antoine',
+            'last_name' => 'Bernard',
+            'email' => 'antoine.bernard@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/12.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id4 = Str::uuid()->toString();
+        $playerIds[] = $id4;
+        $users[] = [
+            'id' => $id4,
+            'first_name' => 'Serge',
+            'last_name' => 'Lama',
+            'email' => 'serge.lama@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2901x1632+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Ff4%2F99%2F7f300fdd4a068052973c3476c06c%2Ffcbcf713-d95e-4f4d-9f27-8bf889ae5ae0.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id5 = Str::uuid()->toString();
+        $playerIds[] = $id5;
+        $users[] = [
+            'id' => $id5,
+            'first_name' => 'Raph',
+            'last_name' => 'GrosPD',
+            'email' => 'raph@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/22.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id6 = Str::uuid()->toString();
+        $playerIds[] = $id6;
+        $users[] = [
+            'id' => $id6,
+            'first_name' => 'Chloé',
+            'last_name' => 'Laurent',
+            'email' => 'chloe.laurent@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/women/31.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id7 = Str::uuid()->toString();
+        $playerIds[] = $id7;
+        $users[] = [
+            'id' => $id7,
+            'first_name' => 'Nathan',
+            'last_name' => 'Leroy',
+            'email' => 'nathan.leroy@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/15.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id8 = Str::uuid()->toString();
+        $playerIds[] = $id8;
+        $users[] = [
+            'id' => $id8,
+            'first_name' => 'Manon',
+            'last_name' => 'Roux',
+            'email' => 'manon.roux@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/women/12.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id9 = Str::uuid()->toString();
+        $playerIds[] = $id9;
+        $users[] = [
+            'id' => $id9,
+            'first_name' => 'Enzo',
+            'last_name' => 'Garcia',
+            'email' => 'enzo.garcia@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/78.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id10 = Str::uuid()->toString();
+        $playerIds[] = $id10;
+        $users[] = [
+            'id' => $id10,
+            'first_name' => 'Camille',
+            'last_name' => 'David',
+            'email' => 'camille.david@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/women/42.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        DB::table('users')->insert($users);
+
+        // 2. Insertion dans admin_users
+        $realAdminId = Str::uuid()->toString();
+        DB::table('admin_users')->insert([
+            'id' => $realAdminId,
+            'user_id' => $adminId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
+        // Remplacer l'identifiant utilisateur par l'identifiant admin
+        // pour que tous les seeders suivants utilisent la clé de AdminUser.
+        $adminId = $realAdminId;
+
+        // 3. Insertion dans players
+        $players = [];
+        $newPlayerIds = [];
+        foreach ($playerIds as $index => $userId) {
+            $playerId = Str::uuid()->toString();
+            $newPlayerIds[] = $playerId;
+            $players[] = [
+                'id' => $playerId,
+                'user_id' => $userId,
+                'pin' => Hash::make('1234'),
+                'code' => 'P' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        DB::table('players')->insert($players);
+        
+        // Remplacer les identifiants d'utilisateurs par les identifiants de joueurs
+        // pour que tous les seeders suivants utilisent la clé de Player et non de User.
+        $playerIds = $newPlayerIds;
+
+        // 4. Création des Classes
+        $classId = DB::table('school_classes')->insertGetId([
+            'school_year' => '2025-2026',
+            'name' => 'Lundi Soir - Intermédiaire',
+            'address' => 'Gymnase Principal',
+            'description' => 'Classe de badminton pour joueurs intermédiaires.',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // 5. Paramètres d'algorithme ELO
+        DB::table('algorithm_parameters')->insert([
+            'min_diff' => 10,
+            'max_diff' => 200,
+            'winner_points' => 25.0,
+            'school_class_id' => $classId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // 6. Participants de la classe
+        $participants = [];
+        foreach ($playerIds as $pid) {
+            $participants[] = [
+                'participantable_type' => 'App\\Models\\Player',
+                'participantable_id' => $pid,
+                'elo_rating' => rand(800, 1500),
+                'school_class_id' => $classId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        
+        $participants[] = [
+            'participantable_type' => 'App\\Models\\AdminUser',
+            'participantable_id' => $adminId,
+            'elo_rating' => 1500,
+            'school_class_id' => $classId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+        DB::table('class_participants')->insert($participants);
+
+        // 7. Sessions de classe
+        $sessionIds = [];
+        for ($i = 0; $i < 5; $i++) {
+            $sessionIds[] = DB::table('class_sessions')->insertGetId([
+                'date' => Carbon::now()->subDays(7 * $i)->toDateString(),
+                'is_active' => $i === 0, // La plus récente est active
+                'school_class_id' => $classId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
-        // Simulate 30 completed matches
-        for ($i = 0; $i < 30; $i++) {
-            $pair = $users->random(2);
-            $challenger = $pair->first();
-            $challenged = $pair->last();
+        // 8. Matchs, Joueurs de match & Historique ELO
+        $matchPlayers = [];
+        $eloHistories = [];
 
-            // Generate random badminton scores
-            $scores = $this->generateScores();
+        foreach ($sessionIds as $sessionId) {
+            // 3 matchs par session
+            for ($m = 0; $m < 3; $m++) {
+                $matchId = DB::table('game_matches')->insertGetId([
+                    'class_session_id' => $sessionId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
 
-            $challengerSets = 0;
-            $challengedSets = 0;
-
-            foreach ($scores as $set) {
-                if ($set['challenger'] > $set['challenged']) {
-                    $challengerSets++;
-                } else {
-                    $challengedSets++;
+                // Choix de 2 joueurs aléatoirement
+                $p1 = $playerIds[array_rand($playerIds)];
+                $p2 = $playerIds[array_rand($playerIds)];
+                while ($p1 === $p2) {
+                    $p2 = $playerIds[array_rand($playerIds)];
                 }
-            }
 
-            $winner = $challengerSets > $challengedSets ? $challenger : $challenged;
-            $loser = $winner->id === $challenger->id ? $challenged : $challenger;
+                $score1 = rand(10, 21);
+                $score2 = $score1 === 21 ? rand(5, 19) : 21;
 
-            $result = $elo->calculate($winner->elo_rating, $loser->elo_rating);
+                $matchPlayers[] = [
+                    'game_match_id' => $matchId,
+                    'player_id' => $p1,
+                    'score' => $score1,
+                    'validated' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+                $matchPlayers[] = [
+                    'game_match_id' => $matchId,
+                    'player_id' => $p2,
+                    'score' => $score2,
+                    'validated' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
 
-            $match = GameMatch::create([
-                'challenger_id' => $challenger->id,
-                'challenged_id' => $challenged->id,
-                'winner_id' => $winner->id,
-                'status' => 'completed',
-                'challenger_score_set1' => $scores[0]['challenger'],
-                'challenged_score_set1' => $scores[0]['challenged'],
-                'challenger_score_set2' => $scores[1]['challenger'],
-                'challenged_score_set2' => $scores[1]['challenged'],
-                'challenger_score_set3' => $scores[2]['challenger'] ?? null,
-                'challenged_score_set3' => $scores[2]['challenged'] ?? null,
-                'played_at' => now()->subDays(rand(0, 30))->subHours(rand(0, 23)),
-                'elo_change' => $result['change'],
-            ]);
-
-            $winner->update([
-                'elo_rating' => $result['winner_new_rating'],
-                'matches_played' => $winner->matches_played + 1,
-                'matches_won' => $winner->matches_won + 1,
-            ]);
-
-            $loser->update([
-                'elo_rating' => $result['loser_new_rating'],
-                'matches_played' => $loser->matches_played + 1,
-                'matches_lost' => $loser->matches_lost + 1,
-            ]);
-
-            // Refresh models to get updated ELO
-            $winner->refresh();
-            $loser->refresh();
-        }
-
-        // Add a pending challenge for demo
-        GameMatch::create([
-            'challenger_id' => $users[1]->id,
-            'challenged_id' => $users[0]->id,
-            'status' => 'pending',
-        ]);
-
-        // Add an accepted match for demo
-        GameMatch::create([
-            'challenger_id' => $users[0]->id,
-            'challenged_id' => $users[2]->id,
-            'status' => 'accepted',
-        ]);
-    }
-
-    private function generateScores(): array
-    {
-        $sets = [];
-
-        // Set 1
-        $sets[] = $this->generateSetScore();
-
-        // Set 2
-        $sets[] = $this->generateSetScore();
-
-        // Check if set 3 is needed
-        $s1winner = $sets[0]['challenger'] > $sets[0]['challenged'] ? 'challenger' : 'challenged';
-        $s2winner = $sets[1]['challenger'] > $sets[1]['challenged'] ? 'challenger' : 'challenged';
-
-        if ($s1winner !== $s2winner) {
-            // Need set 3
-            $sets[] = $this->generateSetScore();
-        }
-
-        return $sets;
-    }
-
-    private function generateSetScore(): array
-    {
-        $winScore = 21;
-        $loserScore = rand(5, 19);
-
-        // Sometimes close scores
-        if (rand(1, 4) === 1) {
-            $loserScore = rand(19, 28);
-            $winScore = $loserScore + 2;
-            if ($winScore > 30) {
-                $winScore = 30;
-                $loserScore = 29;
+                // Faux historique ELO
+                $eloP1Base = rand(900, 1100);
+                $eloP2Base = rand(900, 1100);
+                
+                $eloHistories[] = [
+                    'elo_before' => $eloP1Base,
+                    'elo_after' => $score1 > $score2 ? $eloP1Base + 25 : $eloP1Base - 25,
+                    'player_id' => $p1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+                $eloHistories[] = [
+                    'elo_before' => $eloP2Base,
+                    'elo_after' => $score2 > $score1 ? $eloP2Base + 25 : $eloP2Base - 25,
+                    'player_id' => $p2,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
 
-        // Randomly assign winner
-        if (rand(0, 1)) {
-            return ['challenger' => $winScore, 'challenged' => $loserScore];
-        }
-        return ['challenger' => $loserScore, 'challenged' => $winScore];
+        DB::table('match_player')->insert($matchPlayers);
+        DB::table('elo_histories')->insert($eloHistories);
     }
 }
