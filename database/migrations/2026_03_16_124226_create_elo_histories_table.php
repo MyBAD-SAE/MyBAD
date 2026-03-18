@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('elo_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('player_id')->constrained('players')->onDelete('restrict');
-            $table->decimal('elo_before', 5, 2);
-            $table->decimal('elo_after', 5, 2);
+            $table->decimal('elo_before', 6, 2);
+            $table->decimal('elo_after', 6, 2);
             $table->timestamps();
         });
     }
