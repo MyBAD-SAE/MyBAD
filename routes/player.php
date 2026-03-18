@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -11,6 +12,9 @@ Route::prefix('auth/player')->name('player.')->group(function () {
 
         Route::post('login', [AuthenticatedSessionController::class, 'store'])
             ->name('login.submit');
+
+        Route::post('register', [RegisteredPlayerController::class, 'store'])
+            ->name('register');
     });
 
     Route::middleware('auth:player')->group(function () {
