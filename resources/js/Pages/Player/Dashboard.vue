@@ -5,12 +5,12 @@ const user = usePage().props.auth.user;
 </script>
 
 <template>
-    <Head title="Accueil" />
+    <Head title="Dashboard Joueur" />
 
     <div class="flex min-h-screen items-center justify-center bg-background">
         <div class="w-full max-w-md space-y-6 p-8 text-center">
-            <h1 class="text-3xl font-bold">Bienvenue, {{ user.first_name }} 👋</h1>
-            <p class="text-muted-foreground">Tu es connecté en tant que <strong>{{ user.email }}</strong></p>
+            <h1 class="text-3xl font-bold">Bienvenue, {{ user.first_name }}</h1>
+            <p class="text-muted-foreground">Espace joueur</p>
 
             <div class="rounded-lg border p-4 text-left text-sm space-y-1">
                 <p><span class="font-medium">Nom :</span> {{ user.last_name }}</p>

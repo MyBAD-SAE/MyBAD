@@ -5,7 +5,7 @@ use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::prefix('auth/player')->name('player.')->group(function () {
+Route::prefix('player')->name('player.')->group(function () {
     Route::middleware('guest:player')->group(function () {
         Route::get('login', [AuthenticatedSessionController::class, 'create'])
             ->name('login');

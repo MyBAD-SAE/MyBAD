@@ -34,7 +34,7 @@ const submit = () => {
 
     if (!form.email || !isValidEmail(form.email) || !form.password) return;
 
-    form.post(props.submitRoute ?? route('player.login.submit'), {
+    form.post(route(props.submitRoute ?? 'player.login.submit'), {
         onFinish: () => form.reset('password'),
     });
 };
