@@ -4,7 +4,6 @@ import { Link, useForm } from '@inertiajs/vue3';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
-import { Checkbox } from '@/Components/ui/checkbox';
 import GoogleButton from '@/Components/GoogleButton.vue';
 import SocialDivider from '@/Components/SocialDivider.vue';
 import ConditionsFooter from '@/Components/ConditionsFooter.vue';
@@ -17,7 +16,6 @@ const props = defineProps({
 const form = useForm({
     email: '',
     password: '',
-    remember: false,
 });
 
 const showPassword = ref(false);
@@ -101,14 +99,7 @@ const submit = () => {
                 <p v-if="passwordError()" class="text-sm text-destructive">Le mot de passe est requis.</p>
             </div>
 
-            <div class="flex items-center gap-2">
-                <Checkbox
-                    id="remember"
-                    :checked="form.remember"
-                    @update:checked="form.remember = $event"
-                />
-                <Label for="remember" class="text-sm font-normal">Se souvenir de moi</Label>
-            </div>
+
         </div>
 
         <Button type="submit" class="w-full" size="lg" :disabled="form.processing">

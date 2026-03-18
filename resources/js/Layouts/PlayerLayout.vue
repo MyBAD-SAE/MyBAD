@@ -4,7 +4,7 @@ import { Monitor } from 'lucide-vue-next';
 
 <template>
     <!-- Mobile : contenu normal -->
-    <div class="min-h-screen bg-background sm:hidden">
+    <div class="min-h-screen bg-white sm:hidden">
         <slot />
     </div>
 

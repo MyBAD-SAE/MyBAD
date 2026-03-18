@@ -5,7 +5,7 @@ use Inertia\Inertia;
 
 Route::prefix('auth/admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
-        Route::get('login', fn () => Inertia::render('Admin/Auth'))
+        Route::get('login', fn () => Inertia::render('admin/AdminAuth'))
             ->name('login');
     });
 });

@@ -5,5 +5,5 @@ use Inertia\Inertia;
 
 // Page d'accueil (protégée)
 Route::middleware('auth:player')->group(function () {
-    Route::get('/', fn () => Inertia::render('Index'))->name('home');
+    Route::get('/', fn () => Inertia::render('players/Dashboard'))->name('home');
 });
