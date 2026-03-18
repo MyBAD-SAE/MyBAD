@@ -15,10 +15,6 @@ class PublicView extends Model
         'school_class_id',
     ];
 
-    protected $hidden = [
-        'access_token',
-    ];
-
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class, 'school_class_id');

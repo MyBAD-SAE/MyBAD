@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
@@ -8,23 +8,48 @@ import { Checkbox } from '@/Components/ui/checkbox';
 import GoogleButton from '@/Components/GoogleButton.vue';
 import SocialDivider from '@/Components/SocialDivider.vue';
 import ConditionsFooter from '@/Components/ConditionsFooter.vue';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-vue-next';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, LoaderCircle } from 'lucide-vue-next';
 
-const form = ref({ email: '', password: '', remember: false });
+const props = defineProps({
+    submitRoute: { type: String, default: null },
+});
+
+const form = useForm({
+    email: '',
+    password: '',
+    remember: false,
+});
+
 const showPassword = ref(false);
 const touched = reactive({ email: false, password: false });
 
 const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-const emailError = () => touched.email && !form.value.email;
-const emailFormatError = () => touched.email && form.value.email && !isValidEmail(form.value.email);
-const passwordError = () => touched.password && !form.value.password;
+const emailError = () => touched.email && !form.email;
+const emailFormatError = () => touched.email && form.email && !isValidEmail(form.email);
+const passwordError = () => touched.password && !form.password;
+
+const submit = () => {
+    touched.email = true;
+    touched.password = true;
+
+    if (!form.email || !isValidEmail(form.email) || !form.password) return;
+
+    form.post(props.submitRoute ?? route('player.login.submit'), {
+        onFinish: () => form.reset('password'),
+    });
+};
 </script>
 
 <template>
-    <div class="space-y-6">
+    <form @submit.prevent="submit" class="space-y-6">
         <div class="lg:hidden">
             <h2 class="text-xl font-bold">Connexion</h2>
             <p class="mt-1 text-sm text-muted-foreground">Connectez-vous pour retrouver votre dashboard</p>
+        </div>
+
+        <!-- Erreur serveur -->
+        <div v-if="form.errors.email" class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            {{ form.errors.email }}
         </div>
 
         <div class="space-y-4">
@@ -73,6 +98,7 @@ const passwordError = () => touched.password && !form.value.password;
                         <Eye v-else class="h-4 w-4" />
                     </button>
                 </div>
+                <p v-if="passwordError()" class="text-sm text-destructive">Le mot de passe est requis.</p>
             </div>
 
             <div class="flex items-center gap-2">
@@ -85,13 +111,14 @@ const passwordError = () => touched.password && !form.value.password;
             </div>
         </div>
 
-        <Button class="w-full" size="lg">
+        <Button type="submit" class="w-full" size="lg" :disabled="form.processing">
+            <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
             Se connecter
-            <ArrowRight class="ml-2 h-4 w-4" />
+            <ArrowRight v-if="!form.processing" class="ml-2 h-4 w-4" />
         </Button>
 
         <SocialDivider />
         <GoogleButton />
         <ConditionsFooter />
-    </div>
+    </form>
 </template>

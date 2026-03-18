@@ -22,7 +22,7 @@ class AlgorithmParameter extends Model
         return [
             'min_diff' => 'integer',
             'max_diff' => 'integer',
-            'winner_points' => 'decimal:2',
+            'winner_points' => 'float',
         ];
     }
 
