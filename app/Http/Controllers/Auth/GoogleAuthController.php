@@ -19,6 +19,11 @@ class GoogleAuthController extends Controller
 
     public function callback(): RedirectResponse
     {
+        if (request()->has('error')) {
+            return redirect()->route('player.login')->withErrors([
+                'email' => 'Connexion Google annulée.',
+            ]);
+        }
         $googleUser = Socialite::driver('google')->user();
 
         $user = User::where('google_id', $googleUser->getId())->first();
