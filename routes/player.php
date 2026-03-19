@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\player\AccountController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
+use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,6 +29,9 @@ Route::prefix('player')->name('player.')->group(function () {
 
         Route::delete('account', [AccountController::class, 'destroy'])
             ->name('account.destroy');
+
+        Route::post('pin', [PinController::class, 'store'])
+            ->name('pin.store');
     });
 });
 
