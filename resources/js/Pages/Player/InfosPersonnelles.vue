@@ -80,7 +80,7 @@ function handleSave() {
 
     setTimeout(() => {
         showSuccess.value = false;
-        router.visit(route('profil.index'));
+        router.visit(route('player.account.index'));
     }, 2500);
 }
 </script>
@@ -92,7 +92,7 @@ function handleSave() {
         <div class="pb-20">
             <!-- Header -->
             <div class="relative flex items-center justify-center px-5 pt-6 pb-5">
-                <Link :href="route('profil.index')" class="absolute left-5 flex h-10 w-10 items-center justify-center rounded-2xl border border-border/50">
+                <Link :href="route('player.account.index')" class="absolute left-5 flex h-10 w-10 items-center justify-center rounded-2xl border border-border/50">
                     <ArrowLeft class="h-5 w-5 text-foreground" />
                 </Link>
                 <h1 class="text-lg font-bold text-foreground">Infos Personnelles</h1>
