@@ -17,6 +17,7 @@ const props = defineProps({
     eloDiff : Number,
     eloHistory : Array,
     matchStats : Object,
+    totalMatches: Number,
     winStreak: Number,
 })
 
@@ -35,23 +36,22 @@ console.log('Participant', props.participant)
                 <!-- Suggestion -->
                 <SuggestionCard />
 
-                <!-- Activité mensuelle -->
+                <!-- Activité des 4 dernières séances -->
                 <div>
-                    <h3 class="text-lg font-bold text-foreground">Activité mensuelle</h3>
-                    <p class="text-sm text-muted-foreground">Depuis le début</p>
+                    <h3 class="text-lg font-bold text-foreground">4 dernières séances</h3>
 
                     <div class="mt-3">
-                        <EloCard :elo="participant.elo_rating" :elo-diff="eloDiff" :history="eloHistory" />
+                        <EloCard :elo="participant.elo_rating" :elo-diff="eloDiff" :history="eloHistory" :has-matches="totalMatches > 0" />
                     </div>
 
-                    <div class="mt-3 grid grid-cols-2 gap-3">
+                    <div v-if="matchStats.total > 0" class="mt-3 grid grid-cols-2 gap-3">
                         <MatchStatsCard :total="matchStats.total" :wins="matchStats.wins" :losses="matchStats.losses" :sessions="matchStats.sessions" />
                         <EvolutionCard :wins="matchStats.wins" :losses="matchStats.losses" :total="matchStats.total" />
                     </div>
                 </div>
 
                 <!-- Activité globale -->
-                <GlobalActivityCard :win-streak="winStreak" :total-matches="matchStats.totalMatches" />
+                <GlobalActivityCard :win-streak="winStreak" :total-matches="totalMatches" />
 
                 <!-- Classement -->
                 <RankingWidget />

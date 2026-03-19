@@ -7,6 +7,7 @@ const props = defineProps({
     elo: { type: Number, default: 100.0 },
     eloDiff: { type: Number, default: 0 },
     history: { type: Array, default: () => [] },
+    hasMatches: { type: Boolean, default: true },
 });
 
 const selectedIndex = ref(null);
@@ -57,14 +58,14 @@ const chartData = computed(() => {
 
 <template>
     <Card class="shadow-none py-0 overflow-hidden">
-        <CardContent class="p-4 pb-0">
+        <CardContent class="p-4" :class="{ 'pb-0': hasMatches }">
             <div class="flex items-center justify-between">
                 <div>
                     <span class="text-sm font-bold text-foreground">ELO</span>
                     <p class="text-xs text-muted-foreground">Classement</p>
                 </div>
                 <div
-                    v-if="eloDiff !== 0"
+                    v-if="hasMatches && eloDiff !== 0"
                     class="flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
                     :class="eloDiff > 0 ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'"
                 >
@@ -72,11 +73,19 @@ const chartData = computed(() => {
                     <TrendingDown v-else class="h-3 w-3" />
                     <span>{{ eloDiff > 0 ? '+' : '' }}{{ eloDiff }}</span>
                 </div>
+                <span v-if="!hasMatches" class="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">Nouveau joueur</span>
             </div>
             <p class="mt-2 text-4xl font-bold text-foreground">{{ elo }}</p>
         </CardContent>
 
-        <div class="relative h-[120px] w-full">
+        <!-- Pas de matchs : ligne pointillée + message -->
+        <div v-if="!hasMatches" class="px-4 pb-4">
+            <div class="border-t border-dashed border-muted-foreground/30 pt-3">
+                <p class="text-xs text-muted-foreground text-center">En attente du premier match</p>
+            </div>
+        </div>
+
+        <div v-if="hasMatches" class="relative h-[120px] w-full">
             <svg
                 v-if="history.length >= 2"
                 class="absolute inset-0 h-full w-full"

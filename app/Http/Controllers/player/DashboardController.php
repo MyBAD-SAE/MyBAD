@@ -23,32 +23,22 @@ class DashboardController extends Controller
 
         $eloDiff = 0;
         $eloHistory = [];
-        if ($player && $participant) {
-            $history = EloHistory::where('player_id', $player->id)
-                ->oldest()
-                ->get();
-
-            if ($history->isNotEmpty()) {
-                $eloDiff = round((float) $participant->elo_rating - (float) $history->first()->elo_before, 2);
-                $eloHistory = $history->pluck('elo_after')->prepend($history->first()->elo_before)->values()->all();
-            }
-        }
-
         $matchStats = ['wins' => 0, 'losses' => 0, 'total' => 0, 'sessions' => []];
+        $totalMatches = 0;
 
         if ($player) {
             $matches = GameMatch::whereHas('players', fn ($q) => $q->where('player_id', $player->id))
                 ->with(['players', 'classSession'])
                 ->get();
 
+            // Regrouper par session
             $bySession = [];
             foreach ($matches as $match) {
                 $myScore = $match->players->firstWhere('id', $player->id)->pivot->score;
                 $oppScore = $match->players->where('id', '!=', $player->id)->first()->pivot->score;
                 $won = $myScore > $oppScore;
 
-                $won ? $matchStats['wins']++ : $matchStats['losses']++;
-                $matchStats['total']++;
+                $totalMatches++;
 
                 $sessionId = $match->class_session_id;
                 if (!isset($bySession[$sessionId])) {
@@ -64,17 +54,42 @@ class DashboardController extends Controller
             }
 
             usort($bySession, fn ($a, $b) => ($a['raw_date'] ?? '') <=> ($b['raw_date'] ?? ''));
-            $matchStats['sessions'] = collect(array_slice($bySession, -5))->map(fn ($s) => [
+
+            // Stats des 4 dernières séances
+            $last4Sessions = array_slice($bySession, -4);
+            foreach ($last4Sessions as $s) {
+                $matchStats['wins'] += $s['wins'];
+                $matchStats['losses'] += $s['losses'];
+                $matchStats['total'] += $s['wins'] + $s['losses'];
+            }
+            $matchStats['sessions'] = collect($last4Sessions)->map(fn ($s) => [
                 'wins' => $s['wins'],
                 'losses' => $s['losses'],
                 'date' => $s['date'],
             ])->values()->all();
+
+            // Elo sur les 4 dernières séances
+            if ($participant) {
+                $history = EloHistory::where('player_id', $player->id)
+                    ->oldest()
+                    ->get();
+
+                if ($history->isNotEmpty()) {
+                    // Prendre les entrées correspondant aux 4 dernières séances
+                    $totalEntries = $history->count();
+                    $recentCount = $matchStats['total'];
+                    $recentHistory = $history->slice(max(0, $totalEntries - $recentCount));
+
+                    $eloDiff = round((float) $participant->elo_rating - (float) $recentHistory->first()->elo_before, 2);
+                    $eloHistory = $recentHistory->pluck('elo_after')->prepend($recentHistory->first()->elo_before)->values()->all();
+                }
+            }
         }
 
 
         $winStreak = 0;
         if ($player) {
-            $sortedMatches = $matches->sortByDesc(fn ($m) => $m->classSession?->date ?? '');
+            $sortedMatches = $matches->sortByDesc(fn ($m) => ($m->classSession?->date ?? '') . '_' . str_pad($m->id, 10, '0', STR_PAD_LEFT));
             foreach ($sortedMatches as $match) {
                 $myScore = $match->players->firstWhere('id', $player->id)->pivot->score;
                 $oppScore = $match->players->where('id', '!=', $player->id)->first()->pivot->score;
@@ -91,6 +106,7 @@ class DashboardController extends Controller
             'eloDiff' => $eloDiff,
             'eloHistory' => $eloHistory,
             'matchStats' => $matchStats,
+            'totalMatches' => $totalMatches,
             'winStreak' => $winStreak,
         ]);
     }
