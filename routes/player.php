@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
+use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -21,6 +22,9 @@ Route::prefix('player')->name('player.')->group(function () {
     Route::middleware('auth:player')->group(function () {
         Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
             ->name('logout');
+
+        Route::post('pin', [PinController::class, 'store'])
+            ->name('pin.store');
     });
 });
 
