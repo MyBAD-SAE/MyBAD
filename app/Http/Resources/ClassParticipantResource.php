@@ -16,7 +16,7 @@ class ClassParticipantResource extends JsonResource
             'school_class_id'     => $this->school_class_id,
             'participantable_type' => $this->participantable_type,
             'participantable_id'  => $this->participantable_id,
-            'elo_rating'          => $this?->elo_rating,
+            'elo_rating'          => (float) $this->elo_rating,
             'participantable'     => $this->whenLoaded('participantable', fn () => match ($this->participantable_type) {
                 Player::class    => PlayerResource::make($this->participantable)->resolve(),
                 AdminUser::class => AdminUserResource::make($this->participantable)->resolve(),

@@ -4,22 +4,22 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\player\AccountController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
+use App\Http\Controllers\player\DashboardController;
 use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth:player')->group(function () {
-    Route::get('/', fn () => Inertia::render('Player/Dashboard'))->name('home');
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('matchs', fn () => Inertia::render('Player/Matchs'))->name('matchs');
     Route::get('classements', fn () => Inertia::render('Player/Classements'))->name('classements');
 
     Route::prefix('joueur')->name('player.')->group(function () {
-        Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
         Route::prefix('profil')->name('account.')->group(function () {
             Route::get('/', [AccountController::class, 'index'])->name('index');
             Route::get('download', [AccountController::class, 'download'])->name('download');
             Route::delete('/', [AccountController::class, 'destroy'])->name('destroy');
+            Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
             Route::get('infos', fn () => Inertia::render('Player/InfosPersonnelles'))->name('infos');
             Route::get('confidentialite', [AccountController::class, 'confidentialite'])->name('confidentialite');
         });

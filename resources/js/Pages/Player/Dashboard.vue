@@ -19,6 +19,7 @@ const props = defineProps({
     matchStats : Object,
 })
 
+console.log('Participant', props.participant)
 </script>
 
 <template>
