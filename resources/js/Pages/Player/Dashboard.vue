@@ -17,6 +17,7 @@ const props = defineProps({
     eloDiff : Number,
     eloHistory : Array,
     matchStats : Object,
+    winStreak: Number,
 })
 
 console.log('Participant', props.participant)
@@ -50,7 +51,7 @@ console.log('Participant', props.participant)
                 </div>
 
                 <!-- Activité globale -->
-                <GlobalActivityCard :win-streak="4" :total-matches="50" />
+                <GlobalActivityCard :win-streak="winStreak" :total-matches="matchStats.totalMatches" />
 
                 <!-- Classement -->
                 <RankingWidget />
