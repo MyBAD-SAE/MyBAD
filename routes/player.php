@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\player\AccountController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,12 @@ Route::prefix('player')->name('player.')->group(function () {
     Route::middleware('auth:player')->group(function () {
         Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
             ->name('logout');
+
+        Route::get('account/download', [AccountController::class, 'download'])
+            ->name('account.download');
+
+        Route::delete('account', [AccountController::class, 'destroy'])
+            ->name('account.destroy');
     });
 });
 

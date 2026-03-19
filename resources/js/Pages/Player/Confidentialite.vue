@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
@@ -14,10 +14,23 @@ import {
     TriangleAlert,
 } from 'lucide-vue-next';
 
+const props = defineProps({
+    matchCount: { type: Number, default: 0 },
+    eloHistoryCount: { type: Number, default: 0 },
+    profileSize: { type: Number, default: 0 },
+    eloSize: { type: Number, default: 0 },
+    matchSize: { type: Number, default: 0 },
+});
+
+function formatSize(bytes) {
+    if (bytes < 1024) return `${bytes} o`;
+    return `~${(bytes / 1024).toFixed(1)} Ko`;
+}
+
 const dataItems = [
-    { icon: FileText, title: 'Informations du profil', subtitle: 'Nom, email, préférences', size: '~1 Ko', color: 'text-primary', bg: 'bg-primary/10' },
-    { icon: ClipboardList, title: 'Statistiques & ELO', subtitle: 'Historique de performance', size: '~2 Ko', color: 'text-violet-500', bg: 'bg-violet-50' },
-    { icon: FileText, title: 'Historique des matchs', subtitle: '22 matchs enregistrés', size: '~4 Ko', color: 'text-amber-500', bg: 'bg-amber-50' },
+    { icon: FileText, title: 'Informations du profil', subtitle: 'Nom, email, préférences', size: formatSize(props.profileSize), color: 'text-primary', bg: 'bg-primary/10' },
+    { icon: ClipboardList, title: 'Statistiques & ELO', subtitle: `${props.eloHistoryCount} entrée${props.eloHistoryCount > 1 ? 's' : ''} ELO`, size: formatSize(props.eloSize), color: 'text-violet-500', bg: 'bg-violet-50' },
+    { icon: FileText, title: 'Historique des matchs', subtitle: `${props.matchCount} match${props.matchCount > 1 ? 's' : ''} enregistré${props.matchCount > 1 ? 's' : ''}`, size: formatSize(props.matchSize), color: 'text-amber-500', bg: 'bg-amber-50' },
 ];
 
 // Delete modal
@@ -25,6 +38,19 @@ const showDeleteModal = ref(false);
 const deleteConfirmation = ref('');
 
 const canDelete = computed(() => deleteConfirmation.value === 'SUPPRIMER');
+
+const deleteForm = useForm({
+    confirmation: '',
+});
+
+function handleDelete() {
+    deleteForm.confirmation = deleteConfirmation.value;
+    deleteForm.delete(route('player.account.destroy'), {
+        onFinish: () => {
+            deleteConfirmation.value = '';
+        },
+    });
+}
 
 // Download modal
 const showDownloadModal = ref(false);
@@ -35,6 +61,14 @@ const progressWidth = ref(0);
 
 function handleDownload() {
     showDownloadModal.value = false;
+
+    const link = document.createElement('a');
+    link.href = route('player.account.download');
+    link.download = '';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
     showSuccess.value = true;
     progressWidth.value = 0;
 
@@ -237,7 +271,7 @@ function handleDownload() {
                             <p class="text-xs leading-relaxed text-red-300">En supprimant votre compte, vous perdrez définitivement :</p>
                             <ul class="mt-3 list-disc space-y-2 pl-5 text-xs text-red-300">
                                 <li>Votre profil et vos informations personnelles</li>
-                                <li>Votre historique de 22 matchs</li>
+                                <li>Votre historique de {{ matchCount }} match{{ matchCount > 1 ? 's' : '' }}</li>
                                 <li>Votre score ELO et vos statistiques</li>
                                 <li>Votre position au classement</li>
                             </ul>
@@ -268,10 +302,11 @@ function handleDownload() {
                             </button>
                             <button
                                 class="flex-1 rounded-2xl py-2.5 text-sm font-semibold text-white transition-colors"
-                                :class="canDelete ? 'bg-red-500' : 'bg-red-300 cursor-not-allowed'"
-                                :disabled="!canDelete"
+                                :class="canDelete && !deleteForm.processing ? 'bg-red-500' : 'bg-red-300 cursor-not-allowed'"
+                                :disabled="!canDelete || deleteForm.processing"
+                                @click="handleDelete"
                             >
-                                Supprimer
+                                {{ deleteForm.processing ? 'Suppression...' : 'Supprimer' }}
                             </button>
                         </div>
                     </div>
