@@ -164,7 +164,7 @@ const storeUser = () => {
                     class="mt-0.5"
                 />
                 <Label for="terms" class="text-xs font-normal leading-snug">
-                    J'accepte les <Link :href="route('terms')" class="inline font-medium text-primary hover:underline">CGU</Link> et la <Link :href="route('privacy')" class="inline font-medium text-primary hover:underline">politique de confidentialité</Link>
+                    J'accepte les <Link :href="route('player.terms')" class="inline font-medium text-primary hover:underline">CGU</Link> et la <Link :href="route('player.privacy')" class="inline font-medium text-primary hover:underline">politique de confidentialité</Link>
                 </Label>
             </div>
         </div>

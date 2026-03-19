@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Création des Utilisateurs (1 Admin, 10 Joueurs)
         $users = [];
-        
+
         // --- Admin ---
         $adminId = Str::uuid()->toString();
         $users[] = [
@@ -185,7 +185,7 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
+
         // Remplacer l'identifiant utilisateur par l'identifiant admin
         // pour que tous les seeders suivants utilisent la clé de AdminUser.
         $adminId = $realAdminId;
@@ -200,13 +200,13 @@ class DatabaseSeeder extends Seeder
                 'id' => $playerId,
                 'user_id' => $userId,
                 'pin' => Hash::make('1234'),
-                'code' => 'P' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                'code' => str_pad($index + 1, 6, '0', STR_PAD_LEFT),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
         DB::table('players')->insert($players);
-        
+
         // Remplacer les identifiants d'utilisateurs par les identifiants de joueurs
         // pour que tous les seeders suivants utilisent la clé de Player et non de User.
         $playerIds = $newPlayerIds;
@@ -237,17 +237,17 @@ class DatabaseSeeder extends Seeder
             $participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id' => $pid,
-                'elo_rating' => rand(800, 1500),
+                'elo_rating' => rand(90, 120),
                 'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
-        
+
         $participants[] = [
             'participantable_type' => 'App\\Models\\AdminUser',
             'participantable_id' => $adminId,
-            'elo_rating' => 1500,
+            'elo_rating' => null,
             'school_class_id' => $classId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -286,8 +286,8 @@ class DatabaseSeeder extends Seeder
                     $p2 = $playerIds[array_rand($playerIds)];
                 }
 
-                $score1 = rand(10, 21);
-                $score2 = $score1 === 21 ? rand(5, 19) : 21;
+                $score1 = rand(7, 15);
+                $score2 = $score1 === 15 ? rand(5, 13) : 15;
 
                 $matchPlayers[] = [
                     'game_match_id' => $matchId,
@@ -307,19 +307,19 @@ class DatabaseSeeder extends Seeder
                 ];
 
                 // Faux historique ELO
-                $eloP1Base = rand(900, 1100);
-                $eloP2Base = rand(900, 1100);
-                
+                $eloP1Base = rand(90, 110);
+                $eloP2Base = rand(90, 110);
+
                 $eloHistories[] = [
                     'elo_before' => $eloP1Base,
-                    'elo_after' => $score1 > $score2 ? $eloP1Base + 25 : $eloP1Base - 25,
+                    'elo_after' => $score1 > $score2 ? $eloP1Base + 2.5 : $eloP1Base - 2.5,
                     'player_id' => $p1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
                 $eloHistories[] = [
                     'elo_before' => $eloP2Base,
-                    'elo_after' => $score2 > $score1 ? $eloP2Base + 25 : $eloP2Base - 25,
+                    'elo_after' => $score2 > $score1 ? $eloP2Base + 2.5 : $eloP2Base - 2.5,
                     'player_id' => $p2,
                     'created_at' => now(),
                     'updated_at' => now(),

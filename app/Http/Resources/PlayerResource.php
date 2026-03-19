@@ -12,7 +12,7 @@ class PlayerResource extends JsonResource
         return [
             'user_id' => $this->user_id,
             'code' => $this->code,
-            'user' => UserResource::make($this->whenLoaded('user')),
+            'user' => UserResource::make($this->whenLoaded('user'))->resolve(),
         ];
     }
 }

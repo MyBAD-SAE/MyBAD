@@ -3,15 +3,55 @@
 namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClassParticipantResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class AccountController extends Controller
 {
+    public function index()
+    {
+        $user = auth('player')->user();
+        $player = $user->player;
+
+        $participant = $player
+            ?->classParticipants()
+            ->with('participantable.user')
+            ->first();
+
+        return Inertia::render('Player/Profil', [
+            'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
+        ]);
+    }
+    public function confidentialite(): \Inertia\Response
+    {
+        $user = auth('player')->user();
+        $player = $user->player;
+
+        $profileData = json_encode([
+            'prenom' => $user->first_name,
+            'nom' => $user->last_name,
+            'email' => $user->email,
+            'photo' => $user->profile_picture,
+            'compte_cree_le' => $user->created_at,
+        ]);
+
+        $eloData = json_encode($player->eloHistories()->get(['elo_before', 'elo_after', 'created_at']));
+        $matchData = json_encode($player->gameMatches()->get());
+
+        return Inertia::render('Player/Confidentialite', [
+            'matchCount' => $player->gameMatches()->count(),
+            'eloHistoryCount' => $player->eloHistories()->count(),
+            'profileSize' => strlen($profileData),
+            'eloSize' => strlen($eloData),
+            'matchSize' => strlen($matchData),
+        ]);
+    }
+
     public function download(): JsonResponse
     {
         /** @var User $user */
@@ -60,14 +100,8 @@ class AccountController extends Controller
 
         /** @var User $user */
         $user = Auth::guard('player')->user();
-        $player = $user->player;
 
-        DB::transaction(function () use ($user, $player) {
-            $player->eloHistories()->delete();
-            $player->classParticipants()->delete();
-            $player->delete();
-            $user->delete();
-        });
+        $user->delete();
 
         Auth::guard('player')->logout();
         $request->session()->invalidate();

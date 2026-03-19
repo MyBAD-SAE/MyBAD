@@ -20,5 +20,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])
             ->name('logout');
+
+        Route::get('dashboard', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
     });
 });
