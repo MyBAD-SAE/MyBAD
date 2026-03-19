@@ -2,7 +2,6 @@
 import { Head, usePage } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 
-const user = usePage().props.auth.user;
 import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
 import SuggestionCard from '@/Components/dashboard/SuggestionCard.vue';
 import EloCard from '@/Components/dashboard/EloCard.vue';
@@ -12,6 +11,14 @@ import GlobalActivityCard from '@/Components/dashboard/GlobalActivityCard.vue';
 import RankingWidget from '@/Components/dashboard/RankingWidget.vue';
 import RecentMatchesWidget from '@/Components/dashboard/RecentMatchesWidget.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
+
+const props = defineProps({
+    participant : Object,
+    eloDiff : Number,
+    eloHistory : Array,
+    matchStats : Object,
+})
+
 </script>
 
 <template>
@@ -21,7 +28,7 @@ import BottomNavBar from '@/Components/BottomNavBar.vue';
         <div class="pb-20">
             <div class="space-y-6 p-5">
                 <!-- Header -->
-                <DashboardHeader :first-name="user.first_name" :avatar-url="user.profile_picture" />
+                <DashboardHeader :first-name="participant.participantable.user.first_name" :avatar-url="participant.participantable.user.profile_picture" />
 
                 <!-- Suggestion -->
                 <SuggestionCard />
@@ -32,12 +39,12 @@ import BottomNavBar from '@/Components/BottomNavBar.vue';
                     <p class="text-sm text-muted-foreground">Depuis le début</p>
 
                     <div class="mt-3">
-                        <EloCard :elo="100.0" :elo-diff="22" />
+                        <EloCard :elo="participant.elo_rating" :elo-diff="eloDiff" :history="eloHistory" />
                     </div>
 
                     <div class="mt-3 grid grid-cols-2 gap-3">
-                        <MatchStatsCard :total="36" :wins="25" :losses="12" />
-                        <EvolutionCard :wins="17" :losses="5" :total="22" />
+                        <MatchStatsCard :total="matchStats.total" :wins="matchStats.wins" :losses="matchStats.losses" :sessions="matchStats.sessions" />
+                        <EvolutionCard :wins="matchStats.wins" :losses="matchStats.losses" :total="matchStats.total" />
                     </div>
                 </div>
 
