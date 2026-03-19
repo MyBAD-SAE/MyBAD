@@ -9,6 +9,7 @@ Route::middleware('auth:player')->group(function () {
     Route::get('/matchs', fn () => Inertia::render('Player/Matchs'))->name('matchs');
     Route::get('/classements', fn () => Inertia::render('Player/Classements'))->name('classements');
     Route::get('/profil', fn () => Inertia::render('Player/Profil'))->name('profil');
+    Route::get('/profil/infos', fn () => Inertia::render('Player/InfosPersonnelles'))->name('profil.infos');
 });
 
 // Dashboard admin
