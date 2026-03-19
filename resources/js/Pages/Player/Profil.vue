@@ -68,7 +68,7 @@ function logout() {
                 <h1 class="text-xl font-bold text-foreground">{{ user.first_name }} {{ user.last_name }}</h1>
                 <div class="mt-0.5 flex items-center gap-2">
                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
-                        <Crown class="h-3 w-3" /> #1
+                        <Crown class="h-3 w-3" /> #{{ participant?.rank }}
                     </span>
                     <span class="text-sm text-muted-foreground">ID : {{ player?.code }}</span>
                 </div>

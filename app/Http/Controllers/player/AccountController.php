@@ -21,6 +21,12 @@ class AccountController extends Controller
         $participant = $player
             ?->classParticipants()
             ->with('participantable.user')
+            ->selectRaw('*, (
+                SELECT COUNT(*) + 1
+                FROM class_participants cp
+                WHERE cp.school_class_id = class_participants.school_class_id
+                  AND cp.elo_rating > class_participants.elo_rating
+            ) as `rank`')
             ->first();
 
         return Inertia::render('Player/Profil', [
