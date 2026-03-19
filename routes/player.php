@@ -24,7 +24,7 @@ Route::prefix('player')->name('player.')->group(function () {
 });
 
 
-Route::get('auth/mot-de-passe-oublie', fn () => Inertia::render('ForgotPassword'))
+Route::get('auth/mot-de-passe-oublie', fn () => Inertia::render('Player/Auth/ForgotPassword'))
     ->name('password.request');
 
 Route::get('/conditions-utilisation', fn () => Inertia::render('Terms'))->name('terms');

@@ -18,7 +18,7 @@ class AdminAuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Admin/Auth', [
+        return Inertia::render('Admin/Auth/Auth', [
             'status' => session('status'),
         ]);
     }
