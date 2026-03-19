@@ -12,7 +12,7 @@ return new class extends Migration {
             
             $table->string('participantable_type');
             $table->uuid('participantable_id');
-            $table->decimal('elo_rating', 5, 2)->default(100);
+            $table->decimal('elo_rating', 6, 2)->default(100);
             $table->timestamps();
             
             $table->foreignId('school_class_id')

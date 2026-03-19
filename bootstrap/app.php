@@ -21,7 +21,18 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->routeIs('admin.*') || $request->is('admin', 'admin/*')) {
+                return route('admin.login');
+            }
+
+            // Si un admin non-player accède à /, le rediriger vers /admin
+            if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+                return route('admin.dashboard');
+            }
+
+            return route('player.login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

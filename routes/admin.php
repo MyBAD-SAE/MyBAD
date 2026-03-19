@@ -1,11 +1,24 @@
 <?php
 
+use App\Http\Controllers\admin\Auth\AdminAuthenticatedSessionController;
+use App\Http\Controllers\admin\Auth\RegisteredAdminController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::prefix('auth/admin')->name('admin.')->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('login', fn () => Inertia::render('Admin/Auth'))
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('login', [AdminAuthenticatedSessionController::class, 'create'])
             ->name('login');
+
+        Route::post('login', [AdminAuthenticatedSessionController::class, 'store'])
+            ->name('login.submit');
+
+        // Route::post('register', [RegisteredAdminController::class, 'store'])
+        //     ->name('register');
+    });
+
+    Route::middleware('auth:admin')->group(function () {
+        Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])
+            ->name('logout');
     });
 });

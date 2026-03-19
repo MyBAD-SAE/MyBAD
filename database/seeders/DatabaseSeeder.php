@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'MyBAD',
             'email' => 'admin@mybad.test',
             'password' => Hash::make('password'),
-            'profile_picture' => null,
+            'profile_picture' => "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnRDZVtztZF0WEWoye99mHe-3E6iGqNPmsw&s",
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -34,39 +34,171 @@ class DatabaseSeeder extends Seeder
 
         // --- Joueurs ---
         $playerIds = [];
-        $firstNames = ['Lucas', 'Victor', 'Antoine', 'Serge', 'Raph', 'Chloé', 'Nathan', 'Manon', 'Enzo', 'Camille'];
-        $lastNames = ['Torres', 'Roué', 'Bernard', 'Lama', 'GrosPD', 'Laurent', 'Leroy', 'Roux', 'Garcia', 'David'];
 
-        for ($i = 0; $i < 10; $i++) {
-            $id = Str::uuid()->toString();
-            $playerIds[] = $id;
-            $users[] = [
-                'id' => $id,
-                'first_name' => $firstNames[$i],
-                'last_name' => $lastNames[$i],
-                'email' => strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $firstNames[$i])) . '@mybad.test',
-                'password' => Hash::make('password'),
-                'profile_picture' => null,
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
+        $id1 = Str::uuid()->toString();
+        $playerIds[] = $id1;
+        $users[] = [
+            'id' => $id1,
+            'first_name' => 'Lucas',
+            'last_name' => 'Torres',
+            'email' => 'lucas.torres@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/32.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id2 = Str::uuid()->toString();
+        $playerIds[] = $id2;
+        $users[] = [
+            'id' => $id2,
+            'first_name' => 'Victor',
+            'last_name' => 'Roué',
+            'email' => 'victor.roue@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/44.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id3 = Str::uuid()->toString();
+        $playerIds[] = $id3;
+        $users[] = [
+            'id' => $id3,
+            'first_name' => 'Antoine',
+            'last_name' => 'Bernard',
+            'email' => 'antoine.bernard@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/12.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id4 = Str::uuid()->toString();
+        $playerIds[] = $id4;
+        $users[] = [
+            'id' => $id4,
+            'first_name' => 'Serge',
+            'last_name' => 'Lama',
+            'email' => 'serge.lama@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2901x1632+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Ff4%2F99%2F7f300fdd4a068052973c3476c06c%2Ffcbcf713-d95e-4f4d-9f27-8bf889ae5ae0.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id5 = Str::uuid()->toString();
+        $playerIds[] = $id5;
+        $users[] = [
+            'id' => $id5,
+            'first_name' => 'Raph',
+            'last_name' => 'GrosPD',
+            'email' => 'raph@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/22.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id6 = Str::uuid()->toString();
+        $playerIds[] = $id6;
+        $users[] = [
+            'id' => $id6,
+            'first_name' => 'Chloé',
+            'last_name' => 'Laurent',
+            'email' => 'chloe.laurent@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/women/31.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id7 = Str::uuid()->toString();
+        $playerIds[] = $id7;
+        $users[] = [
+            'id' => $id7,
+            'first_name' => 'Nathan',
+            'last_name' => 'Leroy',
+            'email' => 'nathan.leroy@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/15.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id8 = Str::uuid()->toString();
+        $playerIds[] = $id8;
+        $users[] = [
+            'id' => $id8,
+            'first_name' => 'Manon',
+            'last_name' => 'Roux',
+            'email' => 'manon.roux@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/women/12.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id9 = Str::uuid()->toString();
+        $playerIds[] = $id9;
+        $users[] = [
+            'id' => $id9,
+            'first_name' => 'Enzo',
+            'last_name' => 'Garcia',
+            'email' => 'enzo.garcia@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/78.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $id10 = Str::uuid()->toString();
+        $playerIds[] = $id10;
+        $users[] = [
+            'id' => $id10,
+            'first_name' => 'Camille',
+            'last_name' => 'David',
+            'email' => 'camille.david@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => 'https://randomuser.me/api/portraits/women/42.jpg',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
 
         DB::table('users')->insert($users);
 
         // 2. Insertion dans admin_users
+        $realAdminId = Str::uuid()->toString();
         DB::table('admin_users')->insert([
+            'id' => $realAdminId,
             'user_id' => $adminId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        
+        // Remplacer l'identifiant utilisateur par l'identifiant admin
+        // pour que tous les seeders suivants utilisent la clé de AdminUser.
+        $adminId = $realAdminId;
 
         // 3. Insertion dans players
         $players = [];
-        foreach ($playerIds as $index => $pid) {
+        $newPlayerIds = [];
+        foreach ($playerIds as $index => $userId) {
+            $playerId = Str::uuid()->toString();
+            $newPlayerIds[] = $playerId;
             $players[] = [
-                'id' => $pid,
+                'id' => $playerId,
+                'user_id' => $userId,
                 'pin' => Hash::make('1234'),
                 'code' => 'P' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
                 'created_at' => now(),
@@ -74,9 +206,13 @@ class DatabaseSeeder extends Seeder
             ];
         }
         DB::table('players')->insert($players);
+        
+        // Remplacer les identifiants d'utilisateurs par les identifiants de joueurs
+        // pour que tous les seeders suivants utilisent la clé de Player et non de User.
+        $playerIds = $newPlayerIds;
 
         // 4. Création des Classes
-        $classId = DB::table('classes')->insertGetId([
+        $classId = DB::table('school_classes')->insertGetId([
             'school_year' => '2025-2026',
             'name' => 'Lundi Soir - Intermédiaire',
             'address' => 'Gymnase Principal',
@@ -90,7 +226,7 @@ class DatabaseSeeder extends Seeder
             'min_diff' => 10,
             'max_diff' => 200,
             'winner_points' => 25.0,
-            'class_id' => $classId,
+            'school_class_id' => $classId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -102,7 +238,7 @@ class DatabaseSeeder extends Seeder
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id' => $pid,
                 'elo_rating' => rand(800, 1500),
-                'class_id' => $classId,
+                'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -112,7 +248,7 @@ class DatabaseSeeder extends Seeder
             'participantable_type' => 'App\\Models\\AdminUser',
             'participantable_id' => $adminId,
             'elo_rating' => 1500,
-            'class_id' => $classId,
+            'school_class_id' => $classId,
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -124,7 +260,7 @@ class DatabaseSeeder extends Seeder
             $sessionIds[] = DB::table('class_sessions')->insertGetId([
                 'date' => Carbon::now()->subDays(7 * $i)->toDateString(),
                 'is_active' => $i === 0, // La plus récente est active
-                'class_id' => $classId,
+                'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -137,7 +273,7 @@ class DatabaseSeeder extends Seeder
         foreach ($sessionIds as $sessionId) {
             // 3 matchs par session
             for ($m = 0; $m < 3; $m++) {
-                $matchId = DB::table('matches')->insertGetId([
+                $matchId = DB::table('game_matches')->insertGetId([
                     'class_session_id' => $sessionId,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -154,7 +290,7 @@ class DatabaseSeeder extends Seeder
                 $score2 = $score1 === 21 ? rand(5, 19) : 21;
 
                 $matchPlayers[] = [
-                    'match_id' => $matchId,
+                    'game_match_id' => $matchId,
                     'player_id' => $p1,
                     'score' => $score1,
                     'validated' => true,
@@ -162,7 +298,7 @@ class DatabaseSeeder extends Seeder
                     'updated_at' => now(),
                 ];
                 $matchPlayers[] = [
-                    'match_id' => $matchId,
+                    'game_match_id' => $matchId,
                     'player_id' => $p2,
                     'score' => $score2,
                     'validated' => true,

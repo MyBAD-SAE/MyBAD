@@ -1,11 +1,17 @@
 <script setup>
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { Monitor } from 'lucide-vue-next';
+import CreatePinModal from '@/Components/CreatePinModal.vue';
+
+const showPinModal = computed(() => usePage().props.auth.hasPin === false);
 </script>
 
 <template>
     <!-- Mobile : contenu normal -->
-    <div class="min-h-screen bg-background sm:hidden">
+    <div class="min-h-screen bg-white sm:hidden">
         <slot />
+        <CreatePinModal :model-value="showPinModal" />
     </div>
 
     <!-- Desktop / Tablette : message de blocage -->

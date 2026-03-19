@@ -1,46 +1,28 @@
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { Checkbox } from '@/Components/ui/checkbox';
 import GoogleButton from '@/Components/GoogleButton.vue';
 import SocialDivider from '@/Components/SocialDivider.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-vue-next';
 
-const form = ref({
-    firstName: '',
-    lastName: '',
+const form = useForm({
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
-    passwordConfirmation: '',
-    acceptTerms: false,
+    password_confirmation: '',
 });
 
+const acceptTerms = ref(false);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
 
-const touched = reactive({
-    firstName: false,
-    lastName: false,
-    email: false,
-    password: false,
-    confirmation: false,
-});
-
-const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-const empty = (field, value) => touched[field] && !value;
-const emailFormatError = () => touched.email && form.value.email && !isValidEmail(form.value.email);
-const passwordMinError = () => touched.password && form.value.password && form.value.password.length < 8;
-const confirmError = () => touched.confirmation && form.value.passwordConfirmation && form.value.passwordConfirmation !== form.value.password;
-
-function stripSpaces(field) {
-    form.value[field] = form.value[field].replace(/\s/g, '');
-}
-
 const passwordStrength = computed(() => {
-    const p = form.value.password;
+    const p = form.password;
     if (!p) return 0;
     let score = 0;
     if (p.length >= 8) score++;
@@ -60,10 +42,16 @@ const strengthColor = computed(() => {
     const colors = ['', '#D32F2F', '#F59E0B', '#F59E0B', '#009966', '#009966'];
     return colors[passwordStrength.value] || '';
 });
+
+const storeUser = () => {
+    form.post(route('player.register'), {
+        onFinish: () => form.reset('password', 'password_confirmation'),
+    });
+};
 </script>
 
 <template>
-    <div class="space-y-6">
+    <form class="space-y-6" @submit.prevent="storeUser">
         <div>
             <h2 class="text-xl font-bold">Créer un compte</h2>
             <p class="mt-1 text-sm text-muted-foreground">Rejoignez la communauté MyBAD en quelques secondes</p>
@@ -77,25 +65,21 @@ const strengthColor = computed(() => {
                         <User class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             id="register-firstname"
-                            v-model="form.firstName"
-                            placeholder="Lucas"
+                            v-model="form.first_name"
+                            placeholder="Julien"
                             class="pl-10"
-                            :aria-invalid="empty('firstName', form.firstName)"
-                            @blur="touched.firstName = true"
                         />
                     </div>
-                    <p v-if="empty('firstName', form.firstName)" class="text-sm text-destructive">Le prénom est requis.</p>
+                    <p v-if="form.errors.first_name" class="text-sm text-destructive">{{ form.errors.first_name }}</p>
                 </div>
                 <div class="space-y-2">
                     <Label for="register-lastname">Nom</Label>
                     <Input
                         id="register-lastname"
-                        v-model="form.lastName"
-                        placeholder="Torres"
-                        :aria-invalid="empty('lastName', form.lastName)"
-                        @blur="touched.lastName = true"
+                        v-model="form.last_name"
+                        placeholder="Dupont"
                     />
-                    <p v-if="empty('lastName', form.lastName)" class="text-sm text-destructive">Le nom est requis.</p>
+                    <p v-if="form.errors.last_name" class="text-sm text-destructive">{{ form.errors.last_name }}</p>
                 </div>
             </div>
 
@@ -109,12 +93,9 @@ const strengthColor = computed(() => {
                         type="email"
                         placeholder="nom@exemple.com"
                         class="pl-10"
-                        :aria-invalid="emailFormatError() || empty('email', form.email)"
-                        @blur="touched.email = true"
                     />
                 </div>
-                <p v-if="empty('email', form.email)" class="text-sm text-destructive">L'email est requis.</p>
-                <p v-else-if="emailFormatError()" class="text-sm text-destructive">Format d'email invalide.</p>
+                <p v-if="form.errors.email" class="text-sm text-destructive">{{ form.errors.email }}</p>
             </div>
 
             <div class="space-y-2">
@@ -127,9 +108,6 @@ const strengthColor = computed(() => {
                         :type="showPassword ? 'text' : 'password'"
                         placeholder="Min. 8 caractères"
                         class="pl-10 pr-10"
-                        :aria-invalid="passwordMinError()"
-                        @blur="touched.password = true"
-                        @input="stripSpaces('password')"
                     />
                     <button
                         type="button"
@@ -140,18 +118,20 @@ const strengthColor = computed(() => {
                         <Eye v-else class="h-4 w-4" />
                     </button>
                 </div>
-                <div v-if="form.password" class="space-y-1.5">
+                <p v-if="form.errors.password" class="text-sm text-destructive">{{ form.errors.password }}</p>
+
+                <!-- Jauge de force du mot de passe -->
+                <div v-if="form.password" class="space-y-1">
                     <div class="flex gap-1">
                         <div
                             v-for="i in 5"
                             :key="i"
-                            class="h-1 flex-1 rounded-full transition-colors"
-                            :style="{ backgroundColor: i <= passwordStrength ? strengthColor : '#e7e5e4' }"
+                            class="h-1.5 flex-1 rounded-full transition-colors"
+                            :style="{ backgroundColor: i <= passwordStrength ? strengthColor : '#e5e7eb' }"
                         />
                     </div>
-                    <p class="text-xs" :style="{ color: strengthColor }">{{ strengthLabel }}</p>
+                    <p class="text-xs font-medium" :style="{ color: strengthColor }">{{ strengthLabel }}</p>
                 </div>
-                <p v-if="passwordMinError()" class="text-sm text-destructive">Le mot de passe doit contenir au moins 8 caractères.</p>
             </div>
 
             <div class="space-y-2">
@@ -160,14 +140,10 @@ const strengthColor = computed(() => {
                     <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         id="register-confirm"
-                        v-model="form.passwordConfirmation"
+                        v-model="form.password_confirmation"
                         :type="showConfirmation ? 'text' : 'password'"
                         placeholder="Retapez le mot de passe"
                         class="pl-10 pr-10"
-                        :aria-invalid="confirmError()"
-                        @blur="touched.confirmation = true"
-                        @input="stripSpaces('passwordConfirmation')"
-                        @paste.prevent
                     />
                     <button
                         type="button"
@@ -178,14 +154,13 @@ const strengthColor = computed(() => {
                         <Eye v-else class="h-4 w-4" />
                     </button>
                 </div>
-                <p v-if="confirmError()" class="text-sm text-destructive">Les mots de passe ne correspondent pas.</p>
+                <p v-if="form.errors.password_confirmation" class="text-sm text-destructive">{{ form.errors.password_confirmation }}</p>
             </div>
 
             <div class="flex items-start gap-2">
                 <Checkbox
                     id="terms"
-                    :checked="form.acceptTerms"
-                    @update:checked="form.acceptTerms = $event"
+                    v-model="acceptTerms"
                     class="mt-0.5"
                 />
                 <Label for="terms" class="text-xs font-normal leading-snug">
@@ -194,12 +169,12 @@ const strengthColor = computed(() => {
             </div>
         </div>
 
-        <Button class="w-full" size="lg" :disabled="!form.acceptTerms">
+        <Button type="submit" class="w-full" size="lg" :disabled="!acceptTerms || form.processing">
             Créer mon compte
             <ArrowRight class="ml-2 h-4 w-4" />
         </Button>
 
         <SocialDivider />
         <GoogleButton />
-    </div>
+    </form>
 </template>

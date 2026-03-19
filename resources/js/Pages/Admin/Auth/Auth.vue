@@ -11,14 +11,12 @@ const activeTab = ref('login');
 </script>
 
 <template>
+
     <Head title="Connexion Admin" />
 
-    <AuthLayout
-        title="Espace administrateur"
-        subtitle="Gérez vos classes et vos joueurs."
+    <AuthLayout title="Espace administrateur" subtitle="Gérez vos classes et vos joueurs."
         desktopTitle="Espace administrateur"
-        desktopSubtitle="Gérez vos classes, vos sessions et suivez la progression de vos joueurs."
-    >
+        desktopSubtitle="Gérez vos classes, vos sessions et suivez la progression de vos joueurs.">
         <Tabs v-model="activeTab" class="w-full">
             <div class="flex justify-center">
                 <TabsList class="grid w-full grid-cols-2 lg:w-64">
@@ -30,7 +28,7 @@ const activeTab = ref('login');
             <TabsContent value="login" class="mt-6 lg:mt-8">
                 <!-- Mobile: direct form -->
                 <div class="lg:hidden">
-                    <LoginForm />
+                    <LoginForm submitRoute="admin.login.submit" />
                 </div>
                 <!-- Desktop: wrapped in Card -->
                 <div class="hidden lg:block">
@@ -40,7 +38,7 @@ const activeTab = ref('login');
                             <CardDescription>Connectez-vous pour accéder à votre espace de gestion</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <LoginForm />
+                            <LoginForm submitRoute="admin.login.submit" />
                         </CardContent>
                     </Card>
                 </div>

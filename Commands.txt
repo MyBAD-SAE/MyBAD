@@ -1,0 +1,19 @@
+
+php artisan ide-helper:generate
+php artisan ide-helper:models -F helpers/ModelHelper.php -M       // A faire qd on modifie un model
+php artisan ide-helper:meta
+
+./vendor/bin/pint
+
+./vendor/bin/phpstan analyse     // A faire souvent
+
+./vendor/bin/rector
+./vendor/bin/rector --dry-run
+./vendor/bin/rector process
+
+A chaque fois qu'un repo est récupéré:
+composer install
+npm install
+php artisan migrate
+php artisan optimize:clear
+php artisan optimize
