@@ -34,11 +34,13 @@ const select = (session) => {
 <template>
     <Sheet v-model:open="open">
         <SheetTrigger as-child>
-            <button class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
-                <CalendarDays class="h-3.5 w-3.5" />
-                Séance du {{ modelValue.toLowerCase() }}
-                <ChevronDown class="h-3.5 w-3.5" />
-            </button>
+            <slot name="trigger">
+                <button class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
+                    <CalendarDays class="h-3.5 w-3.5" />
+                    Séance du {{ modelValue.toLowerCase() }}
+                    <ChevronDown class="h-3.5 w-3.5" />
+                </button>
+            </slot>
         </SheetTrigger>
 
         <SheetContent side="bottom" class="rounded-t-2xl px-5 pb-8 gap-0">
