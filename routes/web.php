@@ -10,6 +10,7 @@ Route::middleware('auth:player')->group(function () {
     Route::get('/classements', fn () => Inertia::render('Player/Classements'))->name('classements');
     Route::get('/profil', fn () => Inertia::render('Player/Profil'))->name('profil');
     Route::get('/profil/infos', fn () => Inertia::render('Player/InfosPersonnelles'))->name('profil.infos');
+    Route::get('/profil/confidentialite', fn () => Inertia::render('Player/Confidentialite'))->name('profil.confidentialite');
 });
 
 // Dashboard admin

@@ -37,7 +37,7 @@ const stats = [
 
 const menuItems = [
     { icon: UserRound, title: 'Informations personnelles', subtitle: 'Nom, email, mot de passe', color: 'text-blue-500', bg: 'bg-blue-50', routeName: 'profil.infos' },
-    { icon: Shield, title: 'Confidentialité', subtitle: 'Données personnelles', color: 'text-violet-500', bg: 'bg-violet-50', routeName: null },
+    { icon: Shield, title: 'Confidentialité', subtitle: 'Données personnelles', color: 'text-violet-500', bg: 'bg-violet-50', routeName: 'profil.confidentialite' },
     { icon: ChartNoAxesCombined, title: 'Historique & statistiques', subtitle: '22 matchs joués', color: 'text-rose-500', bg: 'bg-rose-50', routeName: null },
 ];
 
