@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::prefix('auth/player')->name('player.')->group(function () {
+Route::prefix('player')->name('player.')->group(function () {
     Route::middleware('guest:player')->group(function () {
         Route::get('login', [AuthenticatedSessionController::class, 'create'])
             ->name('login');
@@ -24,7 +25,10 @@ Route::prefix('auth/player')->name('player.')->group(function () {
 });
 
 
-Route::get('auth/mot-de-passe-oublie', fn () => Inertia::render('ForgotPassword'))
+Route::get('auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
+Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+
+Route::get('auth/mot-de-passe-oublie', fn () => Inertia::render('Player/Auth/ForgotPassword'))
     ->name('password.request');
 
 Route::get('/conditions-utilisation', fn () => Inertia::render('Terms'))->name('terms');

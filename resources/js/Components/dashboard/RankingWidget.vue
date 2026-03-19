@@ -31,7 +31,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
 </script>
 
 <template>
-    <Card>
+    <Card class="shadow-none">
         <CardContent class="p-4">
             <h3 class="text-lg font-bold text-foreground">Classement</h3>
             <p class="text-sm text-muted-foreground">{{ players.length }} joueurs · saison en cours</p>

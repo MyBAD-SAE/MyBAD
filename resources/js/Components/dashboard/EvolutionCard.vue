@@ -22,7 +22,7 @@ const dashOffset = computed(() => {
 </script>
 
 <template>
-    <Card>
+    <Card class="shadow-none">
         <CardContent class="p-4">
             <span class="text-sm font-medium text-muted-foreground">Evolution</span>
             <!-- Gauge -->

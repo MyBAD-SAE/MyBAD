@@ -9,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-    <Card>
+    <Card class="shadow-none">
         <CardContent class="p-4">
             <span class="text-sm font-medium text-muted-foreground">Matchs</span>
             <div class="mt-1 flex items-baseline gap-2">

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\player\Auth;
+namespace App\Http\Controllers\admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
@@ -11,14 +11,14 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AuthenticatedSessionController extends Controller
+class AdminAuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
      */
     public function create(): Response
     {
-        return Inertia::render('Player/Auth/Auth', [
+        return Inertia::render('Admin/Auth/Auth', [
             'status' => session('status'),
         ]);
     }
@@ -28,21 +28,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate('player');
+        $request->authenticate('admin');
 
-        $user = Auth::guard('player')->user();
+        $user = Auth::guard('admin')->user();
 
-        if (! $user->player) {
-            Auth::guard('player')->logout();
+        if (! $user->adminUser) {
+            Auth::guard('admin')->logout();
 
             throw ValidationException::withMessages([
-                'email' => 'Ce compte n\'est pas associé à un joueur.',
+                'email' => 'Ce compte n\'est pas associé à un administrateur.',
             ]);
         }
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        return redirect()->intended('/admin');
     }
 
     /**
@@ -50,12 +50,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('player')->logout();
+        Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('player.login');
+        return redirect()->route('admin.login');
     }
 }

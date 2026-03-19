@@ -14,7 +14,7 @@ defineProps({
         <p class="text-sm text-muted-foreground">Depuis le début</p>
 
         <div class="mt-3 grid grid-cols-2 gap-3">
-            <Card class="bg-orange-50 border-0">
+            <Card class="bg-orange-50 border-0 shadow-none">
                 <CardContent class="flex flex-col items-center p-4">
                     <div class="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100">
                         <Flame class="h-5 w-5 text-orange-500" />
@@ -24,7 +24,7 @@ defineProps({
                 </CardContent>
             </Card>
 
-            <Card class="bg-primary/5 border-0">
+            <Card class="bg-primary/5 border-0 shadow-none">
                 <CardContent class="flex flex-col items-center p-4">
                     <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                         <Target class="h-5 w-5 text-primary" />

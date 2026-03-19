@@ -9,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-    <Card>
+    <Card class="shadow-none py-0">
         <CardContent class="p-4">
             <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-muted-foreground">ELO</span>

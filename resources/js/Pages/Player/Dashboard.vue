@@ -1,6 +1,8 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
+
+const user = usePage().props.auth.user;
 import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
 import SuggestionCard from '@/Components/dashboard/SuggestionCard.vue';
 import EloCard from '@/Components/dashboard/EloCard.vue';
@@ -9,7 +11,7 @@ import EvolutionCard from '@/Components/dashboard/EvolutionCard.vue';
 import GlobalActivityCard from '@/Components/dashboard/GlobalActivityCard.vue';
 import RankingWidget from '@/Components/dashboard/RankingWidget.vue';
 import RecentMatchesWidget from '@/Components/dashboard/RecentMatchesWidget.vue';
-import BottomNavBar from '@/Components/dashboard/BottomNavBar.vue';
+import BottomNavBar from '@/Components/BottomNavBar.vue';
 </script>
 
 <template>
@@ -19,7 +21,7 @@ import BottomNavBar from '@/Components/dashboard/BottomNavBar.vue';
         <div class="pb-20">
             <div class="space-y-6 p-5">
                 <!-- Header -->
-                <DashboardHeader first-name="Lucas" />
+                <DashboardHeader :first-name="user.first_name" :avatar-url="user.profile_picture" />
 
                 <!-- Suggestion -->
                 <SuggestionCard />
