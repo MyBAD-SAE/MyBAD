@@ -72,7 +72,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
                         <!-- Ranking list -->
                         <div class="mt-4 space-y-2">
                             <div
-                                v-for="player in players"
+                                v-for="player in players.slice(3)"
                                 :key="player.rank"
                                 class="flex items-center gap-3 rounded-xl border p-3"
                             >
