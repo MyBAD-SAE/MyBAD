@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\player\ClassementController;
 use App\Http\Resources\ClassParticipantResource;
 use App\Http\Resources\PlayerResource;
 use App\Models\EloHistory;
@@ -101,6 +102,8 @@ class DashboardController extends Controller
             }
         }
 
+        $rankingPlayers = app(ClassementController::class)->getRankingForCurrentPlayer();
+
         return Inertia::render('Player/Dashboard', [
             'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
             'eloDiff' => $eloDiff,
@@ -108,6 +111,7 @@ class DashboardController extends Controller
             'matchStats' => $matchStats,
             'totalMatches' => $totalMatches,
             'winStreak' => $winStreak,
+            'rankingPlayers' => $rankingPlayers,
         ]);
     }
 }

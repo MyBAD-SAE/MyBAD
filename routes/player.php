@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\player\AccountController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
+use App\Http\Controllers\player\ClassementController;
 use App\Http\Controllers\player\DashboardController;
 use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +13,7 @@ use Inertia\Inertia;
 Route::middleware('auth:player')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('matchs', fn () => Inertia::render('Player/Matchs'))->name('matchs');
-    Route::get('classements', fn () => Inertia::render('Player/Classements'))->name('classements');
+    Route::get('classements', [ClassementController::class, 'index'])->name('classements');
 
     Route::prefix('joueur')->name('player.')->group(function () {
         Route::prefix('profil')->name('account.')->group(function () {

@@ -14,34 +14,40 @@ class ClassementController extends Controller
 {
     public function index(): Response
     {
+        $players = $this->getRankingForCurrentPlayer();
+
+        return Inertia::render('Player/Classements', [
+            'players' => $players,
+        ]);
+    }
+
+    public function getRankingForCurrentPlayer(): array
+    {
         /** @var \App\Models\User $user */
         $user = Auth::guard('player')->user();
         $player = $user->player;
 
-        // Find the player's school class
         $participation = ClassParticipant::where('participantable_type', Player::class)
             ->where('participantable_id', $player->id)
             ->first();
 
         if (! $participation) {
-            return Inertia::render('Player/Classements', ['players' => []]);
+            return [];
         }
 
         $schoolClassId = $participation->school_class_id;
 
-        // All participants in this class, ordered by elo
         $participants = ClassParticipant::where('school_class_id', $schoolClassId)
             ->where('participantable_type', Player::class)
             ->with('participantable.user')
             ->orderByDesc('elo_rating')
             ->get();
 
-        // Preload match stats for all players in one query
         $playerIds = $participants->pluck('participantable_id');
         $matchStats = $this->getBulkMatchStats($playerIds, $schoolClassId);
         $eloTrends = $this->getBulkEloTrends($playerIds);
 
-        $players = $participants->values()->map(function ($participant, $index) use ($matchStats, $eloTrends) {
+        return $participants->values()->map(function ($participant, $index) use ($matchStats, $eloTrends) {
             $playerId = $participant->participantable_id;
             $playerUser = $participant->participantable->user;
 
@@ -60,11 +66,7 @@ class ClassementController extends Controller
                 'trend' => $eloTrends[$playerId] ?? 0,
                 'winRate' => $winRate,
             ];
-        });
-
-        return Inertia::render('Player/Classements', [
-            'players' => $players,
-        ]);
+        })->all();
     }
 
     /**

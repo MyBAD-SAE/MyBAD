@@ -19,6 +19,7 @@ const props = defineProps({
     matchStats : Object,
     totalMatches: Number,
     winStreak: Number,
+    rankingPlayers: Array,
 })
 
 console.log('Participant', props.participant)
@@ -54,7 +55,7 @@ console.log('Participant', props.participant)
                 <GlobalActivityCard :win-streak="winStreak" :total-matches="totalMatches" />
 
                 <!-- Classement -->
-                <RankingWidget />
+                <RankingWidget :players="rankingPlayers" />
 
                 <!-- Derniers matchs -->
                 <RecentMatchesWidget />
