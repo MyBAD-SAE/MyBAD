@@ -106,6 +106,9 @@ class DashboardController extends Controller
 
         return Inertia::render('Player/Dashboard', [
             'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
+            'playerCode' => $player?->code,
+            'firstName' => $user->first_name,
+            'avatarUrl' => $user->profile_picture,
             'eloDiff' => $eloDiff,
             'eloHistory' => $eloHistory,
             'matchStats' => $matchStats,
