@@ -98,7 +98,7 @@ function handleDownload() {
             </div>
 
             <!-- Mes données personnelles -->
-            <Card class="mx-4 mt-2 gap-0 py-4">
+            <Card class="mx-4 mt-2 gap-0 py-4 shadow-none">
                 <CardContent class="px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Mes données personnelles</span>
 
@@ -134,7 +134,7 @@ function handleDownload() {
             </Card>
 
             <!-- Zone de danger -->
-            <Card class="mx-4 mt-4 gap-0 py-4">
+            <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-red-500">Zone de danger</span>
 
