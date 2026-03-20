@@ -34,7 +34,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
         <div class="pb-20">
             <!-- Header -->
             <div class="relative flex items-center justify-center px-5 pt-5 pb-2">
-                <Link :href="route('home')" class="absolute left-5">
+                <Link :href="route('home')" class="absolute left-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white">
                     <ArrowLeft class="h-5 w-5 text-foreground" />
                 </Link>
                 <h1 class="text-lg font-bold text-foreground">Classement</h1>
