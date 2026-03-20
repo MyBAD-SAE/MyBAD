@@ -49,7 +49,7 @@ const dotPosition = computed(() => {
 <template>
     <Card class="shadow-none">
         <CardContent class="p-4">
-            <span class="text-sm font-bold text-foreground">Evolution</span>
+            <span class="text-sm font-bold text-foreground">Taux de victoires</span>
 
             <div class="mt-2 flex justify-center">
                 <svg width="140" height="85" viewBox="0 0 140 85">
