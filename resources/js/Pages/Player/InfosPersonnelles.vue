@@ -99,7 +99,7 @@ function handleSave() {
             </div>
 
             <!-- Identité -->
-            <Card class="mx-4 gap-0 py-4">
+            <Card class="mx-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-4 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Identité</span>
 
@@ -122,7 +122,7 @@ function handleSave() {
             </Card>
 
             <!-- Contact -->
-            <Card class="mx-4 mt-4 gap-0 py-4">
+            <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-4 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Contact</span>
 
@@ -137,7 +137,7 @@ function handleSave() {
             </Card>
 
             <!-- Code PIN -->
-            <Card class="mx-4 mt-4 gap-0 py-4">
+            <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-5 px-4 py-0">
                     <div class="flex items-center gap-1.5">
                         <ShieldCheck class="h-4 w-4 text-primary" />
@@ -220,7 +220,7 @@ function handleSave() {
             </Card>
 
             <!-- Mot de passe -->
-            <Card class="mx-4 mt-4 gap-0 py-4">
+            <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-5 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Mot de passe</span>
 

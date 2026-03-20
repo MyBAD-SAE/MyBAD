@@ -83,7 +83,7 @@ const formattedCode = (code) => {
                 <!-- Inscrit dans un cours -->
                 <template v-else>
                     <!-- Header -->
-                    <DashboardHeader :first-name="participant.participantable.user.first_name" :avatar-url="participant.participantable.user.profile_picture" />
+                    <DashboardHeader :first-name="participant?.participantable?.user?.first_name ?? ''" :avatar-url="participant?.participantable?.user?.profile_picture" />
 
                     <!-- Suggestion -->
                     <SuggestionCard />
@@ -93,7 +93,7 @@ const formattedCode = (code) => {
                         <h3 class="text-lg font-bold text-foreground">4 dernières séances</h3>
 
                         <div class="mt-3">
-                            <EloCard :elo="participant.elo_rating" :elo-diff="eloDiff" :history="eloHistory" :has-matches="totalMatches > 0" />
+                            <EloCard :elo="participant?.elo_rating ?? 0" :elo-diff="eloDiff" :history="eloHistory" :has-matches="totalMatches > 0" />
                         </div>
 
                         <div v-if="matchStats.total > 0" class="mt-3 grid grid-cols-2 gap-3">
