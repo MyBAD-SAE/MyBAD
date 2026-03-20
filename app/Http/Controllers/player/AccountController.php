@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Player\UpdateProfileRequest;
 use App\Http\Resources\ClassParticipantResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class AccountController extends Controller
@@ -33,6 +35,31 @@ class AccountController extends Controller
             'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
         ]);
     }
+    public function update(UpdateProfileRequest $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = Auth::guard('player')->user();
+
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+        ]);
+
+        if ($request->filled('new_pin')) {
+            if (! Hash::check($request->current_pin, $user->player->pin ?? '')) {
+                return back()->withErrors(['current_pin' => 'Le code PIN actuel est incorrect.']);
+            }
+            $user->player->update(['pin' => $request->new_pin]);
+        }
+
+        if ($request->filled('new_password')) {
+            $user->update(['password' => Hash::make($request->new_password)]);
+        }
+
+        return redirect()->route('player.account.infos');
+    }
+
     public function confidentialite(): \Inertia\Response
     {
         $user = auth('player')->user();
