@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\player\AccountController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\player\Auth\GoogleAuthController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use App\Http\Controllers\player\ClassementController;
 use App\Http\Controllers\player\DashboardController;
