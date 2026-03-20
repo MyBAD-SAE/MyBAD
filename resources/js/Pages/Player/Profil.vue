@@ -84,7 +84,7 @@ function logout() {
 
 
             <!-- Menu Compte -->
-            <Card class="mx-4 mt-4 gap-0 py-3">
+            <Card class="mx-4 mt-4 gap-0 py-3 shadow-none border-border/50">
                 <CardContent class="px-4 py-0">
                     <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Compte</span>
 

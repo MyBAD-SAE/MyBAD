@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import SessionPicker from '@/Components/dashboard/SessionPicker.vue';
 
@@ -19,9 +20,11 @@ const selectedDay = ref('Mardi');
                 <SessionPicker v-model="selectedDay" />
             </div>
         </div>
-        <Avatar class="h-10 w-10">
-            <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
-            <AvatarFallback>{{ firstName?.charAt(0) }}</AvatarFallback>
-        </Avatar>
+        <Link :href="route('player.account.index')">
+            <Avatar class="h-10 w-10">
+                <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
+                <AvatarFallback>{{ firstName?.charAt(0) }}</AvatarFallback>
+            </Avatar>
+        </Link>
     </div>
 </template>
