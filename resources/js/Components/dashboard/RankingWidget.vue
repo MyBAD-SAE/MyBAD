@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, TrendingUp, TrendingDown, ChevronRight } from 'lucide-vue-next';
@@ -6,13 +7,7 @@ import { Trophy, TrendingUp, TrendingDown, ChevronRight } from 'lucide-vue-next'
 defineProps({
     players: {
         type: Array,
-        default: () => [
-            { rank: 1, name: 'Lucas TORRES', avatar: null, elo: 124.7, wins: 18, losses: 4, trend: 43, winRate: 82 },
-            { rank: 2, name: 'Quentin UGUEN', avatar: null, elo: 118.3, wins: 15, losses: 6, trend: 18, winRate: 71 },
-            { rank: 3, name: 'Amélie DUBOIS', avatar: null, elo: 109.5, wins: 12, losses: 7, trend: -12, winRate: 63 },
-            { rank: 4, name: 'Mael SELLIER', avatar: null, elo: 102.2, wins: 9, losses: 8, trend: 0, winRate: 53 },
-            { rank: 5, name: 'Victor ROUE', avatar: null, elo: 96.7, wins: 7, losses: 9, trend: -25, winRate: 44 },
-        ],
+        default: () => [],
     },
 });
 
@@ -37,14 +32,14 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
             <p class="text-sm text-muted-foreground">{{ players.length }} joueurs · saison en cours</p>
 
             <!-- Podium -->
-            <div class="mt-4 flex items-end justify-center gap-2">
+            <div v-if="players.length >= 3" class="mt-4 flex items-end justify-center gap-2">
                 <div v-for="idx in podiumOrder" :key="idx" class="flex flex-col items-center" :class="idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'">
                     <div class="relative">
+                        <span v-if="idx === 0" class="absolute -top-5 left-1/2 z-10 -translate-x-1/2 text-xl">👑</span>
                         <Avatar :class="idx === 0 ? 'h-16 w-16 ring-2 ring-yellow-400' : 'h-12 w-12'">
                             <AvatarImage v-if="players[idx]?.avatar" :src="players[idx].avatar" />
                             <AvatarFallback class="text-xs">{{ getInitials(players[idx]?.name || '') }}</AvatarFallback>
                         </Avatar>
-                        <span v-if="idx === 0" class="absolute -top-3 left-1/2 -translate-x-1/2 text-lg">👑</span>
                     </div>
                     <span class="mt-1 text-xs font-medium text-foreground">{{ players[idx]?.name.split(' ')[0] }}</span>
                     <span class="text-xs text-muted-foreground">{{ players[idx]?.elo }} pts</span>
@@ -99,11 +94,16 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
                 </div>
             </div>
 
+            <!-- Empty state -->
+            <div v-if="players.length === 0" class="py-8 text-center">
+                <p class="text-sm text-muted-foreground">Aucun joueur dans le classement pour le moment.</p>
+            </div>
+
             <!-- Link -->
-            <button class="mt-4 flex w-full items-center justify-center gap-1 text-sm font-medium text-primary">
+            <Link :href="route('classements')" class="mt-4 flex w-full items-center justify-center gap-1 text-sm font-medium text-primary">
                 Voir tout le classement
                 <ChevronRight class="h-4 w-4" />
-            </button>
+            </Link>
         </CardContent>
     </Card>
 </template>
