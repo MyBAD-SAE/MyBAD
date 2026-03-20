@@ -324,18 +324,17 @@ class DatabaseSeeder extends Seeder
                 $roll = mt_rand(1, 100) / 100;
                 $p1Wins = $roll < $p1WinChance;
 
-                // Scores réalistes badminton (en 21, gagnant a toujours 21)
+                // Scores réalistes badminton (en 15, gagnant a toujours 15)
                 if ($p1Wins) {
-                    $score1 = 21;
-                    // Le perdant a un score entre 8 et 19, pondéré par l'écart de niveau
+                    $score1 = 15;
                     $gap = abs($s1 - $s2);
-                    $minLoser = max(5, 19 - intdiv($gap, 5));
-                    $score2 = rand(min($minLoser, 18), 19);
+                    $minLoser = max(3, 13 - intdiv($gap, 5));
+                    $score2 = rand(min($minLoser, 13), 13);
                 } else {
-                    $score2 = 21;
+                    $score2 = 15;
                     $gap = abs($s1 - $s2);
-                    $minLoser = max(5, 19 - intdiv($gap, 5));
-                    $score1 = rand(min($minLoser, 18), 19);
+                    $minLoser = max(3, 13 - intdiv($gap, 5));
+                    $score1 = rand(min($minLoser, 13), 13);
                 }
 
                 $matchId = DB::table('game_matches')->insertGetId([
