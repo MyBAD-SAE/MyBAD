@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import SessionPicker from '@/Components/dashboard/SessionPicker.vue';
+import { PartyPopper } from 'lucide-vue-next';
 
 defineProps({
     firstName: { type: String, required: true },
@@ -15,7 +16,7 @@ const selectedDay = ref('Mardi');
 <template>
     <div class="flex items-start justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-foreground">Bonjour {{ firstName }} 👋</h1>
+            <h1 class="text-2xl font-bold text-foreground">Bonjour {{ firstName }} <PartyPopper class="inline h-5 w-5 -translate-y-0.5 text-amber-400" /></h1>
             <div class="mt-2">
                 <SessionPicker v-model="selectedDay" />
             </div>

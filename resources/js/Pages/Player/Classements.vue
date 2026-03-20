@@ -4,7 +4,7 @@ import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Trophy, TrendingUp, TrendingDown, ArrowLeft } from 'lucide-vue-next';
+import { Trophy, TrendingUp, TrendingDown, ArrowLeft, Crown } from 'lucide-vue-next';
 
 defineProps({
     players: {
@@ -50,8 +50,8 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
                         <div v-if="players.length >= 3" class="mt-4 flex items-end justify-center gap-2">
                             <div v-for="idx in podiumOrder" :key="idx" class="flex flex-col items-center" :class="idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'">
                                 <div class="relative">
-                                    <span v-if="idx === 0" class="absolute -top-5 left-1/2 z-10 -translate-x-1/2 text-xl">👑</span>
-                                    <Avatar :class="idx === 0 ? 'h-16 w-16 ring-2 ring-yellow-400' : 'h-12 w-12'">
+                                    <Crown v-if="idx === 0" class="absolute -top-5 left-1/2 z-10 h-5 w-5 -translate-x-1/2 text-yellow-400" />
+                                    <Avatar :class="[idx === 0 ? 'h-16 w-16 ring-3 ring-yellow-400' : 'h-12 w-12 ring-3', idx === 1 ? 'ring-gray-300' : '', idx === 2 ? 'ring-orange-300' : '']">
                                         <AvatarImage v-if="players[idx]?.avatar" :src="players[idx].avatar" />
                                         <AvatarFallback class="text-xs">{{ getInitials(players[idx]?.name || '') }}</AvatarFallback>
                                     </Avatar>
@@ -60,7 +60,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
                                 <span class="text-xs text-muted-foreground">{{ players[idx]?.elo }} pts</span>
                                 <div
                                     class="mt-1 w-20 rounded-t-lg"
-                                    :class="idx === 0 ? 'h-16 bg-primary/15' : idx === 1 ? 'h-12 bg-muted' : 'h-10 bg-muted'"
+                                    :class="idx === 0 ? 'h-16 bg-yellow-100' : idx === 1 ? 'h-12 bg-gray-100' : 'h-10 bg-orange-100'"
                                 >
                                     <div class="flex h-full items-end justify-center pb-1">
                                         <span class="text-xs font-semibold text-muted-foreground">{{ idx === 0 ? '1er' : `${idx + 1}e` }}</span>
