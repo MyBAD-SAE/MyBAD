@@ -27,3 +27,4 @@ GEMINI.md
 .claude/
 _ide_helper.php
 /Helpers/ModelHelper.php
+resources/js/ziggy.js

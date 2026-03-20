@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 
 class GoogleAuthController extends Controller
 {
@@ -24,7 +25,13 @@ class GoogleAuthController extends Controller
                 'email' => 'Connexion Google annulée.',
             ]);
         }
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (InvalidStateException) {
+            return redirect()->route('player.login')->withErrors([
+                'email' => 'La session a expiré, veuillez réessayer.',
+            ]);
+        }
 
         $user = User::where('google_id', $googleUser->getId())->first();
 
