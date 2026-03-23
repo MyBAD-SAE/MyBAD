@@ -21,6 +21,8 @@ import {
 
 const props = defineProps({
     participant: Object,
+    user: Object,
+    playerCode: String,
 })
 
 const logoutForm = useForm({});
@@ -28,7 +30,7 @@ const showLogoutModal = ref(false);
 const selectedDay = ref('Mardi');
 
 const player = computed(() => props.participant?.participantable);
-const user = computed(() => player.value?.user);
+const userInfo = computed(() => player.value?.user ?? props.user);
 
 const menuItems = [
     { icon: UserRound, title: 'Informations personnelles', subtitle: 'Nom, email, mot de passe', color: 'text-blue-500', bg: 'bg-blue-50', routeName: 'player.account.infos' },
@@ -54,8 +56,8 @@ function logout() {
                 <div class="absolute bottom-0 left-4 z-10 translate-y-1/2">
                     <div class="relative">
                         <Avatar class="h-24 w-24 border-4 border-background shadow-lg">
-                            <AvatarImage v-if="user.profile_picture" :src="user.profile_picture" :alt="user.full_name" />
-                            <AvatarFallback class="text-2xl">{{ user.first_name?.charAt(0) }}</AvatarFallback>
+                            <AvatarImage v-if="userInfo?.profile_picture" :src="userInfo.profile_picture" :alt="userInfo?.first_name" />
+                            <AvatarFallback class="text-2xl">{{ userInfo?.first_name?.charAt(0) }}</AvatarFallback>
                         </Avatar>
                         <button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md">
                             <Camera class="h-4 w-4" />
@@ -66,12 +68,12 @@ function logout() {
 
             <!-- Nom + rang + ID — sous la bannière, décalé à droite de l'avatar -->
             <div class="pl-32 pr-4 pt-3 pb-4">
-                <h1 class="text-xl font-bold text-foreground">{{ user.first_name }} {{ user.last_name }}</h1>
+                <h1 class="text-xl font-bold text-foreground">{{ userInfo?.first_name }} {{ userInfo?.last_name }}</h1>
                 <div class="mt-0.5 flex items-center gap-2">
                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
                         <Crown class="h-3 w-3" /> #{{ participant?.rank }}
                     </span>
-                    <span class="text-sm text-muted-foreground">ID : {{ player?.code }}</span>
+                    <span class="text-sm text-muted-foreground">ID : {{ playerCode ?? player?.code }}</span>
                 </div>
             </div>
 

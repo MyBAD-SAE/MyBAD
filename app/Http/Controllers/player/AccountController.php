@@ -33,6 +33,13 @@ class AccountController extends Controller
 
         return Inertia::render('Player/Profil', [
             'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
+            'user' => [
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'profile_picture' => $user->profile_picture,
+            ],
+            'playerCode' => $player?->code,
         ]);
     }
     public function update(UpdateProfileRequest $request): RedirectResponse
