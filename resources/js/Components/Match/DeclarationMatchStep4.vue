@@ -33,13 +33,14 @@ const currentStep = ref(4)
 const isVictory = props.myScore > props.opponentScore
 
 function goToRanking() {
-  router.visit(route('ranking')) // à adapter selon ta route
+  router.visit(route('classements'))
 }
 
 function getInitials(name) {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 }
 
+// TODO: récupérer la photo de profigil du joueur si elle existe, sinon générer une couleur d'avatar à partir de son nom ?
 function getAvatarColor(name) {
   const colors = ['#27BDAE', '#6366f1', '#f59e0b', '#D32F2F', '#8b5cf6', '#10b981', '#f97316', '#3b82f6']
   let hash = 0
