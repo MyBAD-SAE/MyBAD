@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 
 import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
@@ -55,10 +55,12 @@ function copyCode() {
                 <template v-if="!participant">
                     <div class="flex items-center justify-between">
                         <h1 class="text-lg font-semibold text-foreground">Bonjour {{ firstName }} 👋</h1>
-                        <Avatar class="h-8 w-8">
-                            <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
-                            <AvatarFallback class="text-xs">{{ firstName?.charAt(0) }}</AvatarFallback>
-                        </Avatar>
+                        <Link :href="route('player.account.index')">
+                            <Avatar class="h-8 w-8">
+                                <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
+                                <AvatarFallback class="text-xs">{{ firstName?.charAt(0) }}</AvatarFallback>
+                            </Avatar>
+                        </Link>
                     </div>
 
                     <Card class="shadow-none border-border/40">

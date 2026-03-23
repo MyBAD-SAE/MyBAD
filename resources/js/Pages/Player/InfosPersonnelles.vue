@@ -122,16 +122,16 @@ function handleSave() {
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Nom</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
-                            <UserRound class="h-4 w-4 text-primary" />
-                            <input v-model="form.last_name" type="text" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
+                            <UserRound class="h-4 w-4 shrink-0 text-primary" />
+                            <input v-model="form.last_name" type="text" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
                     </div>
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Prénom</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
-                            <UserRound class="h-4 w-4 text-primary" />
-                            <input v-model="form.first_name" type="text" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
+                            <UserRound class="h-4 w-4 shrink-0 text-primary" />
+                            <input v-model="form.first_name" type="text" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
                     </div>
                 </CardContent>
@@ -145,8 +145,8 @@ function handleSave() {
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Email</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
-                            <Mail class="h-4 w-4 text-violet-500" />
-                            <input v-model="form.email" type="email" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
+                            <Mail class="h-4 w-4 shrink-0 text-violet-500" />
+                            <input v-model="form.email" type="email" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
                     </div>
                 </CardContent>
