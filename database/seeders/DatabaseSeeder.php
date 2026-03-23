@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'MyBAD',
             'email' => 'admin@mybad.test',
             'password' => Hash::make('password'),
-            'profile_picture' => "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnRDZVtztZF0WEWoye99mHe-3E6iGqNPmsw&s",
+            'profile_picture' => "https://randomuser.me/api/portraits/men/47.jpg",
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -81,11 +81,11 @@ class DatabaseSeeder extends Seeder
         $playerIds[] = $id4;
         $users[] = [
             'id' => $id4,
-            'first_name' => 'Serge',
-            'last_name' => 'Lama',
+            'first_name' => 'Kevin',
+            'last_name' => 'Durant',
             'email' => 'serge.lama@mybad.test',
             'password' => Hash::make('password'),
-            'profile_picture' => 'https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2901x1632+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Ff4%2F99%2F7f300fdd4a068052973c3476c06c%2Ffcbcf713-d95e-4f4d-9f27-8bf889ae5ae0.jpg',
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/21.jpg',
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -95,8 +95,8 @@ class DatabaseSeeder extends Seeder
         $playerIds[] = $id5;
         $users[] = [
             'id' => $id5,
-            'first_name' => 'Raph',
-            'last_name' => 'GrosPD',
+            'first_name' => 'Raphaël',
+            'last_name' => 'Corre',
             'email' => 'raph@mybad.test',
             'password' => Hash::make('password'),
             'profile_picture' => 'https://randomuser.me/api/portraits/men/22.jpg',
