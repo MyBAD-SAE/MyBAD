@@ -121,7 +121,7 @@ function handleSave() {
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Nom</label>
-                        <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
+                        <div class="mt-1.5 flex items-center gap-2.5 rounded-xl border border-transparent bg-muted/40 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <UserRound class="h-4 w-4 shrink-0 text-primary" />
                             <input v-model="form.last_name" type="text" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
@@ -129,7 +129,7 @@ function handleSave() {
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Prénom</label>
-                        <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
+                        <div class="mt-1.5 flex items-center gap-2.5 rounded-xl border border-transparent bg-muted/40 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <UserRound class="h-4 w-4 shrink-0 text-primary" />
                             <input v-model="form.first_name" type="text" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
@@ -144,7 +144,7 @@ function handleSave() {
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Email</label>
-                        <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
+                        <div class="mt-1.5 flex items-center gap-2.5 rounded-xl border border-transparent bg-muted/40 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <Mail class="h-4 w-4 shrink-0 text-violet-500" />
                             <input v-model="form.email" type="email" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
@@ -172,7 +172,7 @@ function handleSave() {
                                     :value="currentPin[i]"
                                     maxlength="1"
                                     inputmode="numeric"
-                                    class="h-14 w-14 rounded-2xl border border-border/50 bg-muted/30 text-center text-lg font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                                    class="h-14 w-14 rounded-2xl border border-border/50 bg-muted/30 text-center text-lg font-medium text-foreground outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20"
                                     @input="handlePinInput(currentPin, i, $event)"
                                     @keydown="handlePinKeydown(currentPin, i, $event)"
                                 />
@@ -195,7 +195,7 @@ function handleSave() {
                                     :value="newPin[i]"
                                     maxlength="1"
                                     inputmode="numeric"
-                                    class="h-14 w-14 rounded-2xl border border-border/50 bg-muted/30 text-center text-lg font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                                    class="h-14 w-14 rounded-2xl border border-border/50 bg-muted/30 text-center text-lg font-medium text-foreground outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20"
                                     @input="handlePinInput(newPin, i, $event)"
                                     @keydown="handlePinKeydown(newPin, i, $event)"
                                 />
@@ -219,7 +219,7 @@ function handleSave() {
                                     maxlength="1"
                                     inputmode="numeric"
                                     :class="[
-                                        'h-14 w-14 rounded-2xl text-center text-lg font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/30',
+                                        'h-14 w-14 rounded-2xl text-center text-lg font-medium text-foreground outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20',
                                         pinMismatch ? 'border border-red-400 bg-red-50' : 'border border-border/50 bg-muted/30',
                                     ]"
                                     @input="handlePinInput(confirmPin, i, $event)"
@@ -242,7 +242,7 @@ function handleSave() {
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Mot de passe actuel</label>
-                        <div class="mt-1.5 flex items-center gap-2.5 rounded-2xl border border-border/50 bg-muted/30 px-3.5 py-2">
+                        <div class="mt-1.5 flex items-center gap-2.5 rounded-2xl border border-border/50 bg-muted/30 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <Lock class="h-4 w-4 text-amber-400" />
                             <input
                                 v-model="form.current_password"
@@ -258,7 +258,7 @@ function handleSave() {
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Nouveau mot de passe</label>
-                        <div class="mt-1.5 flex items-center gap-2.5 rounded-2xl border border-border/50 bg-muted/30 px-3.5 py-2">
+                        <div class="mt-1.5 flex items-center gap-2.5 rounded-2xl border border-border/50 bg-muted/30 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <Lock class="h-4 w-4 text-amber-400" />
                             <input
                                 v-model="form.new_password"
@@ -276,7 +276,7 @@ function handleSave() {
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Confirmer le mot de passe</label>
                         <div
                             :class="[
-                                'mt-1.5 flex items-center gap-2.5 rounded-2xl px-3.5 py-2',
+                                'mt-1.5 flex items-center gap-2.5 rounded-2xl px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20',
                                 passwordMismatch ? 'border border-red-400 bg-red-50' : 'border border-border/50 bg-muted/30',
                             ]"
                         >
