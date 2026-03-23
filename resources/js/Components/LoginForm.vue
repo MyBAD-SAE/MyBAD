@@ -72,7 +72,7 @@ const submit = () => {
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
                     <Label for="login-password">Mot de passe</Label>
-                    <Link :href="route('password.request')" class="text-sm font-medium text-primary hover:underline">
+                    <Link :href="route('player.password.request')" class="text-sm font-medium text-primary hover:underline">
                         Oublié ?
                     </Link>
                 </div>

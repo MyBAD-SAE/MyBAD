@@ -11,7 +11,7 @@ defineProps({
 <template>
     <div>
         <h3 class="text-lg font-bold text-foreground">Activité globale</h3>
-        <p class="text-sm text-muted-foreground">Depuis le début</p>
+<!--        <p class="text-sm text-muted-foreground">Depuis le début</p>-->
 
         <div class="mt-3 grid grid-cols-2 gap-3">
             <Card class="bg-orange-50 border-0 shadow-none">

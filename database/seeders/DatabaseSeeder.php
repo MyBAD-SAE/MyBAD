@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Création des Utilisateurs (1 Admin, 10 Joueurs)
         $users = [];
-        
+
         // --- Admin ---
         $adminId = Str::uuid()->toString();
         $users[] = [
@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'MyBAD',
             'email' => 'admin@mybad.test',
             'password' => Hash::make('password'),
-            'profile_picture' => "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnRDZVtztZF0WEWoye99mHe-3E6iGqNPmsw&s",
+            'profile_picture' => "https://randomuser.me/api/portraits/men/47.jpg",
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -81,11 +81,11 @@ class DatabaseSeeder extends Seeder
         $playerIds[] = $id4;
         $users[] = [
             'id' => $id4,
-            'first_name' => 'Serge',
-            'last_name' => 'Lama',
+            'first_name' => 'Kevin',
+            'last_name' => 'Durant',
             'email' => 'serge.lama@mybad.test',
             'password' => Hash::make('password'),
-            'profile_picture' => 'https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2901x1632+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Ff4%2F99%2F7f300fdd4a068052973c3476c06c%2Ffcbcf713-d95e-4f4d-9f27-8bf889ae5ae0.jpg',
+            'profile_picture' => 'https://randomuser.me/api/portraits/men/21.jpg',
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -95,8 +95,8 @@ class DatabaseSeeder extends Seeder
         $playerIds[] = $id5;
         $users[] = [
             'id' => $id5,
-            'first_name' => 'Raph',
-            'last_name' => 'GrosPD',
+            'first_name' => 'Raphaël',
+            'last_name' => 'Corre',
             'email' => 'raph@mybad.test',
             'password' => Hash::make('password'),
             'profile_picture' => 'https://randomuser.me/api/portraits/men/22.jpg',
@@ -185,7 +185,7 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
+
         // Remplacer l'identifiant utilisateur par l'identifiant admin
         // pour que tous les seeders suivants utilisent la clé de AdminUser.
         $adminId = $realAdminId;
@@ -200,13 +200,13 @@ class DatabaseSeeder extends Seeder
                 'id' => $playerId,
                 'user_id' => $userId,
                 'pin' => Hash::make('1234'),
-                'code' => 'P' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                'code' => str_pad($index + 1, 6, '0', STR_PAD_LEFT),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
         DB::table('players')->insert($players);
-        
+
         // Remplacer les identifiants d'utilisateurs par les identifiants de joueurs
         // pour que tous les seeders suivants utilisent la clé de Player et non de User.
         $playerIds = $newPlayerIds;
@@ -231,63 +231,117 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // 6. Participants de la classe
+        // 6. Participants de la classe (tout le monde commence à 100 Elo)
+        $elos = [];
+        foreach ($playerIds as $pid) {
+            $elos[$pid] = 100.0;
+        }
+
         $participants = [];
         foreach ($playerIds as $pid) {
             $participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id' => $pid,
-                'elo_rating' => rand(800, 1500),
+                'elo_rating' => 100.0, // sera mis à jour à la fin
                 'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
-        
+
         $participants[] = [
             'participantable_type' => 'App\\Models\\AdminUser',
             'participantable_id' => $adminId,
-            'elo_rating' => 1500,
+            'elo_rating' => null,
             'school_class_id' => $classId,
             'created_at' => now(),
             'updated_at' => now(),
         ];
         DB::table('class_participants')->insert($participants);
 
-        // 7. Sessions de classe
+        // 7. Sessions de classe (8 séances hebdomadaires)
         $sessionIds = [];
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 7; $i >= 0; $i--) {
             $sessionIds[] = DB::table('class_sessions')->insertGetId([
-                'date' => Carbon::now()->subDays(7 * $i)->toDateString(),
-                'is_active' => $i === 0, // La plus récente est active
+                'date' => Carbon::now()->subWeeks($i)->toDateString(),
+                'is_active' => $i === 0,
                 'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
 
-        // 8. Matchs, Joueurs de match & Historique ELO
+        // 8. Matchs réalistes avec Elo cohérent
+        // Niveaux de force par joueur (plus c'est haut, plus il gagne souvent)
+        $skillLevels = [
+            $playerIds[0] => 80,  // Lucas Torres - très fort
+            $playerIds[1] => 55,  // Victor Roué - moyen
+            $playerIds[2] => 72,  // Antoine Bernard - fort
+            $playerIds[3] => 35,  // Serge Lama - faible
+            $playerIds[4] => 50,  // Raph - moyen
+            $playerIds[5] => 65,  // Chloé Laurent - au-dessus moyenne
+            $playerIds[6] => 68,  // Nathan Leroy - au-dessus moyenne
+            $playerIds[7] => 40,  // Manon Roux - en-dessous moyenne
+            $playerIds[8] => 58,  // Enzo Garcia - moyen+
+            $playerIds[9] => 45,  // Camille David - en-dessous moyenne
+        ];
+
         $matchPlayers = [];
         $eloHistories = [];
+        $kFactor = 25.0; // K = sensibilité (correspond à winner_points dans algorithm_parameters)
 
-        foreach ($sessionIds as $sessionId) {
-            // 3 matchs par session
-            for ($m = 0; $m < 3; $m++) {
+        // Pré-définir des matchups par session pour que chaque joueur joue 2-3 matchs
+        $allMatchups = [
+            // Session 0
+            [[0,3], [1,4], [2,5], [6,7], [8,9]],
+            // Session 1
+            [[0,1], [2,3], [4,5], [6,9], [7,8]],
+            // Session 2
+            [[0,6], [1,7], [2,8], [3,9], [4,5]],
+            // Session 3
+            [[0,2], [1,6], [3,7], [4,8], [5,9]],
+            // Session 4
+            [[0,5], [1,3], [2,9], [4,6], [7,8]],
+            // Session 5
+            [[0,4], [1,2], [3,8], [5,7], [6,9]],
+            // Session 6
+            [[0,7], [1,5], [2,6], [3,4], [8,9]],
+            // Session 7
+            [[0,1], [2,4], [3,6], [5,8], [7,9]],
+        ];
+
+        foreach ($sessionIds as $sIdx => $sessionId) {
+            $matchups = $allMatchups[$sIdx];
+
+            foreach ($matchups as $pair) {
+                $p1 = $playerIds[$pair[0]];
+                $p2 = $playerIds[$pair[1]];
+
+                // Déterminer le vainqueur basé sur les skill levels
+                $s1 = $skillLevels[$p1];
+                $s2 = $skillLevels[$p2];
+                $p1WinChance = $s1 / ($s1 + $s2);
+                $roll = mt_rand(1, 100) / 100;
+                $p1Wins = $roll < $p1WinChance;
+
+                // Scores réalistes badminton (en 15, gagnant a toujours 15)
+                if ($p1Wins) {
+                    $score1 = 15;
+                    $gap = abs($s1 - $s2);
+                    $minLoser = max(3, 13 - intdiv($gap, 5));
+                    $score2 = rand(min($minLoser, 13), 13);
+                } else {
+                    $score2 = 15;
+                    $gap = abs($s1 - $s2);
+                    $minLoser = max(3, 13 - intdiv($gap, 5));
+                    $score1 = rand(min($minLoser, 13), 13);
+                }
+
                 $matchId = DB::table('game_matches')->insertGetId([
                     'class_session_id' => $sessionId,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-
-                // Choix de 2 joueurs aléatoirement
-                $p1 = $playerIds[array_rand($playerIds)];
-                $p2 = $playerIds[array_rand($playerIds)];
-                while ($p1 === $p2) {
-                    $p2 = $playerIds[array_rand($playerIds)];
-                }
-
-                $score1 = rand(10, 21);
-                $score2 = $score1 === 21 ? rand(5, 19) : 21;
 
                 $matchPlayers[] = [
                     'game_match_id' => $matchId,
@@ -306,20 +360,31 @@ class DatabaseSeeder extends Seeder
                     'updated_at' => now(),
                 ];
 
-                // Faux historique ELO
-                $eloP1Base = rand(900, 1100);
-                $eloP2Base = rand(900, 1100);
-                
+                // Calcul Elo officiel
+                // E_A = 1 / (1 + 10^((R_B - R_A) / 400))
+                // R_A' = R_A + K × (S_A - E_A)
+                $eloBefore1 = $elos[$p1];
+                $eloBefore2 = $elos[$p2];
+
+                $expectedA = 1 / (1 + pow(10, ($eloBefore2 - $eloBefore1) / 400));
+                $expectedB = 1 - $expectedA;
+
+                $scoreA = $score1 > $score2 ? 1 : 0;
+                $scoreB = 1 - $scoreA;
+
+                $elos[$p1] = round($eloBefore1 + $kFactor * ($scoreA - $expectedA), 2);
+                $elos[$p2] = round($eloBefore2 + $kFactor * ($scoreB - $expectedB), 2);
+
                 $eloHistories[] = [
-                    'elo_before' => $eloP1Base,
-                    'elo_after' => $score1 > $score2 ? $eloP1Base + 25 : $eloP1Base - 25,
+                    'elo_before' => $eloBefore1,
+                    'elo_after' => $elos[$p1],
                     'player_id' => $p1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
                 $eloHistories[] = [
-                    'elo_before' => $eloP2Base,
-                    'elo_after' => $score2 > $score1 ? $eloP2Base + 25 : $eloP2Base - 25,
+                    'elo_before' => $eloBefore2,
+                    'elo_after' => $elos[$p2],
                     'player_id' => $p2,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -329,5 +394,13 @@ class DatabaseSeeder extends Seeder
 
         DB::table('match_player')->insert($matchPlayers);
         DB::table('elo_histories')->insert($eloHistories);
+
+        // Mettre à jour les elo_rating finaux des participants
+        foreach ($elos as $pid => $elo) {
+            DB::table('class_participants')
+                ->where('participantable_type', 'App\\Models\\Player')
+                ->where('participantable_id', $pid)
+                ->update(['elo_rating' => $elo]);
+        }
     }
 }

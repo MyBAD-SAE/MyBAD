@@ -11,7 +11,7 @@ const navItems = [
     { key: 'matchs', label: 'Matchs', icon: Swords, route: 'matchs' },
     { key: 'add', label: '', icon: Plus, route: null },
     { key: 'classement', label: 'Classement', icon: Trophy, route: 'classements' },
-    { key: 'profil', label: 'Profil', icon: User, route: 'profil' },
+    { key: 'profil', label: 'Profil', icon: User, route: 'player.account.index' },
 ];
 </script>
 

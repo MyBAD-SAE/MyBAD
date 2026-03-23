@@ -1,18 +1,13 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Trophy, TrendingUp, TrendingDown, ChevronRight } from 'lucide-vue-next';
+import { Trophy, TrendingUp, TrendingDown, ChevronRight, Crown } from 'lucide-vue-next';
 
 defineProps({
     players: {
         type: Array,
-        default: () => [
-            { rank: 1, name: 'Lucas TORRES', avatar: null, elo: 124.7, wins: 18, losses: 4, trend: 43, winRate: 82 },
-            { rank: 2, name: 'Quentin UGUEN', avatar: null, elo: 118.3, wins: 15, losses: 6, trend: 18, winRate: 71 },
-            { rank: 3, name: 'Amélie DUBOIS', avatar: null, elo: 109.5, wins: 12, losses: 7, trend: -12, winRate: 63 },
-            { rank: 4, name: 'Mael SELLIER', avatar: null, elo: 102.2, wins: 9, losses: 8, trend: 0, winRate: 53 },
-            { rank: 5, name: 'Victor ROUE', avatar: null, elo: 96.7, wins: 7, losses: 9, trend: -25, winRate: 44 },
-        ],
+        default: () => [],
     },
 });
 
@@ -37,20 +32,20 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
             <p class="text-sm text-muted-foreground">{{ players.length }} joueurs · saison en cours</p>
 
             <!-- Podium -->
-            <div class="mt-4 flex items-end justify-center gap-2">
+            <div v-if="players.length >= 3" class="mt-4 flex items-end justify-center gap-2">
                 <div v-for="idx in podiumOrder" :key="idx" class="flex flex-col items-center" :class="idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'">
                     <div class="relative">
-                        <Avatar :class="idx === 0 ? 'h-16 w-16 ring-2 ring-yellow-400' : 'h-12 w-12'">
+                        <Crown v-if="idx === 0" class="absolute -top-5 left-1/2 z-10 h-5 w-5 -translate-x-1/2 text-yellow-400" />
+                        <Avatar :class="[idx === 0 ? 'h-16 w-16 ring-3 ring-yellow-400' : 'h-12 w-12 ring-3', idx === 1 ? 'ring-gray-300' : '', idx === 2 ? 'ring-orange-300' : '']">
                             <AvatarImage v-if="players[idx]?.avatar" :src="players[idx].avatar" />
                             <AvatarFallback class="text-xs">{{ getInitials(players[idx]?.name || '') }}</AvatarFallback>
                         </Avatar>
-                        <span v-if="idx === 0" class="absolute -top-3 left-1/2 -translate-x-1/2 text-lg">👑</span>
                     </div>
                     <span class="mt-1 text-xs font-medium text-foreground">{{ players[idx]?.name.split(' ')[0] }}</span>
                     <span class="text-xs text-muted-foreground">{{ players[idx]?.elo }} pts</span>
                     <div
                         class="mt-1 w-20 rounded-t-lg"
-                        :class="idx === 0 ? 'h-16 bg-primary/15' : idx === 1 ? 'h-12 bg-muted' : 'h-10 bg-muted'"
+                        :class="idx === 0 ? 'h-16 bg-yellow-100' : idx === 1 ? 'h-12 bg-gray-100' : 'h-10 bg-orange-100'"
                     >
                         <div class="flex h-full items-end justify-center pb-1">
                             <span class="text-xs font-semibold text-muted-foreground">{{ idx === 0 ? '1er' : `${idx + 1}e` }}</span>
@@ -62,7 +57,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
             <!-- Ranking list -->
             <div class="mt-4 space-y-2">
                 <div
-                    v-for="player in players"
+                    v-for="player in players.slice(3, 8)"
                     :key="player.rank"
                     class="flex items-center gap-3 rounded-xl border p-3"
                 >
@@ -99,11 +94,16 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
                 </div>
             </div>
 
+            <!-- Empty state -->
+            <div v-if="players.length === 0" class="py-8 text-center">
+                <p class="text-sm text-muted-foreground">Aucun joueur dans le classement pour le moment.</p>
+            </div>
+
             <!-- Link -->
-            <button class="mt-4 flex w-full items-center justify-center gap-1 text-sm font-medium text-primary">
+            <Link :href="route('classements')" class="mt-4 flex w-full items-center justify-center gap-1 text-sm font-medium text-primary">
                 Voir tout le classement
                 <ChevronRight class="h-4 w-4" />
-            </button>
+            </Link>
         </CardContent>
     </Card>
 </template>
