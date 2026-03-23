@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue';
-import { Head, usePage, Link, router } from '@inertiajs/vue3';
+import { Head, usePage, Link, useForm } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
@@ -16,12 +16,19 @@ import {
 
 const user = usePage().props.auth.user;
 
-// Identity & contact fields
-const lastName = ref(user.last_name);
-const firstName = ref(user.first_name);
-const email = ref(user.email);
+// Form
+const form = useForm({
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    current_pin: '',
+    new_pin: '',
+    new_password_confirmation: '',
+    current_password: '',
+    new_password: '',
+});
 
-// PIN fields
+// PIN fields (UI arrays)
 const currentPin = ref(['', '', '', '']);
 const newPin = ref(['', '', '', '']);
 const confirmPin = ref(['', '', '', '']);
@@ -29,10 +36,7 @@ const showCurrentPin = ref(false);
 const showNewPin = ref(false);
 const showConfirmPin = ref(false);
 
-// Password fields
-const currentPassword = ref('');
-const newPassword = ref('');
-const confirmPassword = ref('');
+// Password fields visibility
 const showCurrentPassword = ref(false);
 const showNewPassword = ref(false);
 const showConfirmPassword = ref(false);
@@ -45,7 +49,7 @@ const pinMismatch = computed(() => {
 });
 
 const passwordMismatch = computed(() => {
-    return confirmPassword.value.length > 0 && newPassword.value.length > 0 && confirmPassword.value !== newPassword.value;
+    return form.new_password_confirmation.length > 0 && form.new_password.length > 0 && form.new_password_confirmation !== form.new_password;
 });
 
 function handlePinInput(pinArray, index, event) {
@@ -69,19 +73,31 @@ const showSuccess = ref(false);
 const progressWidth = ref(0);
 
 function handleSave() {
-    showSuccess.value = true;
-    progressWidth.value = 0;
+    form.current_pin = currentPin.value.join('');
+    form.new_pin = newPin.value.join('');
+    form.new_password_confirmation = form.new_password_confirmation;
 
-    nextTick(() => {
-        requestAnimationFrame(() => {
-            progressWidth.value = 100;
-        });
+    form.put(route('player.account.infos.update'), {
+        onSuccess: () => {
+            form.reset('current_pin', 'new_pin', 'current_password', 'new_password', 'new_password_confirmation');
+            currentPin.value = ['', '', '', ''];
+            newPin.value = ['', '', '', ''];
+            confirmPin.value = ['', '', '', ''];
+
+            showSuccess.value = true;
+            progressWidth.value = 0;
+
+            nextTick(() => {
+                requestAnimationFrame(() => {
+                    progressWidth.value = 100;
+                });
+            });
+
+            setTimeout(() => {
+                showSuccess.value = false;
+            }, 2500);
+        },
     });
-
-    setTimeout(() => {
-        showSuccess.value = false;
-        router.visit(route('player.account.index'));
-    }, 2500);
 }
 </script>
 
@@ -107,7 +123,7 @@ function handleSave() {
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Nom</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
                             <UserRound class="h-4 w-4 text-primary" />
-                            <input v-model="lastName" type="text" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
+                            <input v-model="form.last_name" type="text" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
                     </div>
 
@@ -115,7 +131,7 @@ function handleSave() {
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Prénom</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
                             <UserRound class="h-4 w-4 text-primary" />
-                            <input v-model="firstName" type="text" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
+                            <input v-model="form.first_name" type="text" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
                     </div>
                 </CardContent>
@@ -130,7 +146,7 @@ function handleSave() {
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Email</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3.5 py-2">
                             <Mail class="h-4 w-4 text-violet-500" />
-                            <input v-model="email" type="email" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
+                            <input v-model="form.email" type="email" class="flex-1 border-none bg-transparent text-sm text-muted-foreground/70 shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
                     </div>
                 </CardContent>
@@ -229,7 +245,7 @@ function handleSave() {
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-2xl border border-border/50 bg-muted/30 px-3.5 py-2">
                             <Lock class="h-4 w-4 text-amber-400" />
                             <input
-                                v-model="currentPassword"
+                                v-model="form.current_password"
                                 :type="showCurrentPassword ? 'text' : 'password'"
                                 placeholder="••••••••••"
                                 class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
@@ -245,7 +261,7 @@ function handleSave() {
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-2xl border border-border/50 bg-muted/30 px-3.5 py-2">
                             <Lock class="h-4 w-4 text-amber-400" />
                             <input
-                                v-model="newPassword"
+                                v-model="form.new_password"
                                 :type="showNewPassword ? 'text' : 'password'"
                                 placeholder="••••••••••••"
                                 class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
@@ -266,7 +282,7 @@ function handleSave() {
                         >
                             <Lock class="h-4 w-4 text-amber-400" />
                             <input
-                                v-model="confirmPassword"
+                                v-model="form.new_password_confirmation"
                                 :type="showConfirmPassword ? 'text' : 'password'"
                                 placeholder="••••••••••••"
                                 class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"

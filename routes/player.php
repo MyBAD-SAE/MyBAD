@@ -22,6 +22,7 @@ Route::middleware('auth:player')->group(function () {
             Route::delete('/', [AccountController::class, 'destroy'])->name('destroy');
             Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
             Route::get('infos', fn () => Inertia::render('Player/InfosPersonnelles'))->name('infos');
+            Route::put('infos', [AccountController::class, 'update'])->name('infos.update');
             Route::get('confidentialite', [AccountController::class, 'confidentialite'])->name('confidentialite');
         });
 
