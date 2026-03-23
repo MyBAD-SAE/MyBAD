@@ -7,14 +7,25 @@ use App\Http\Controllers\player\Auth\PasswordResetController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use App\Http\Controllers\player\ClassementController;
 use App\Http\Controllers\player\DashboardController;
+use App\Http\Controllers\player\MatchDeclarationController;
 use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth:player')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
-    Route::get('matchs', fn () => Inertia::render('Player/Matchs'))->name('matchs');
+    Route::get('matchs', fn() => Inertia::render('Player/Matchs'))->name('matchs');
     Route::get('classements', [ClassementController::class, 'index'])->name('classements');
+
+    Route::prefix('declarer-un-match')
+        ->name('match.')
+        ->controller(MatchDeclarationController::class)
+        ->group(function () {
+            Route::get('/', 'create')->name('declare');
+            Route::get('/adversaires', 'opponents')->name('opponents');
+            Route::post('/verify-pin', 'verifyPin')->name('verify-pin');
+            Route::post('/', 'store')->name('store');
+        });
 
     Route::prefix('joueur')->name('player.')->group(function () {
         Route::prefix('profil')->name('account.')->group(function () {
@@ -22,7 +33,7 @@ Route::middleware('auth:player')->group(function () {
             Route::get('download', [AccountController::class, 'download'])->name('download');
             Route::delete('/', [AccountController::class, 'destroy'])->name('destroy');
             Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-            Route::get('infos', fn () => Inertia::render('Player/InfosPersonnelles'))->name('infos');
+            Route::get('infos', fn() => Inertia::render('Player/InfosPersonnelles'))->name('infos');
             Route::put('infos', [AccountController::class, 'update'])->name('infos.update');
             Route::get('confidentialite', [AccountController::class, 'confidentialite'])->name('confidentialite');
         });
@@ -30,6 +41,7 @@ Route::middleware('auth:player')->group(function () {
         Route::prefix('pin')->name('pin.')->group(function () {
             Route::post('/', [PinController::class, 'store'])->name('store');
         });
+
     });
 });
 
@@ -46,7 +58,7 @@ Route::prefix('player')->name('player.')->group(function () {
             Route::get('callback', [GoogleAuthController::class, 'callback'])->name('callback');
         });
 
-        Route::get('mot-de-passe-oublie', fn () => Inertia::render('Player/Auth/ForgotPassword'))
+        Route::get('mot-de-passe-oublie', fn() => Inertia::render('Player/Auth/ForgotPassword'))
             ->name('password.request');
         Route::post('mot-de-passe-oublie', [PasswordResetController::class, 'sendResetLink'])
             ->name('password.email');
@@ -56,6 +68,6 @@ Route::prefix('player')->name('player.')->group(function () {
             ->name('password.update');
     });
 
-    Route::get('conditions-utilisation', fn () => Inertia::render('Terms'))->name('terms');
-    Route::get('politique-de-confidentialite', fn () => Inertia::render('Privacy'))->name('privacy');
+    Route::get('conditions-utilisation', fn() => Inertia::render('Terms'))->name('terms');
+    Route::get('politique-de-confidentialite', fn() => Inertia::render('Privacy'))->name('privacy');
 });

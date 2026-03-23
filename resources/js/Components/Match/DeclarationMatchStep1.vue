@@ -1,15 +1,19 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
 
 const props = defineProps({
   currentPlayer: {
     type: Object,
-    default: () => ({ id: 1, name: 'Moi' })
+    required: true,
   },
   selectedOpponent: {
     type: Object,
+    default: null
+  },
+  activeSession: {
+    type: [Number, String],
     default: null
   }
 })
@@ -19,26 +23,66 @@ const emit = defineEmits(['next', 'back'])
 const currentStep = ref(1)
 const searchQuery = ref('')
 const selectedPlayer = ref(props.selectedOpponent)
+const players = ref([])
+const currentElo = ref(0)
+const isLoading = ref(false)
+const errorMessage = ref('')
 
-// TODO: Récupérer la liste des joueurs depuis l'API, en excluant le joueur connecté
-// Pour l'instant, on met une liste statique pour les tests
-const players = ref([
-  { id: 2, name: 'Quentin UGUEN', elo: 1425 },
-  { id: 3, name: 'Amélie DUBOIS', elo: 1318 },
-  { id: 4, name: 'Kenji TANAKA', elo: 1350 },
-  { id: 5, name: 'Clara MARTIN', elo: 1315 },
-  { id: 6, name: 'Kenji TANAKA', elo: 1420 },
-  { id: 7, name: 'Quentin UGUEN', elo: 1425 },
-  { id: 8, name: 'Amélie DUBOIS', elo: 1318 },
-])
+onMounted(async () => {
+  await fetchOpponents()
+})
+
+async function fetchOpponents() {
+  isLoading.value = true
+  errorMessage.value = ''
+  try {
+    const response = await axios.get(route('match.opponents'))
+    if (response.data.error) {
+      errorMessage.value = response.data.error
+    }
+    players.value = response.data.opponents || []
+    currentElo.value = response.data.currentElo || 0
+  } catch (e) {
+    errorMessage.value = 'Impossible de charger la liste des adversaires.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const closestPlayers = computed(() => {
+  const available = players.value.filter(p => !p.already_played)
+  const sorted = [...available].sort((a, b) => Math.abs(a.elo - currentElo.value) - Math.abs(b.elo - currentElo.value))
+  const below = sorted.filter(p => p.elo <= currentElo.value).slice(0, 4)
+  const above = sorted.filter(p => p.elo > currentElo.value).slice(0, 4)
+  const ids = new Set([...below, ...above].map(p => p.id))
+  if (ids.size < 8) {
+    for (const p of sorted) {
+      if (ids.size >= 8) break
+      ids.add(p.id)
+    }
+  }
+  // Si on n'a pas 8 joueurs disponibles, compléter avec les déjà joués
+  if (ids.size < 8) {
+    const played = players.value.filter(p => p.already_played)
+      .sort((a, b) => Math.abs(a.elo - currentElo.value) - Math.abs(b.elo - currentElo.value))
+    for (const p of played) {
+      if (ids.size >= 8) break
+      ids.add(p.id)
+    }
+  }
+  return ids
+})
 
 const filteredPlayers = computed(() => {
-  if (!searchQuery.value.trim()) return players.value
-  const q = searchQuery.value.toLowerCase()
-  return players.value.filter(p => p.name.toLowerCase().includes(q))
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    return players.value.filter(p => p.name.toLowerCase().includes(q))
+  }
+  return players.value.filter(p => closestPlayers.value.has(p.id))
 })
 
 function selectPlayer(player) {
+  if (player.already_played) return
   selectedPlayer.value = player
 }
 
@@ -51,7 +95,6 @@ function getInitials(name) {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 }
 
-// TODO: récupérer la photo de profigil du joueur si elle existe, sinon générer une couleur d'avatar à partir de son nom ?
 function getAvatarColor(name) {
   const colors = ['#27BDAE', '#6366f1', '#f59e0b', '#D32F2F', '#8b5cf6', '#10b981', '#f97316', '#3b82f6']
   let hash = 0
@@ -107,57 +150,78 @@ function getAvatarColor(name) {
         <p class="text-sm font-bold text-gray-700 mb-1">Sélectionnez le joueur défié</p>
         <p class="text-xs text-gray-400 mb-3">Recherchez votre adversaire dans la liste ci-dessous</p>
 
-        <!-- Search -->
-        <div class="relative mb-4">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+        <!-- Error message -->
+        <div v-if="errorMessage" class="rounded-xl px-4 py-3 mb-4" style="background-color: #FEF2F2; border: 1px solid #fecaca;">
+          <p class="text-xs text-center text-[#D32F2F]">{{ errorMessage }}</p>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="isLoading" class="flex-1 flex items-center justify-center">
+          <svg class="w-6 h-6 animate-spin text-[#27BDAE]" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
           </svg>
-          <Input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Rechercher un joueur..."
-            class="pl-9 w-full text-sm placeholder:text-gray-400 shadow-none focus-visible:ring-1 focus-visible:ring-[#27BDAE]"
-            style="height: 36px; border-radius: 10px; background-color: #f8fafc; border: 1px solid #e2e8f0;"
-          />
         </div>
 
-        <!-- Player list -->
-        <div class="flex-1 overflow-y-auto space-y-2 pb-4">
-          <Button
-            v-for="player in filteredPlayers"
-            :key="player.id"
-            variant="outline"
-            @click="selectPlayer(player)"
-            class="w-full flex items-center gap-3 px-3 border transition-all justify-start"
-            style="height: 52px; border-radius: 10px;"
-            :class="selectedPlayer?.id === player.id
-              ? 'border-[#27BDAE] bg-[#ECFDF5] hover:bg-[#ECFDF5] shadow-sm'
-              : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'"
-          >
-            <div
-              class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-              :style="{ backgroundColor: getAvatarColor(player.name) }"
-            >
-              {{ getInitials(player.name) }}
-            </div>
-            <div class="flex-1 min-w-0 text-left">
-              <p class="text-sm font-semibold text-[#352B2B] truncate">{{ player.name }}</p>
-              <p class="text-xs text-gray-400 font-normal">ELO {{ player.elo }}</p>
-            </div>
-            <div
-              v-if="selectedPlayer?.id === player.id"
-              class="w-6 h-6 rounded-full bg-[#27BDAE] flex items-center justify-center flex-shrink-0"
-            >
-              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-              </svg>
-            </div>
-          </Button>
+        <template v-else>
+          <!-- Search -->
+          <div class="relative mb-4">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+            <Input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Rechercher un joueur..."
+              class="pl-9 w-full text-sm placeholder:text-gray-400 shadow-none focus-visible:ring-1 focus-visible:ring-[#27BDAE]"
+              style="height: 36px; border-radius: 10px; background-color: #f8fafc; border: 1px solid #e2e8f0;"
+            />
+          </div>
 
-          <p v-if="filteredPlayers.length === 0" class="text-center text-sm text-gray-400 py-6">
-            Aucun joueur trouvé
-          </p>
-        </div>
+          <!-- Player list -->
+          <div class="flex-1 overflow-y-auto space-y-2 pb-4">
+            <Button
+              v-for="player in filteredPlayers"
+              :key="player.id"
+              variant="outline"
+              @click="selectPlayer(player)"
+              :disabled="player.already_played"
+              class="w-full flex items-center gap-3 px-3 border transition-all justify-start"
+              style="height: 52px; border-radius: 10px;"
+              :class="player.already_played
+                ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                : selectedPlayer?.id === player.id
+                  ? 'border-[#27BDAE] bg-[#ECFDF5] hover:bg-[#ECFDF5] shadow-sm'
+                  : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'"
+            >
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
+                :style="{ backgroundColor: player.avatar ? 'transparent' : getAvatarColor(player.name), filter: player.already_played ? 'grayscale(100%)' : 'none' }"
+              >
+                <img v-if="player.avatar" :src="player.avatar" :alt="player.name" class="w-full h-full object-cover" />
+                <span v-else>{{ getInitials(player.name) }}</span>
+              </div>
+              <div class="flex-1 min-w-0 text-left">
+                <p class="text-sm font-semibold truncate" :class="player.already_played ? 'text-gray-400' : 'text-[#352B2B]'">{{ player.name }}</p>
+                <p class="text-xs font-normal" :class="player.already_played ? 'text-gray-300' : 'text-gray-400'">
+                  {{ player.already_played ? 'Déjà affronté' : `ELO ${player.elo}` }}
+                </p>
+              </div>
+              <div
+                v-if="selectedPlayer?.id === player.id && !player.already_played"
+                class="w-6 h-6 rounded-full bg-[#27BDAE] flex items-center justify-center flex-shrink-0"
+              >
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            </Button>
+
+            <p v-if="filteredPlayers.length === 0 && !isLoading" class="text-center text-sm text-gray-400 py-6">
+              Aucun joueur trouvé
+            </p>
+          </div>
+        </template>
       </div>
 
       <!-- Footer button -->
