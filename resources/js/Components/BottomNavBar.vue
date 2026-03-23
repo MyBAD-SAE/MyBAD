@@ -16,7 +16,7 @@ const navItems = [
 </script>
 
 <template>
-    <nav class="fixed bottom-0 left-0 right-0 z-50 border-t bg-background sm:hidden">
+    <nav class="fixed bottom-0 left-0 right-0 z-50 border-t bg-white sm:hidden">
         <div class="flex items-center justify-around py-2">
             <template v-for="item in navItems" :key="item.key">
                 <!-- Center add button -->
