@@ -73,8 +73,10 @@ const showSuccess = ref(false);
 const progressWidth = ref(0);
 
 function handleSave() {
-    form.current_pin = currentPin.value.join('');
-    form.new_pin = newPin.value.join('');
+    const currentPinStr = currentPin.value.join('');
+    const newPinStr = newPin.value.join('');
+    form.current_pin = currentPinStr.length === 4 ? currentPinStr : null;
+    form.new_pin = newPinStr.length === 4 ? newPinStr : null;
     form.new_password_confirmation = form.new_password_confirmation;
 
     form.put(route('player.account.infos.update'), {
@@ -118,6 +120,12 @@ function handleSave() {
             <Card class="mx-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-4 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Identité</span>
+
+                    <div v-if="form.errors.first_name || form.errors.last_name || form.errors.email" class="rounded-xl bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+                        <p v-if="form.errors.first_name">{{ form.errors.first_name }}</p>
+                        <p v-if="form.errors.last_name">{{ form.errors.last_name }}</p>
+                        <p v-if="form.errors.email">{{ form.errors.email }}</p>
+                    </div>
 
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Nom</label>
@@ -181,6 +189,7 @@ function handleSave() {
                                 <component :is="showCurrentPin ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/60" />
                             </button>
                         </div>
+                        <p v-if="form.errors.current_pin" class="mt-1.5 text-xs text-red-500">{{ form.errors.current_pin }}</p>
                     </div>
 
                     <!-- Nouveau code PIN -->
@@ -232,6 +241,11 @@ function handleSave() {
                         </div>
                         <p v-if="pinMismatch" class="mt-1.5 text-xs text-red-500">Les codes PIN ne correspondent pas</p>
                     </div>
+
+                    <!-- Erreurs PIN serveur -->
+                    <div v-if="form.errors.new_pin" class="rounded-xl bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+                        <p>{{ form.errors.new_pin }}</p>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -248,9 +262,9 @@ function handleSave() {
                                 v-model="form.current_password"
                                 :type="showCurrentPassword ? 'text' : 'password'"
                                 placeholder="••••••••••"
-                                class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
+                                class="min-w-0 flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
                             />
-                            <button @click="showCurrentPassword = !showCurrentPassword">
+                            <button type="button" class="shrink-0" @click="showCurrentPassword = !showCurrentPassword">
                                 <component :is="showCurrentPassword ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/50" />
                             </button>
                         </div>
@@ -264,9 +278,9 @@ function handleSave() {
                                 v-model="form.new_password"
                                 :type="showNewPassword ? 'text' : 'password'"
                                 placeholder="••••••••••••"
-                                class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
+                                class="min-w-0 flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
                             />
-                            <button @click="showNewPassword = !showNewPassword">
+                            <button type="button" class="shrink-0" @click="showNewPassword = !showNewPassword">
                                 <component :is="showNewPassword ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/50" />
                             </button>
                         </div>
@@ -285,13 +299,19 @@ function handleSave() {
                                 v-model="form.new_password_confirmation"
                                 :type="showConfirmPassword ? 'text' : 'password'"
                                 placeholder="••••••••••••"
-                                class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
+                                class="min-w-0 flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:ring-0"
                             />
-                            <button @click="showConfirmPassword = !showConfirmPassword">
+                            <button type="button" class="shrink-0" @click="showConfirmPassword = !showConfirmPassword">
                                 <component :is="showConfirmPassword ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/50" />
                             </button>
                         </div>
                         <p v-if="passwordMismatch" class="mt-1.5 text-xs text-red-500">Les mots de passe ne correspondent pas</p>
+                    </div>
+
+                    <!-- Erreurs mot de passe serveur -->
+                    <div v-if="form.errors.current_password || form.errors.new_password" class="rounded-xl bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+                        <p v-if="form.errors.current_password">{{ form.errors.current_password }}</p>
+                        <p v-if="form.errors.new_password">{{ form.errors.new_password }}</p>
                     </div>
                 </CardContent>
             </Card>
