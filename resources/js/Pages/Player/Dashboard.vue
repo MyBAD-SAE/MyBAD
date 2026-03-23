@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 
 import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
@@ -13,7 +13,8 @@ import RecentMatchesWidget from '@/Components/dashboard/RecentMatchesWidget.vue'
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Clock } from 'lucide-vue-next';
+import { Clock, Copy, Check, UserPlus } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const props = defineProps({
     participant : Object,
@@ -33,6 +34,14 @@ const formattedCode = (code) => {
     const padded = code.toString().padStart(6, '0');
     return padded.slice(0, 3) + ' ' + padded.slice(3);
 }
+
+const copied = ref(false);
+function copyCode() {
+    if (!props.playerCode) return;
+    navigator.clipboard.writeText(props.playerCode.toString());
+    copied.value = true;
+    setTimeout(() => { copied.value = false; }, 2000);
+}
 </script>
 
 <template>
@@ -44,35 +53,56 @@ const formattedCode = (code) => {
 
                 <!-- Pas inscrit dans un cours -->
                 <template v-if="!participant">
-                    <div class="flex items-start justify-between">
-                        <h1 class="text-2xl font-bold text-foreground">Bonjour {{ firstName }} 👋</h1>
-                        <Avatar class="h-10 w-10">
-                            <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
-                            <AvatarFallback>{{ firstName?.charAt(0) }}</AvatarFallback>
-                        </Avatar>
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-lg font-semibold text-foreground">Bonjour {{ firstName }} 👋</h1>
+                        <Link :href="route('player.account.index')">
+                            <Avatar class="h-8 w-8">
+                                <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
+                                <AvatarFallback class="text-xs">{{ firstName?.charAt(0) }}</AvatarFallback>
+                            </Avatar>
+                        </Link>
                     </div>
 
-                    <Card class="border-0 shadow-sm">
-                        <CardContent class="p-6">
-                            <h2 class="text-xl font-bold text-foreground">Rejoindre un cours</h2>
-                            <p class="mt-1 text-sm text-muted-foreground">
-                                Communiquez ce code à votre professeur pour être ajouté à une séance.
-                            </p>
-
-                            <div class="mt-5 rounded-2xl bg-emerald-50 py-6 text-center">
-                                <span class="text-4xl font-bold tracking-[0.3em] text-emerald-500">
-                                    {{ formattedCode(playerCode) }}
-                                </span>
+                    <Card class="shadow-none border-border/40">
+                        <CardContent class="px-4 py-5">
+                            <!-- Illustration + message d'accueil -->
+                            <div class="flex flex-col items-center">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                    <UserPlus class="h-4.5 w-4.5 text-primary" />
+                                </div>
+                                <h2 class="mt-2.5 text-center text-sm font-semibold text-foreground">Rejoindre un cours</h2>
+                                <p class="mt-0.5 text-center text-xs leading-relaxed text-muted-foreground">
+                                    Communiquez ce code à votre professeur<br />pour être ajouté à une séance.
+                                </p>
                             </div>
 
-                            <div class="mt-5 flex items-start gap-3">
-                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
-                                    <Clock class="h-4 w-4 text-muted-foreground" />
+                            <!-- Code joueur -->
+                            <button
+                                class="mt-4 flex w-full items-center justify-between rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors active:bg-primary/10"
+                                @click="copyCode"
+                            >
+                                <div class="flex flex-col items-start gap-0.5">
+                                    <span class="text-[9px] font-semibold uppercase tracking-widest text-primary/60">Mon code joueur</span>
+                                    <span class="font-mono text-lg font-bold tracking-[0.2em] text-primary">
+                                        {{ formattedCode(playerCode) }}
+                                    </span>
+                                </div>
+                                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                                    <Check v-if="copied" class="h-3.5 w-3.5 text-primary" />
+                                    <Copy v-else class="h-3.5 w-3.5 text-primary/60" />
+                                </div>
+                            </button>
+                            <p class="mt-1 text-center text-[10px] text-muted-foreground/50">Appuyez pour copier le code</p>
+
+                            <!-- Statut en attente -->
+                            <div class="mt-4 flex items-center gap-2.5 rounded-xl bg-muted/40 px-3 py-2.5">
+                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50">
+                                    <Clock class="h-3.5 w-3.5 text-amber-400" />
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-foreground">En attente d'un cours</p>
-                                    <p class="text-sm text-muted-foreground">
-                                        Vos statistiques et votre classement apparaîtront une fois ajouté à une séance.
+                                    <p class="text-xs font-semibold text-foreground">En attente d'un cours</p>
+                                    <p class="text-[11px] leading-relaxed text-muted-foreground">
+                                        Vos statistiques apparaîtront une fois ajouté à une séance.
                                     </p>
                                 </div>
                             </div>
