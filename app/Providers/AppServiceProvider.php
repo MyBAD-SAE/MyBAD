@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\GameMatch;
 use App\Policies\MatchPolicy;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
@@ -26,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return url(route('player.password.reset', ['token' => $token, 'email' => $user->email], false));
+        });
         Gate::policy(GameMatch::class, MatchPolicy::class);
         Route::model('match', GameMatch::class);
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\player\AccountController;
 use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\GoogleAuthController;
+use App\Http\Controllers\player\Auth\PasswordResetController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use App\Http\Controllers\player\ClassementController;
 use App\Http\Controllers\player\DashboardController;
@@ -47,6 +48,12 @@ Route::prefix('player')->name('player.')->group(function () {
 
         Route::get('mot-de-passe-oublie', fn () => Inertia::render('Player/Auth/ForgotPassword'))
             ->name('password.request');
+        Route::post('mot-de-passe-oublie', [PasswordResetController::class, 'sendResetLink'])
+            ->name('password.email');
+        Route::get('reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
+            ->name('password.reset');
+        Route::post('reset-password', [PasswordResetController::class, 'reset'])
+            ->name('password.update');
     });
 
     Route::get('conditions-utilisation', fn () => Inertia::render('Terms'))->name('terms');
