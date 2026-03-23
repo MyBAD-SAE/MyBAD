@@ -175,6 +175,20 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ];
 
+        $id11 = Str::uuid()->toString();
+        $playerIds[] = $id11;
+        $users[] = [
+            'id' => $id11,
+            'first_name' => 'Quentin',
+            'last_name' => 'Uguen',
+            'email' => 'quentin.uguen@mybad.test',
+            'password' => Hash::make('password'),
+            'profile_picture' => null,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
         DB::table('users')->insert($users);
 
         // 2. Insertion dans admin_users
@@ -222,14 +236,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 5. Paramètres d'algorithme ELO
-        DB::table('algorithm_parameters')->insert([
-            'min_diff' => 10,
-            'max_diff' => 200,
-            'winner_points' => 25.0,
-            'school_class_id' => $classId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $algoParams = [
+            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -0.7],
+            ['min_diff' => -11, 'max_diff' => -7,  'winner_points' => -0.2],
+            ['min_diff' => -6,  'max_diff' => -1,  'winner_points' => 0.0],
+            ['min_diff' => 0,   'max_diff' => 6,   'winner_points' => 0.5],
+            ['min_diff' => 7,   'max_diff' => 11,  'winner_points' => 1.0],
+            ['min_diff' => 12,  'max_diff' => 20,  'winner_points' => 1.6],
+        ];
+        DB::table('algorithm_parameters')->insert(
+            array_map(fn($p) => [...$p, 'school_class_id' => $classId, 'created_at' => now(), 'updated_at' => now()], $algoParams)
+        );
 
         // 6. Participants de la classe (tout le monde commence à 100 Elo)
         $elos = [];
@@ -284,6 +301,7 @@ class DatabaseSeeder extends Seeder
             $playerIds[7] => 40,  // Manon Roux - en-dessous moyenne
             $playerIds[8] => 58,  // Enzo Garcia - moyen+
             $playerIds[9] => 45,  // Camille David - en-dessous moyenne
+            $playerIds[10] => 62, // Quentin Uguen - au-dessus moyenne
         ];
 
         $matchPlayers = [];
@@ -293,21 +311,21 @@ class DatabaseSeeder extends Seeder
         // Pré-définir des matchups par session pour que chaque joueur joue 2-3 matchs
         $allMatchups = [
             // Session 0
-            [[0,3], [1,4], [2,5], [6,7], [8,9]],
+            [[0,3], [1,4], [2,5], [6,7], [8,9], [10,1]],
             // Session 1
-            [[0,1], [2,3], [4,5], [6,9], [7,8]],
+            [[0,1], [2,3], [4,5], [6,9], [7,8], [10,3]],
             // Session 2
-            [[0,6], [1,7], [2,8], [3,9], [4,5]],
+            [[0,6], [1,7], [2,8], [3,9], [4,5], [10,0]],
             // Session 3
-            [[0,2], [1,6], [3,7], [4,8], [5,9]],
+            [[0,2], [1,6], [3,7], [4,8], [5,9], [10,4]],
             // Session 4
-            [[0,5], [1,3], [2,9], [4,6], [7,8]],
+            [[0,5], [1,3], [2,9], [4,6], [7,8], [10,7]],
             // Session 5
-            [[0,4], [1,2], [3,8], [5,7], [6,9]],
+            [[0,4], [1,2], [3,8], [5,7], [6,9], [10,9]],
             // Session 6
-            [[0,7], [1,5], [2,6], [3,4], [8,9]],
+            [[0,7], [1,5], [2,6], [3,4], [8,9], [10,8]],
             // Session 7
-            [[0,1], [2,4], [3,6], [5,8], [7,9]],
+            [[0,1], [2,4], [3,6], [5,8], [7,9], [10,6]],
         ];
 
         foreach ($sessionIds as $sIdx => $sessionId) {
