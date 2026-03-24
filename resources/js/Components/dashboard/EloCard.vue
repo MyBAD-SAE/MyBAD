@@ -75,7 +75,7 @@ const chartData = computed(() => {
                 </div>
                 <span v-if="!hasMatches" class="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">Nouveau joueur</span>
             </div>
-            <p class="mt-2 text-4xl font-bold text-foreground">{{ elo }}</p>
+            <p class="mt-2 text-4xl font-semibold text-foreground">{{ elo }}</p>
         </CardContent>
 
         <!-- Pas de matchs : ligne pointillée + message -->

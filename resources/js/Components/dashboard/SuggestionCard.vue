@@ -3,7 +3,7 @@ import { Badge } from '@/Components/ui/badge';
 </script>
 
 <template>
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3DD4C4] to-[#7DE5DA] p-6 text-white">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#27BDAE] to-[#5DC9BC] p-6 text-white">
         <Badge class="bg-white/20 text-white hover:bg-white/30 border-0 text-xs font-semibold uppercase tracking-wider">
             Suggestion
         </Badge>

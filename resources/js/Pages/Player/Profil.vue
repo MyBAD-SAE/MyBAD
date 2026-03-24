@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
@@ -38,6 +38,42 @@ const menuItems = [
     { icon: ChartNoAxesCombined, title: 'Historique', subtitle: `${props.matchCount} match${props.matchCount > 1 ? 's' : ''} enregistré${props.matchCount > 1 ? 's' : ''}`, color: 'text-rose-500', bg: 'bg-rose-50', routeName: null },
 ];
 
+const photoInput = ref(null);
+const photoPreview = ref(null);
+const photoError = ref(null);
+
+function selectPhoto() {
+    photoInput.value.click();
+}
+
+function uploadPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    photoError.value = null;
+
+const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
+        photoInput.value.value = '';
+        return;
+    }
+
+    photoPreview.value = URL.createObjectURL(file);
+
+    router.post(route('player.account.photo.update'), { photo: file }, {
+        forceFormData: true,
+        preserveScroll: true,
+        onError: (errors) => {
+            photoError.value = errors.photo;
+            photoPreview.value = null;
+        },
+        onFinish: () => {
+            photoInput.value.value = '';
+        },
+    });
+}
+
 function logout() {
     logoutForm.post(route('player.account.logout'));
 }
@@ -56,18 +92,21 @@ function logout() {
                 <div class="absolute bottom-0 left-4 z-10 translate-y-1/2">
                     <div class="relative">
                         <Avatar class="h-24 w-24 border-4 border-background shadow-lg">
-                            <AvatarImage v-if="userInfo?.profile_picture" :src="userInfo.profile_picture" :alt="userInfo?.first_name" />
+                            <AvatarImage v-if="photoPreview || userInfo?.profile_picture" :src="photoPreview || userInfo.profile_picture" :alt="userInfo?.first_name" />
                             <AvatarFallback class="text-2xl">{{ userInfo?.first_name?.charAt(0) }}</AvatarFallback>
                         </Avatar>
-                        <button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md">
+                        <button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md" @click="selectPhoto">
                             <Camera class="h-4 w-4" />
                         </button>
+                        <input ref="photoInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="uploadPhoto" />
                     </div>
                 </div>
             </div>
 
+            <p v-if="photoError" class="ml-4 mt-14 text-xs text-destructive">{{ photoError }}</p>
+
             <!-- Nom + rang + ID — sous la bannière, décalé à droite de l'avatar -->
-            <div class="pl-32 pr-4 pt-3 pb-4">
+            <div class="pl-32 pr-4 pt-3 pb-4" :class="{ 'pt-1': photoError }">
                 <h1 class="text-xl font-bold text-foreground">{{ userInfo?.first_name }} {{ userInfo?.last_name }}</h1>
                 <div class="mt-0.5 flex items-center gap-2">
                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">

@@ -20,7 +20,7 @@ const maxPerSession = computed(() => {
         <CardContent class="flex flex-col p-4 h-full">
             <span class="text-sm font-bold text-foreground">Matchs</span>
             <div class="mt-1 flex items-baseline gap-2">
-                <span class="text-3xl font-bold text-foreground">{{ total }}</span>
+                <span class="text-3xl font-semibold text-foreground">{{ total }}</span>
                 <span class="text-sm font-medium text-primary">{{ wins }}V / {{ losses }}D</span>
             </div>
             <div class="mt-4 flex flex-1 items-end gap-1.5">

@@ -8,7 +8,7 @@ defineProps({
 
 const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: 'home' },
-    { key: 'matchs', label: 'Matchs', icon: Swords, route: 'matchs' },
+    { key: 'matchs', label: 'Matchs', icon: Swords, route: 'historique.matchs' },
     { key: 'add', label: '', icon: Plus, route: 'match.declare' },
     { key: 'classement', label: 'Classement', icon: Trophy, route: 'classements' },
     { key: 'profil', label: 'Profil', icon: User, route: 'player.account.index' },
@@ -25,7 +25,7 @@ const navItems = [
                     :href="route(item.route)"
                     class="flex flex-col items-center gap-0.5"
                 >
-                    <div class="flex h-12 w-12 -mt-5 items-center justify-center rounded-full bg-primary text-white shadow-lg">
+                    <div class="flex h-12 w-12 -mt-5 items-center justify-center rounded-full bg-[#27BDAE] text-white" style="box-shadow: 0 4px 14px rgba(39, 189, 174, 0.4);">
                         <Plus class="h-6 w-6" />
                     </div>
                 </Link>
