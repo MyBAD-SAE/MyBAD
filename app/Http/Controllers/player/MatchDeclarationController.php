@@ -55,16 +55,7 @@ class MatchDeclarationController extends Controller
             return response()->json(['opponents' => [], 'error' => 'Aucune séance active.'], 200);
         }
 
-        // Joueurs du même cours
-        $participation = ClassParticipant::where('participantable_type', Player::class)
-            ->where('participantable_id', $player->id)
-            ->first();
-
-        if (!$participation) {
-            return response()->json(['opponents' => []], 200);
-        }
-
-        $schoolClassId = $participation->school_class_id;
+        $schoolClassId = $activeSession->school_class_id;
 
         // Tous les joueurs du cours (sauf moi)
         $classPlayers = ClassParticipant::where('school_class_id', $schoolClassId)
@@ -74,15 +65,11 @@ class MatchDeclarationController extends Controller
             ->get();
 
         // Joueurs déjà affrontés dans cette séance
-        $alreadyPlayed = DB::table('match_player as mp1')
-            ->join('match_player as mp2', function ($join) use ($player) {
-                $join->on('mp1.game_match_id', '=', 'mp2.game_match_id')
-                    ->where('mp1.player_id', '=', $player->id)
-                    ->whereColumn('mp2.player_id', '!=', 'mp1.player_id');
-            })
-            ->join('game_matches as gm', 'mp1.game_match_id', '=', 'gm.id')
-            ->where('gm.class_session_id', $activeSession->id)
-            ->pluck('mp2.player_id')
+        $alreadyPlayed = GameMatch::where('class_session_id', $activeSession->id)
+            ->whereHas('players', fn ($q) => $q->where('player_id', $player->id))
+            ->with('players')
+            ->get()
+            ->flatMap(fn ($match) => $match->players->where('id', '!=', $player->id)->pluck('id'))
             ->toArray();
 
         $opponents = $classPlayers
@@ -103,8 +90,8 @@ class MatchDeclarationController extends Controller
             ->values();
 
         return response()->json([
-            'opponents' => $opponents,
-            'currentElo' => (float) $participation->elo_rating,
+            'opponents'  => $opponents,
+            'currentElo' => (float) $player->selectedParticipation()?->elo_rating,
         ]);
     }
 
@@ -139,8 +126,8 @@ class MatchDeclarationController extends Controller
     {
         $request->validate([
             'opponent_id' => ['required', 'exists:players,id'],
-            'my_score' => ['required', 'integer', 'min:0', 'max:99'],
-            'opponent_score' => ['required', 'integer', 'min:0', 'max:99'],
+            'my_score' => ['required', 'integer', 'min:0', 'max:21'],
+            'opponent_score' => ['required', 'integer', 'min:0', 'max:21'],
         ]);
 
         $user = Auth::guard('player')->user();
@@ -153,31 +140,28 @@ class MatchDeclarationController extends Controller
         }
 
         // Vérifier que l'adversaire n'a pas déjà été affronté dans cette séance
-        $alreadyPlayed = DB::table('match_player as mp1')
-            ->join('match_player as mp2', function ($join) use ($player) {
-                $join->on('mp1.game_match_id', '=', 'mp2.game_match_id')
-                    ->where('mp1.player_id', '=', $player->id)
-                    ->whereColumn('mp2.player_id', '!=', 'mp1.player_id');
-            })
-            ->join('game_matches as gm', 'mp1.game_match_id', '=', 'gm.id')
-            ->where('gm.class_session_id', $activeSession->id)
-            ->where('mp2.player_id', $request->opponent_id)
+        $alreadyPlayed = GameMatch::where('class_session_id', $activeSession->id)
+            ->whereHas('players', fn ($q) => $q->where('player_id', $player->id))
+            ->whereHas('players', fn ($q) => $q->where('player_id', $request->opponent_id))
             ->exists();
 
         if ($alreadyPlayed) {
             return response()->json(['error' => 'Vous avez déjà joué contre ce joueur dans cette séance.'], 422);
         }
 
+        $schoolClassId = $activeSession->school_class_id;
+
         // Calculer le changement d'ELO
         $eloChange = $this->calculateEloChange(
             $player->id,
             $request->opponent_id,
             $request->my_score,
-            $request->opponent_score
+            $request->opponent_score,
+            $schoolClassId,
         );
 
         // Créer le match et les entrées pivot dans une transaction
-        $match = DB::transaction(function () use ($request, $player, $activeSession, $eloChange) {
+        $match = DB::transaction(function () use ($request, $player, $activeSession, $eloChange, $schoolClassId) {
             $match = GameMatch::create([
                 'class_session_id' => $activeSession->id,
             ]);
@@ -194,9 +178,9 @@ class MatchDeclarationController extends Controller
                 'validated' => true,
             ]);
 
-            // Mettre à jour l'ELO des deux joueurs
-            $this->updateElo($player->id, $eloChange);
-            $this->updateElo($request->opponent_id, -$eloChange);
+            // Mettre à jour l'ELO des deux joueurs dans la bonne classe
+            $this->updateElo($player->id, $eloChange, $schoolClassId);
+            $this->updateElo($request->opponent_id, -$eloChange, $schoolClassId);
 
             return $match;
         });
@@ -209,19 +193,17 @@ class MatchDeclarationController extends Controller
     }
 
     /**
-     * Récupère la séance active pour le joueur.
+     * Récupère la séance active pour le joueur dans sa classe sélectionnée.
      */
     private function getActiveSession(Player $player): ?ClassSession
     {
-        $participation = ClassParticipant::where('participantable_type', Player::class)
-            ->where('participantable_id', $player->id)
-            ->first();
+        $classId = $player->selectedParticipation()?->school_class_id;
 
-        if (!$participation) {
+        if (!$classId) {
             return null;
         }
 
-        return ClassSession::where('school_class_id', $participation->school_class_id)
+        return ClassSession::where('school_class_id', $classId)
             ->where('is_active', true)
             ->latest('date')
             ->first();
@@ -233,21 +215,11 @@ class MatchDeclarationController extends Controller
      * Formule : winner_points (depuis algorithm_parameters) + écart_rang / 10
      * Plafonné entre 0 et 10. Le perdant reçoit l'inverse.
      */
-    private function calculateEloChange(string $playerId, string $opponentId, int $myScore, int $opponentScore): float
+    private function calculateEloChange(string $playerId, string $opponentId, int $myScore, int $opponentScore, int $schoolClassId): float
     {
         if ($myScore === $opponentScore) {
             return 0;
         }
-
-        $participation = ClassParticipant::where('participantable_type', Player::class)
-            ->where('participantable_id', $playerId)
-            ->first();
-
-        if (!$participation) {
-            return 0;
-        }
-
-        $schoolClassId = $participation->school_class_id;
 
         // Classement de tous les joueurs de la classe par ELO décroissant
         $rankings = ClassParticipant::where('school_class_id', $schoolClassId)
@@ -273,7 +245,7 @@ class MatchDeclarationController extends Controller
         // Écart de rang du point de vue du vainqueur : positif = le perdant était mieux classé
         $winnerRank = $isWinner ? $myRank : $opponentRank;
         $loserRank = $isWinner ? $opponentRank : $myRank;
-        $rankDiff = $loserRank - $winnerRank;
+        $rankDiff = $winnerRank - $loserRank;
 
         // Récupérer les paramètres de l'algorithme pour cette classe
         $param = AlgorithmParameter::where('school_class_id', $schoolClassId)
@@ -300,10 +272,11 @@ class MatchDeclarationController extends Controller
     /**
      * Met à jour l'ELO d'un joueur et enregistre l'historique.
      */
-    private function updateElo(string $playerId, float $eloChange): void
+    private function updateElo(string $playerId, float $eloChange, int $schoolClassId): void
     {
         $participation = ClassParticipant::where('participantable_type', Player::class)
             ->where('participantable_id', $playerId)
+            ->where('school_class_id', $schoolClassId)
             ->first();
 
         if (!$participation) {
@@ -311,14 +284,14 @@ class MatchDeclarationController extends Controller
         }
 
         $eloBefore = (float) $participation->elo_rating;
-        $eloAfter = $eloBefore + $eloChange;
+        $eloAfter  = $eloBefore + $eloChange;
 
         $participation->update(['elo_rating' => $eloAfter]);
 
         EloHistory::create([
-            'player_id' => $playerId,
-            'elo_before' => $eloBefore,
-            'elo_after' => $eloAfter,
+            'participant_id' => $participation->id,
+            'elo_before'     => $eloBefore,
+            'elo_after'      => $eloAfter,
         ]);
     }
 }

@@ -38,6 +38,8 @@ Route::middleware('auth:player')->group(function () {
             Route::get('confidentialite', [AccountController::class, 'confidentialite'])->name('confidentialite');
         });
 
+        Route::post('classe', [AccountController::class, 'selectClass'])->name('class.select');
+
         Route::prefix('pin')->name('pin.')->group(function () {
             Route::post('/', [PinController::class, 'store'])->name('store');
         });

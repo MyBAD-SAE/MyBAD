@@ -27,6 +27,8 @@ const props = defineProps({
     totalMatches: Number,
     winStreak: Number,
     rankingPlayers: Array,
+    classes: { type: Array, default: () => [] },
+    selectedClassId: { type: Number, default: null },
 })
 
 const formattedCode = (code) => {
@@ -113,7 +115,12 @@ function copyCode() {
                 <!-- Inscrit dans un cours -->
                 <template v-else>
                     <!-- Header -->
-                    <DashboardHeader :first-name="participant?.participantable?.user?.first_name ?? ''" :avatar-url="participant?.participantable?.user?.profile_picture" />
+                    <DashboardHeader
+                        :first-name="participant?.participantable?.user?.first_name ?? ''"
+                        :avatar-url="participant?.participantable?.user?.profile_picture"
+                        :classes="classes"
+                        :selected-class-id="selectedClassId"
+                    />
 
                     <!-- Suggestion -->
                     <SuggestionCard />

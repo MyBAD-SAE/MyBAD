@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
-import SessionPicker from '@/Components/dashboard/SessionPicker.vue';
+import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
 import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
@@ -14,28 +14,28 @@ import {
     UserRound,
     Shield,
     ChartNoAxesCombined,
-    CalendarDays,
+    GraduationCap,
     ChevronRight,
     LogOut,
 } from 'lucide-vue-next';
 
 const props = defineProps({
     participant: Object,
-    user: Object,
-    playerCode: String,
+    classes: { type: Array, default: () => [] },
+    selectedClassId: { type: Number, default: null },
+    matchCount: { type: Number, default: 0 },
 })
 
 const logoutForm = useForm({});
 const showLogoutModal = ref(false);
-const selectedDay = ref('Mardi');
 
 const player = computed(() => props.participant?.participantable);
-const userInfo = computed(() => player.value?.user ?? props.user);
+const userInfo = computed(() => player.value?.user);
 
 const menuItems = [
     { icon: UserRound, title: 'Informations personnelles', subtitle: 'Nom, email, mot de passe', color: 'text-blue-500', bg: 'bg-blue-50', routeName: 'player.account.infos' },
     { icon: Shield, title: 'Confidentialité', subtitle: 'Données personnelles', color: 'text-violet-500', bg: 'bg-violet-50', routeName: 'player.account.confidentialite' },
-    { icon: ChartNoAxesCombined, title: 'Historique & statistiques', subtitle: '22 matchs joués', color: 'text-rose-500', bg: 'bg-rose-50', routeName: null },
+    { icon: ChartNoAxesCombined, title: 'Historique', subtitle: `${props.matchCount} match${props.matchCount > 1 ? 's' : ''} enregistré${props.matchCount > 1 ? 's' : ''}`, color: 'text-rose-500', bg: 'bg-rose-50', routeName: null },
 ];
 
 function logout() {
@@ -73,7 +73,7 @@ function logout() {
                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
                         <Crown class="h-3 w-3" /> #{{ participant?.rank }}
                     </span>
-                    <span class="text-sm text-muted-foreground">ID : {{ playerCode ?? player?.code }}</span>
+                    <span class="text-sm text-muted-foreground">ID : {{ player?.code }}</span>
                 </div>
             </div>
 
@@ -110,22 +110,24 @@ function logout() {
                             <Separator v-if="index < menuItems.length - 1" />
                         </template>
 
-                        <!-- Séance du jour — ouvre le SessionPicker -->
-                        <Separator />
-                        <SessionPicker v-model="selectedDay">
-                            <template #trigger>
-                                <button class="flex w-full items-center gap-3 py-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-50">
-                                        <CalendarDays class="h-5 w-5 text-pink-500" />
-                                    </div>
-                                    <div class="flex-1 text-left">
-                                        <p class="text-sm font-medium text-foreground">Séance du jour</p>
-                                        <p class="text-xs text-muted-foreground/60">{{ selectedDay }}</p>
-                                    </div>
-                                    <ChevronRight class="h-4 w-4 text-muted-foreground" />
-                                </button>
-                            </template>
-                        </SessionPicker>
+                        <!-- Cours actif — ouvre le ClassPicker -->
+                        <template v-if="classes.length > 0">
+                            <Separator />
+                            <ClassPicker :classes="classes" :selected-class-id="selectedClassId">
+                                <template #trigger>
+                                    <button class="flex w-full items-center gap-3 py-3">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50">
+                                            <GraduationCap class="h-5 w-5 text-green-500" />
+                                        </div>
+                                        <div class="flex-1 text-left">
+                                            <p class="text-sm font-medium text-foreground">Cours actif</p>
+                                            <p class="text-xs text-muted-foreground/60">{{ classes.find(c => c.id === selectedClassId)?.name ?? classes[0]?.name }}</p>
+                                        </div>
+                                        <ChevronRight v-if="classes.length > 1" class="h-4 w-4 text-muted-foreground" />
+                                    </button>
+                                </template>
+                            </ClassPicker>
+                        </template>
                     </div>
 
                     <!-- Déconnexion -->
