@@ -24,6 +24,7 @@ const myScoreRef = ref(null)
 const opponentScoreRef = ref(null)
 
 const scoreError = ref('')
+let myScoreTimer = null
 
 const isValid = computed(() =>
     myScore.value !== null && opponentScore.value !== null &&
@@ -37,13 +38,20 @@ function focusInput(field) {
     else opponentScoreRef.value?.focus()
 }
 
+function focusOpponent() {
+    const el = opponentScoreRef.value?.$el || opponentScoreRef.value
+    el?.focus()
+}
+
 function clampScore(field) {
     if (field === 'myScore') {
         if (myScore.value > 99) myScore.value = 99
         if (myScore.value < 0) myScore.value = 0
+        clearTimeout(myScoreTimer)
         if (String(myScore.value).length >= 2) {
-            const el = opponentScoreRef.value?.$el || opponentScoreRef.value
-            el?.focus()
+            focusOpponent()
+        } else if (myScore.value !== null && myScore.value !== '') {
+            myScoreTimer = setTimeout(focusOpponent, 800)
         }
     } else {
         if (opponentScore.value > 99) opponentScore.value = 99

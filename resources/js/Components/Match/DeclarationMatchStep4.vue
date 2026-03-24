@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Button } from '@/Components/ui/button'
 import { router } from '@inertiajs/vue3'
+import { TrendingUp, TrendingDown } from 'lucide-vue-next'
 
 const props = defineProps({
   currentPlayer: {
@@ -76,8 +77,8 @@ function getAvatarColor(name) {
       <div class="flex-1 flex flex-col items-center px-4">
 
         <!-- Big check icon -->
-        <div class="w-20 h-20 rounded-full flex items-center justify-center mb-5" style="background-color: rgba(39, 189, 174, 0.1);">
-          <svg class="w-10 h-10" fill="none" stroke="#27BDAE" viewBox="0 0 24 24" stroke-width="2">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mb-5" style="background-color: rgba(39, 189, 174, 0.1);">
+          <svg class="w-8 h-8" fill="none" stroke="#27BDAE" viewBox="0 0 24 24" stroke-width="2">
             <circle cx="12" cy="12" r="9" stroke="#27BDAE" stroke-width="2" fill="none"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12l2.5 2.5L16 9.5"/>
           </svg>
@@ -168,14 +169,8 @@ function getAvatarColor(name) {
                 ? 'color: #009966; background-color: #ECFDF5;'
                 : 'color: #D32F2F; background-color: #FEF2F2;'"
             >
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2.5"
-                  :d="eloChange > 0 ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'"
-                />
-              </svg>
+              <TrendingUp v-if="eloChange > 0" class="w-3 h-3" />
+              <TrendingDown v-else class="w-3 h-3" />
               {{ eloChange > 0 ? '+' : '' }}{{ eloChange }} ELO
             </span>
           </div>
