@@ -10,29 +10,27 @@ defineProps({
 
 <template>
     <div>
-        <h3 class="text-lg font-bold text-foreground">Activité globale</h3>
+        <h3 class="text-lg font-semibold text-foreground">Activité globale</h3>
 <!--        <p class="text-sm text-muted-foreground">Depuis le début</p>-->
 
-        <div class="mt-3 grid grid-cols-2 gap-3">
-            <Card class="bg-orange-50 border-0 shadow-none">
-                <CardContent class="flex flex-col items-center p-4">
+        <Card class="mt-3 shadow-none">
+            <CardContent class="grid grid-cols-2 gap-3 p-3">
+                <div class="flex flex-col items-center rounded-xl bg-orange-50 p-4">
                     <div class="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100">
                         <Flame class="h-5 w-5 text-orange-500" />
                     </div>
-                    <span class="mt-2 text-2xl font-bold text-foreground">{{ winStreak }}</span>
+                    <span class="mt-2 text-2xl font-semibold text-foreground">{{ winStreak }}</span>
                     <span class="text-xs text-muted-foreground">Win streak</span>
-                </CardContent>
-            </Card>
+                </div>
 
-            <Card class="bg-primary/5 border-0 shadow-none">
-                <CardContent class="flex flex-col items-center p-4">
+                <div class="flex flex-col items-center rounded-xl bg-primary/5 p-4">
                     <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                         <Target class="h-5 w-5 text-primary" />
                     </div>
-                    <span class="mt-2 text-2xl font-bold text-foreground">{{ totalMatches }}</span>
+                    <span class="mt-2 text-2xl font-semibold text-foreground">{{ totalMatches }}</span>
                     <span class="text-xs text-muted-foreground">Matchs joués</span>
-                </CardContent>
-            </Card>
-        </div>
+                </div>
+            </CardContent>
+        </Card>
     </div>
 </template>

@@ -23,7 +23,7 @@ defineProps({
                     <span class="text-lg font-bold text-white">MyBAD</span>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-white">{{ title }}</h1>
+                    <h1 class="text-xl font-bold text-white">{{ title }}</h1>
                     <p class="mt-1 text-sm text-white/80">{{ subtitle }}</p>
                 </div>
             </div>

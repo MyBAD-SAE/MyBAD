@@ -120,7 +120,7 @@ function copyCode() {
 
                     <!-- Activité des 4 dernières séances -->
                     <div>
-                        <h3 class="text-lg font-bold text-foreground">4 dernières séances</h3>
+                        <h3 class="text-lg font-semibold text-foreground">4 dernières séances</h3>
 
                         <div class="mt-3">
                             <EloCard :elo="participant?.elo_rating ?? 0" :elo-diff="eloDiff" :history="eloHistory" :has-matches="totalMatches > 0" />
