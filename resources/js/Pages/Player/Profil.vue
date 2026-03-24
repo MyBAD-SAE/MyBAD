@@ -150,7 +150,7 @@ function logout() {
                         </template>
 
                         <!-- Cours actif — ouvre le ClassPicker -->
-                        <template v-if="classes.length > 0">
+                        <template v-if="classes.length > 1">
                             <Separator />
                             <ClassPicker :classes="classes" :selected-class-id="selectedClassId">
                                 <template #trigger>

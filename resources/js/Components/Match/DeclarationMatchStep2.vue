@@ -92,10 +92,10 @@ function getAvatarColor(name) {
             <div class="px-4 pt-6 pb-4 flex items-center gap-3">
                 <button
                     @click="$emit('back')"
-                    class="w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors shrink-0"
+                    class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors shrink-0"
                     style="background-color: #ffffff; border: 1px solid #e5e7eb;"
                 >
-                    <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>

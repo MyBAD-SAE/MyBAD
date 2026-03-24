@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 const page = usePage();
-const userInfo = computed(() => props.participant.participantable.user);
+const userInfo = computed(() => props.user);
 const photoInput = ref(null);
 const photoPreview = ref(null);
 const photoUploading = ref(false);
