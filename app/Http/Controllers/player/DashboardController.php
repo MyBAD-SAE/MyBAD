@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\player\ClassementController;
+use App\Http\Controllers\player\RankingController;
 use App\Http\Resources\ClassParticipantResource;
 use App\Http\Resources\PlayerResource;
 use App\Models\EloHistory;
@@ -102,7 +102,7 @@ class DashboardController extends Controller
             }
         }
 
-        $rankingPlayers = app(ClassementController::class)->getRankingForCurrentPlayer();
+        $rankingPlayers = app(RankingController::class)->getRankingForCurrentPlayer();
 
         return Inertia::render('Player/Dashboard', [
             'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,

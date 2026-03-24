@@ -5,7 +5,7 @@ use App\Http\Controllers\player\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\player\Auth\GoogleAuthController;
 use App\Http\Controllers\player\Auth\PasswordResetController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
-use App\Http\Controllers\player\ClassementController;
+use App\Http\Controllers\player\RankingController;
 use App\Http\Controllers\player\DashboardController;
 use App\Http\Controllers\player\MatchDeclarationController;
 use App\Http\Controllers\player\PinController;
@@ -15,7 +15,7 @@ use Inertia\Inertia;
 Route::middleware('auth:player')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('matchs', fn() => Inertia::render('Player/Matchs'))->name('matchs');
-    Route::get('classements', [ClassementController::class, 'index'])->name('classements');
+    Route::get('classements', [RankingController::class, 'index'])->name('classements');
     Route::get('historique-matchs', fn () => Inertia::render('Player/HistoriqueMatchs'))->name('historique.matchs');
 
     Route::prefix('declarer-un-match')

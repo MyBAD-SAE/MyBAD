@@ -4,13 +4,14 @@ namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassParticipant;
+use App\Models\EloHistory;
+use App\Models\MatchPlayer;
 use App\Models\Player;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ClassementController extends Controller
+class RankingController extends Controller
 {
     public function index(): Response
     {
@@ -74,14 +75,9 @@ class ClassementController extends Controller
      */
     private function getBulkMatchStats($playerIds, int $schoolClassId): array
     {
-        // Get all match_player entries for these players in this school class
-        $entries = DB::table('match_player as mp')
-            ->join('game_matches as gm', 'mp.game_match_id', '=', 'gm.id')
-            ->join('class_sessions as cs', 'gm.class_session_id', '=', 'cs.id')
-            ->whereIn('mp.player_id', $playerIds)
-            ->where('cs.school_class_id', $schoolClassId)
-            ->select('mp.game_match_id', 'mp.player_id', 'mp.score')
-            ->get();
+        $entries = MatchPlayer::whereIn('player_id', $playerIds)
+            ->whereHas('gameMatch.classSession', fn ($q) => $q->where('school_class_id', $schoolClassId))
+            ->get(['game_match_id', 'player_id', 'score']);
 
         // Group by match to compare scores
         $matchGroups = $entries->groupBy('game_match_id');
@@ -116,8 +112,7 @@ class ClassementController extends Controller
      */
     private function getBulkEloTrends($playerIds): array
     {
-        return DB::table('elo_histories')
-            ->whereIn('player_id', $playerIds)
+        return EloHistory::whereIn('player_id', $playerIds)
             ->groupBy('player_id')
             ->selectRaw('player_id, ROUND(SUM(elo_after - elo_before), 1) as trend')
             ->pluck('trend', 'player_id')
