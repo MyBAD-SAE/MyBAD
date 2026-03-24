@@ -15,14 +15,26 @@ class RankingController extends Controller
 {
     public function index(): Response
     {
-        $players = $this->getRankingForCurrentPlayer();
+        $user    = Auth::guard('player')->user();
+        $player  = $user->player;
+        $classId = $player?->selectedParticipation()?->school_class_id;
+
+        $classes = $player
+            ? $player->classParticipants()->with('schoolClass')->get()
+                ->map(fn ($cp) => ['id' => $cp->school_class_id, 'name' => $cp->schoolClass->name])
+                ->values()->all()
+            : [];
+
+        $players = $this->getRankingForCurrentPlayer($classId);
 
         return Inertia::render('Player/Classements', [
-            'players' => $players,
+            'players'         => $players,
+            'classes'         => $classes,
+            'selectedClassId' => $classId,
         ]);
     }
 
-    public function getRankingForCurrentPlayer(): array
+    public function getRankingForCurrentPlayer(?int $classId = null): array
     {
         /** @var \App\Models\User $user */
         $user = Auth::guard('player')->user();
@@ -30,6 +42,7 @@ class RankingController extends Controller
 
         $participation = ClassParticipant::where('participantable_type', Player::class)
             ->where('participantable_id', $player->id)
+            ->when($classId, fn ($q) => $q->where('school_class_id', $classId))
             ->first();
 
         if (! $participation) {
@@ -44,9 +57,9 @@ class RankingController extends Controller
             ->orderByDesc('elo_rating')
             ->get();
 
-        $playerIds = $participants->pluck('participantable_id');
+        $playerIds  = $participants->pluck('participantable_id');
         $matchStats = $this->getBulkMatchStats($playerIds, $schoolClassId);
-        $eloTrends = $this->getBulkEloTrends($playerIds);
+        $eloTrends  = $this->getBulkEloTrends($participants);
 
         return $participants->values()->map(function ($participant, $index) use ($matchStats, $eloTrends) {
             $playerId = $participant->participantable_id;
@@ -70,27 +83,16 @@ class RankingController extends Controller
         })->all();
     }
 
-    /**
-     * Get wins/losses for all players in a school class efficiently.
-     */
     private function getBulkMatchStats($playerIds, int $schoolClassId): array
     {
         $entries = MatchPlayer::whereIn('player_id', $playerIds)
             ->whereHas('gameMatch.classSession', fn ($q) => $q->where('school_class_id', $schoolClassId))
             ->get(['game_match_id', 'player_id', 'score']);
 
-        // Group by match to compare scores
-        $matchGroups = $entries->groupBy('game_match_id');
+        $stats = $playerIds->mapWithKeys(fn ($id) => [$id => ['wins' => 0, 'losses' => 0]])->toArray();
 
-        $stats = [];
-        foreach ($playerIds as $id) {
-            $stats[$id] = ['wins' => 0, 'losses' => 0];
-        }
-
-        foreach ($matchGroups as $matchEntries) {
-            if ($matchEntries->count() !== 2) {
-                continue;
-            }
+        $entries->groupBy('game_match_id')->each(function ($matchEntries) use (&$stats) {
+            if ($matchEntries->count() !== 2) return;
 
             $a = $matchEntries->first();
             $b = $matchEntries->last();
@@ -102,16 +104,15 @@ class RankingController extends Controller
                 $stats[$b->player_id]['wins']++;
                 $stats[$a->player_id]['losses']++;
             }
-        }
+        });
 
         return $stats;
     }
 
-    /**
-     * Get Elo trend (total change from all history) for each player.
-     */
-    private function getBulkEloTrends($playerIds): array
+    private function getBulkEloTrends($participants): array
     {
+        $playerIds = $participants->pluck('participantable_id');
+
         return EloHistory::whereIn('player_id', $playerIds)
             ->groupBy('player_id')
             ->selectRaw('player_id, ROUND(SUM(elo_after - elo_before), 1) as trend')

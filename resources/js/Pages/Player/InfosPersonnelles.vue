@@ -16,7 +16,7 @@ import {
 } from 'lucide-vue-next';
 
 const props = defineProps({
-    participant: { type: Object, required: true },
+    user: { type: Object, required: true },
 });
 
 const page = usePage();
@@ -62,9 +62,9 @@ const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
 // Form
 const form = useForm({
-    first_name: props.participant.participantable.user.first_name,
-    last_name: props.participant.participantable.user.last_name,
-    email: props.participant.participantable.user.email,
+    first_name: props.user.first_name,
+    last_name: props.user.last_name,
+    email: props.user.email,
     current_pin: '',
     new_pin: '',
     new_password_confirmation: '',
@@ -73,12 +73,11 @@ const form = useForm({
 });
 
 watch(
-    () => props.participant,
+    () => props.user,
     (newValue) => {
-        const user = newValue.participantable.user;
-        form.first_name = user.first_name;
-        form.last_name  = user.last_name;
-        form.email      = user.email;
+        form.first_name = newValue.first_name;
+        form.last_name  = newValue.last_name;
+        form.email      = newValue.email;
     }
 );
 

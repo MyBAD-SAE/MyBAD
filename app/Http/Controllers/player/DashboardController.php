@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\player\RankingController;
 use App\Http\Resources\ClassParticipantResource;
 use App\Http\Resources\PlayerResource;
-use App\Models\EloHistory;
 use App\Models\GameMatch;
 use Inertia\Inertia;
 
@@ -17,10 +16,15 @@ class DashboardController extends Controller
         $user = auth('player')->user();
         $player = $user->player;
 
-        $participant = $player
-            ?->classParticipants()
-            ->with('participantable.user')
-            ->first();
+        $participation = $player?->selectedParticipation()?->load('participantable.user');
+        $classId       = $participation?->school_class_id;
+        $participant   = $participation;
+
+        $classes = $player
+            ? $player->classParticipants()->with('schoolClass')->get()
+                ->map(fn ($cp) => ['id' => $cp->school_class_id, 'name' => $cp->schoolClass->name])
+                ->values()->all()
+            : [];
 
         $eloDiff = 0;
         $eloHistory = [];
@@ -29,6 +33,7 @@ class DashboardController extends Controller
 
         if ($player) {
             $matches = GameMatch::whereHas('players', fn ($q) => $q->where('player_id', $player->id))
+                ->when($classId, fn ($q) => $q->whereHas('classSession', fn ($q2) => $q2->where('school_class_id', $classId)))
                 ->with(['players', 'classSession'])
                 ->get();
 
@@ -71,18 +76,18 @@ class DashboardController extends Controller
 
             // Elo sur les 4 dernières séances
             if ($participant) {
-                $history = EloHistory::where('player_id', $player->id)
-                    ->oldest()
-                    ->get();
+                $history = $participant->eloHistories()->oldest()->get();
 
-                if ($history->isNotEmpty()) {
+                if ($history->isNotEmpty() && $matchStats['total'] > 0) {
                     // Prendre les entrées correspondant aux 4 dernières séances
                     $totalEntries = $history->count();
                     $recentCount = $matchStats['total'];
                     $recentHistory = $history->slice(max(0, $totalEntries - $recentCount));
 
-                    $eloDiff = round((float) $participant->elo_rating - (float) $recentHistory->first()->elo_before, 2);
-                    $eloHistory = $recentHistory->pluck('elo_after')->prepend($recentHistory->first()->elo_before)->values()->all();
+                    if ($recentHistory->isNotEmpty()) {
+                        $eloDiff = round((float) $participant->elo_rating - (float) $recentHistory->first()->elo_before, 2);
+                        $eloHistory = $recentHistory->pluck('elo_after')->prepend($recentHistory->first()->elo_before)->values()->all();
+                    }
                 }
             }
         }
@@ -105,16 +110,18 @@ class DashboardController extends Controller
         $rankingPlayers = app(RankingController::class)->getRankingForCurrentPlayer();
 
         return Inertia::render('Player/Dashboard', [
-            'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
-            'playerCode' => $player?->code,
-            'firstName' => $user->first_name,
-            'avatarUrl' => $user->profile_picture,
-            'eloDiff' => $eloDiff,
-            'eloHistory' => $eloHistory,
-            'matchStats' => $matchStats,
-            'totalMatches' => $totalMatches,
-            'winStreak' => $winStreak,
-            'rankingPlayers' => $rankingPlayers,
+            'participant'     => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
+            'classes'         => $classes,
+            'selectedClassId' => $classId,
+            'playerCode'      => $player?->code,
+            'firstName'       => $user->first_name,
+            'avatarUrl'       => $user->profile_picture,
+            'eloDiff'         => $eloDiff,
+            'eloHistory'      => $eloHistory,
+            'matchStats'      => $matchStats,
+            'totalMatches'    => $totalMatches,
+            'winStreak'       => $winStreak,
+            'rankingPlayers'  => $rankingPlayers,
         ]);
     }
 }

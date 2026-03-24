@@ -83,8 +83,8 @@ class MatchDeclarationController extends Controller
             ->values();
 
         return response()->json([
-            'opponents' => $opponents,
-            'currentElo' => (float) $participation->elo_rating,
+            'opponents'  => $opponents,
+            'currentElo' => (float) $player->selectedParticipation()?->elo_rating,
         ]);
     }
 
@@ -125,6 +125,8 @@ class MatchDeclarationController extends Controller
             return response()->json(['error' => 'Vous avez déjà joué contre ce joueur dans cette séance.'], 422);
         }
 
+        $schoolClassId = $activeSession->school_class_id;
+
         // Calculer le changement d'ELO
         $eloChange = $this->eloService->calculateEloChange(
             $player->id,
@@ -134,7 +136,7 @@ class MatchDeclarationController extends Controller
         );
 
         // Créer le match et les entrées pivot dans une transaction
-        $match = DB::transaction(function () use ($request, $player, $activeSession, $eloChange) {
+        $match = DB::transaction(function () use ($request, $player, $activeSession, $eloChange, $schoolClassId) {
             $match = GameMatch::create([
                 'class_session_id' => $activeSession->id,
             ]);
@@ -166,7 +168,7 @@ class MatchDeclarationController extends Controller
     }
 
     /**
-     * Récupère la séance active pour le joueur.
+     * Récupère la séance active pour le joueur dans sa classe sélectionnée.
      */
     private function getActiveSession(Player $player): ?ClassSession
     {
