@@ -17,3 +17,5 @@ npm install
 php artisan migrate
 php artisan optimize:clear
 php artisan optimize
+php artisan storage:link
+mkdir -p storage/app/public/profile-photos/
