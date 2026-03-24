@@ -52,14 +52,7 @@ function uploadPhoto(event) {
 
     photoError.value = null;
 
-    const maxSize = 2 * 1024 * 1024;
-    if (file.size > maxSize) {
-        photoError.value = 'L\'image ne doit pas dépasser 2 Mo.';
-        photoInput.value.value = '';
-        return;
-    }
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
         photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
         photoInput.value.value = '';

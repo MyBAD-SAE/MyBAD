@@ -8,7 +8,7 @@ defineProps({
 
 const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: 'home' },
-    { key: 'matchs', label: 'Matchs', icon: Swords, route: 'matchs' },
+    { key: 'matchs', label: 'Matchs', icon: Swords, route: 'historique.matchs' },
     { key: 'add', label: '', icon: Plus, route: 'match.declare' },
     { key: 'classement', label: 'Classement', icon: Trophy, route: 'classements' },
     { key: 'profil', label: 'Profil', icon: User, route: 'player.account.index' },

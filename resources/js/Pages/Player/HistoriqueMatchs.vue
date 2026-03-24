@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
+import PlayerLayout from '@/Layouts/PlayerLayout.vue'
+import BottomNavBar from '@/Components/BottomNavBar.vue'
 import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs'
@@ -81,8 +83,9 @@ function getAvatarColor(name) {
 </script>
 
 <template>
+  <PlayerLayout>
   <div class="min-h-screen bg-white flex items-center justify-center" style="font-family: 'Poppins', sans-serif;">
-    <div class="w-full max-w-sm min-h-screen bg-white flex flex-col">
+    <div class="w-full max-w-sm min-h-screen bg-white flex flex-col pb-16">
 
       <!-- Header -->
       <div class="px-4 pt-6 pb-8 relative flex items-center justify-center">
@@ -286,6 +289,8 @@ function getAvatarColor(name) {
 
     </div>
   </div>
+  <BottomNavBar active="matchs" />
+  </PlayerLayout>
 </template>
 
 <style>
