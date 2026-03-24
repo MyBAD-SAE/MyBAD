@@ -179,25 +179,10 @@ function getAvatarColor(name) {
 
         <!-- Tabs filtre -->
         <Tabs v-model="activeTab" class="mb-4">
-          <TabsList class="w-full !bg-gray-100 rounded-xl p-1">
-            <TabsTrigger
-              value="all"
-              class="flex-1 text-sm font-semibold rounded-lg data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#352B2B] text-gray-400"
-            >
-              Tous
-            </TabsTrigger>
-            <TabsTrigger
-              value="win"
-              class="flex-1 text-sm font-semibold rounded-lg data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#352B2B] text-gray-400"
-            >
-              Victoires
-            </TabsTrigger>
-            <TabsTrigger
-              value="loss"
-              class="flex-1 text-sm font-semibold rounded-lg data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#352B2B] text-gray-400"
-            >
-              Défaites
-            </TabsTrigger>
+          <TabsList class="grid w-full grid-cols-3">
+            <TabsTrigger value="all">Tous</TabsTrigger>
+            <TabsTrigger value="win">Victoires</TabsTrigger>
+            <TabsTrigger value="loss">Défaites</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -211,41 +196,41 @@ function getAvatarColor(name) {
             class="flex items-center gap-3 px-3"
             style="height: 64px; border-radius: 16px;"
             :style="match.result === 'win'
-              ? 'background-color: #ECFDF5; border: 1px solid #D0FAE5;'
-              : 'background-color: #FEF2F2; border: 1px solid #FFE2E2;'"
+              ? 'background-color: #ECFDF580; border: 1px solid #D0FAE599;'
+              : 'background-color: #FEF2F266; border: 1px solid #FFE2E280;'"
           >
             <!-- Icône victoire/défaite -->
             <div
-              class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+              class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
               :style="{
                 backgroundColor: match.result === 'win' ? '#ECFDF5' : '#FEF2F2'
               }"
             >
               <Trophy
                 v-if="match.result === 'win'"
-                class="w-4 h-4"
+                class="w-5 h-5"
                 stroke="#009966"
                 color="#009966"
               />
               <Frown
                 v-else
-                class="w-4 h-4"
+                class="w-5 h-5"
                 stroke="#D32F2F"
                 color="#D32F2F"
               />
             </div>
 
             <!-- Avatar -->
-            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+            <div class="w-10 h-10 rounded-full flex-shrink-0 border-2 border-gray-200">
               <img
                 v-if="match.opponent.avatar"
                 :src="match.opponent.avatar"
                 :alt="match.opponent.name"
-                class="w-full h-full object-cover"
+                class="w-full h-full rounded-full object-cover"
               />
               <div
                 v-else
-                class="w-full h-full flex items-center justify-center text-white text-xs font-bold"
+                class="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold"
                 :style="{ backgroundColor: getAvatarColor(match.opponent.name) }"
               >
                 {{ getInitials(match.opponent.name) }}
