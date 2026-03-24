@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
@@ -19,10 +19,12 @@ const props = defineProps({
     participant: { type: Object, required: true },
 });
 
+const page = usePage();
 const userInfo = computed(() => props.participant.participantable.user);
 const photoInput = ref(null);
 const photoPreview = ref(null);
 const photoUploading = ref(false);
+const photoError = ref(null);
 
 function selectPhoto() {
     photoInput.value.click();
@@ -32,12 +34,32 @@ function uploadPhoto(event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    photoError.value = null;
+
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+        photoError.value = 'L\'image ne doit pas dépasser 2 Mo.';
+        photoInput.value.value = '';
+        return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
+        photoInput.value.value = '';
+        return;
+    }
+
     photoPreview.value = URL.createObjectURL(file);
     photoUploading.value = true;
 
     router.post(route('player.account.photo.update'), { photo: file }, {
         forceFormData: true,
         preserveScroll: true,
+        onError: (errors) => {
+            photoError.value = errors.photo;
+            photoPreview.value = null;
+        },
         onFinish: () => {
             photoUploading.value = false;
             photoInput.value.value = '';
@@ -174,7 +196,8 @@ function handleSave() {
                     </button>
                 </div>
                 <input ref="photoInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="uploadPhoto" />
-                <p class="mt-2 text-xs text-muted-foreground">Changer la photo de profil</p>
+                <p v-if="photoError" class="mt-2 text-xs text-destructive">{{ photoError }}</p>
+                <p v-else class="mt-2 text-xs text-muted-foreground">Changer la photo de profil</p>
             </div>
 
             <!-- Identité -->
