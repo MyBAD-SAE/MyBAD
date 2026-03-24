@@ -52,16 +52,9 @@ function uploadPhoto(event) {
 
     photoError.value = null;
 
-    const maxSize = 2 * 1024 * 1024;
-    if (file.size > maxSize) {
-        photoError.value = 'L\'image ne doit pas dépasser 2 Mo.';
-        photoInput.value.value = '';
-        return;
-    }
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-        photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
+const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.heic') && !file.name.toLowerCase().endsWith('.heif')) {
+        photoError.value = 'L\'image doit être au format JPG, PNG, WebP ou HEIC.';
         photoInput.value.value = '';
         return;
     }

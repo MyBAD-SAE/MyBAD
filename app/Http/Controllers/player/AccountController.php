@@ -68,7 +68,7 @@ class AccountController extends Controller
     public function updatePhoto(Request $request): RedirectResponse
     {
         $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photo' => ['required', 'mimes:jpg,jpeg,png,webp,heic,heif'],
         ], [
             'photo.required' => 'Veuillez sélectionner une photo.',
             'photo.image' => 'Le fichier doit être une image.',
