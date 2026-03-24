@@ -91,10 +91,10 @@ function getAvatarColor(name) {
       <div class="px-4 pt-6 pb-8 relative flex items-center justify-center">
         <button
           @click="goBack"
-          class="absolute left-4 w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors"
+          class="absolute left-4 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors"
           style="background-color: #ffffff; border: 1px solid #e5e7eb;"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #352B2B;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #352B2B;">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
@@ -103,13 +103,10 @@ function getAvatarColor(name) {
 
       <!-- Content -->
       <div class="flex-1 flex flex-col px-4 pb-4">
-        <div class="flex-1 flex flex-col rounded-2xl p-4" style="border: 1px solid #F0EFED;">
 
-        <!-- Titre + bouton Nouveau -->
+        <!-- Bouton Nouveau + compteur -->
         <div class="flex items-center justify-between mb-1">
           <div>
-            <p class="text-lg font-bold" style="color: #352B2B;">Historique</p>
-            <!-- TODO: Remplacer matches.length par le total retourné par l'API -->
             <p class="text-xs" style="color: #a8a29e;">{{ matches.length }} matchs</p>
           </div>
           <Button
@@ -268,7 +265,6 @@ function getAvatarColor(name) {
             {{ filteredMatches.length }} sur {{ matches.length }} matchs
           </p>
 
-        </div>
         </div>
       </div>
 
