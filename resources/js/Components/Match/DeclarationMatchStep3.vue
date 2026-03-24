@@ -61,36 +61,43 @@ async function validatePin() {
   isLoading.value = true
   errorMessage.value = ''
 
-  // TODO: Bypass pour les tests à supprimer en production
-  if (pin.value.join('') === '0000') {
-    isLoading.value = false
-    // TODO: eloChange à calculer via l'API
-    emit('next', { eloChange: 16 })
-    return
-  }
-
   try {
-    // TODO: Appel API Laravel pour vérifier le PIN
-    const response = await fetch('/api/players/verify-pin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-      body: JSON.stringify({
-        player_id: props.opponent.id,
-        pin: pin.value.join('')
-      })
+    // 1. Vérifier le PIN de l'adversaire
+    const pinResponse = await axios.post(route('match.verify-pin'), {
+      player_id: props.opponent.id,
+      pin: pin.value.join('')
     })
 
-    const data = await response.json()
-
-    if (data.valid) {
-      emit('next', { pin: pin.value.join('') })
-    } else {
-      errorMessage.value = 'Code PIN incorrect. Veuillez réessayer.'
+    if (!pinResponse.data.valid) {
+      errorMessage.value = pinResponse.data.message || 'Code PIN incorrect. Veuillez réessayer.'
       pin.value = ['', '', '', '']
       pinRefs.value[0]?.focus()
+      return
     }
+
+    // 2. PIN valide -> soumettre le match
+    const matchResponse = await axios.post(route('match.store'), {
+      opponent_id: props.opponent.id,
+      my_score: props.myScore,
+      opponent_score: props.opponentScore,
+    })
+
+    if (matchResponse.data.error) {
+      errorMessage.value = matchResponse.data.error
+      return
+    }
+
+    // 3. Succès -> passer à l'étape 4 avec le changement d'ELO
+    emit('next', { eloChange: matchResponse.data.eloChange ?? 0 })
   } catch (e) {
-    errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
+    if (e.response?.data?.errors) {
+      const firstError = Object.values(e.response.data.errors)[0]
+      errorMessage.value = Array.isArray(firstError) ? firstError[0] : firstError
+    } else if (e.response?.data?.error) {
+      errorMessage.value = e.response.data.error
+    } else {
+      errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
+    }
   } finally {
     isLoading.value = false
   }
@@ -100,7 +107,6 @@ function getInitials(name) {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 }
 
-// TODO: récupérer la photo de profigil du joueur si elle existe, sinon générer une couleur d'avatar à partir de son nom ?
 function getAvatarColor(name) {
   const colors = ['#27BDAE', '#6366f1', '#f59e0b', '#D32F2F', '#8b5cf6', '#10b981', '#f97316', '#3b82f6']
   let hash = 0
