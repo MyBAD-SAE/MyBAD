@@ -35,6 +35,7 @@ Route::middleware('auth:player')->group(function () {
             Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
             Route::get('infos', [AccountController::class, 'infos'])->name('infos');
             Route::put('infos', [AccountController::class, 'update'])->name('infos.update');
+            Route::post('photo', [AccountController::class, 'updatePhoto'])->name('photo.update');
             Route::get('confidentialite', [AccountController::class, 'confidentialite'])->name('confidentialite');
         });
 

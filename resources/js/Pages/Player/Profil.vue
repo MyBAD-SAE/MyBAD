@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import SessionPicker from '@/Components/dashboard/SessionPicker.vue';
@@ -38,6 +38,28 @@ const menuItems = [
     { icon: ChartNoAxesCombined, title: 'Historique & statistiques', subtitle: '22 matchs joués', color: 'text-rose-500', bg: 'bg-rose-50', routeName: null },
 ];
 
+const photoInput = ref(null);
+const photoPreview = ref(null);
+
+function selectPhoto() {
+    photoInput.value.click();
+}
+
+function uploadPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    photoPreview.value = URL.createObjectURL(file);
+
+    router.post(route('player.account.photo.update'), { photo: file }, {
+        forceFormData: true,
+        preserveScroll: true,
+        onFinish: () => {
+            photoInput.value.value = '';
+        },
+    });
+}
+
 function logout() {
     logoutForm.post(route('player.account.logout'));
 }
@@ -56,12 +78,13 @@ function logout() {
                 <div class="absolute bottom-0 left-4 z-10 translate-y-1/2">
                     <div class="relative">
                         <Avatar class="h-24 w-24 border-4 border-background shadow-lg">
-                            <AvatarImage v-if="userInfo?.profile_picture" :src="userInfo.profile_picture" :alt="userInfo?.first_name" />
+                            <AvatarImage v-if="photoPreview || userInfo?.profile_picture" :src="photoPreview || userInfo.profile_picture" :alt="userInfo?.first_name" />
                             <AvatarFallback class="text-2xl">{{ userInfo?.first_name?.charAt(0) }}</AvatarFallback>
                         </Avatar>
-                        <button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md">
+                        <button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md" @click="selectPhoto">
                             <Camera class="h-4 w-4" />
                         </button>
+                        <input ref="photoInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="uploadPhoto" />
                     </div>
                 </div>
             </div>
