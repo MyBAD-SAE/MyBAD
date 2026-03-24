@@ -1,7 +1,8 @@
 <script setup>
 import {ref, computed} from 'vue'
 import {Button} from '@/Components/ui/button'
-import {Swords} from 'lucide-vue-next'
+import {Input} from '@/Components/ui/input'
+import {Swords, ArrowRight} from 'lucide-vue-next'
 
 const props = defineProps({
     currentPlayer: {
@@ -22,20 +23,36 @@ const opponentScore = ref(null)
 const myScoreRef = ref(null)
 const opponentScoreRef = ref(null)
 
+const scoreError = ref('')
+let myScoreTimer = null
+
 const isValid = computed(() =>
     myScore.value !== null && opponentScore.value !== null &&
     myScore.value !== '' && opponentScore.value !== ''
 )
+
+const hasMinScoreError = computed(() => scoreError.value !== '')
 
 function focusInput(field) {
     if (field === 'myScore') myScoreRef.value?.focus()
     else opponentScoreRef.value?.focus()
 }
 
+function focusOpponent() {
+    const el = opponentScoreRef.value?.$el || opponentScoreRef.value
+    el?.focus()
+}
+
 function clampScore(field) {
     if (field === 'myScore') {
         if (myScore.value > 99) myScore.value = 99
         if (myScore.value < 0) myScore.value = 0
+        clearTimeout(myScoreTimer)
+        if (String(myScore.value).length >= 2) {
+            focusOpponent()
+        } else if (myScore.value !== null && myScore.value !== '') {
+            myScoreTimer = setTimeout(focusOpponent, 800)
+        }
     } else {
         if (opponentScore.value > 99) opponentScore.value = 99
         if (opponentScore.value < 0) opponentScore.value = 0
@@ -44,6 +61,11 @@ function clampScore(field) {
 
 function goToNext() {
     if (!isValid.value) return
+    if (Number(myScore.value) < 15 && Number(opponentScore.value) < 15) {
+        scoreError.value = 'Au moins un des deux scores doit être de 15 points minimum.'
+        return
+    }
+    scoreError.value = ''
     emit('next', {
         myScore: Number(myScore.value),
         opponentScore: Number(opponentScore.value)
@@ -67,17 +89,17 @@ function getAvatarColor(name) {
         <div class="w-full max-w-sm min-h-screen bg-white flex flex-col">
 
             <!-- Header -->
-            <div class="px-4 pt-6 pb-4">
+            <div class="px-4 pt-6 pb-4 flex items-center gap-3">
                 <button
                     @click="$emit('back')"
-                    class="mb-4 w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    class="w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors shrink-0"
                     style="background-color: #ffffff; border: 1px solid #e5e7eb;"
                 >
                     <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1 class="text-lg font-bold text-[#352B2B] text-center -mt-6">Déclarer un match</h1>
+                <h1 class="text-lg font-bold text-[#352B2B] flex-1 text-center pr-11">Déclarer un match</h1>
             </div>
 
             <!-- Stepper -->
@@ -111,7 +133,7 @@ function getAvatarColor(name) {
                 <p class="text-xs text-gray-400 mb-6 text-center">Entrez le score final de la rencontre.</p>
 
                 <!-- Score card -->
-                <div class="rounded-2xl py-5 px-8" style="background-color: #f5f5f4;">
+                <div class="rounded-2xl py-5 px-8 border" style="background-color: #F9FAFB; border-color: #F3F4F6;">
 
                     <div class="flex items-start justify-between">
 
@@ -136,22 +158,17 @@ function getAvatarColor(name) {
                 {{ currentPlayer?.firstName || 'Vous' }}
               </span>
                             <!-- Input score gauche -->
-                            <div
-                                class="bg-white flex items-center justify-center cursor-pointer shadow-sm"
-                                style="width: 56px; height: 56px; border-radius: 10px;"
-                                @click="focusInput('myScore')"
-                            >
-                                <input
-                                    ref="myScoreRef"
-                                    v-model="myScore"
-                                    type="number"
-                                    min="0"
-                                    max="99"
-                                    class="w-full h-full text-center font-bold text-[#352B2B] bg-transparent border-none outline-none text-2xl"
-                                    style="font-family: 'Poppins', sans-serif;"
-                                    @input="clampScore('myScore')"
-                                />
-                            </div>
+                            <Input
+                                ref="myScoreRef"
+                                v-model="myScore"
+                                type="number"
+                                min="0"
+                                max="99"
+                                :aria-invalid="hasMinScoreError"
+                                class="!w-14 !h-14 text-center font-bold text-[#352B2B] !bg-white text-2xl !rounded-[10px] !shadow-none !px-0 !border-[#E5E7EB]"
+                                style="font-family: 'Poppins', sans-serif;"
+                                @input="clampScore('myScore')"
+                            />
                         </div>
 
                         <!-- VS centré -->
@@ -181,25 +198,25 @@ function getAvatarColor(name) {
                 {{ opponent?.firstName || opponent?.name?.split(' ')[0] || 'Adversaire' }}
               </span>
                             <!-- Input score droite -->
-                            <div
-                                class="bg-white flex items-center justify-center cursor-pointer shadow-sm"
-                                style="width: 56px; height: 56px; border-radius: 10px;"
-                                @click="focusInput('opponentScore')"
-                            >
-                                <input
-                                    ref="opponentScoreRef"
-                                    v-model="opponentScore"
-                                    type="number"
-                                    min="0"
-                                    max="99"
-                                    class="w-full h-full text-center font-bold text-[#352B2B] bg-transparent border-none outline-none text-2xl"
-                                    style="font-family: 'Poppins', sans-serif;"
-                                    @input="clampScore('opponentScore')"
-                                />
-                            </div>
+                            <Input
+                                ref="opponentScoreRef"
+                                v-model="opponentScore"
+                                type="number"
+                                min="0"
+                                max="99"
+                                :aria-invalid="hasMinScoreError"
+                                class="!w-14 !h-14 text-center font-bold text-[#352B2B] !bg-white text-2xl !rounded-[10px] !shadow-none !px-0 !border-[#E5E7EB]"
+                                style="font-family: 'Poppins', sans-serif;"
+                                @input="clampScore('opponentScore')"
+                            />
                         </div>
 
                     </div>
+                </div>
+
+                <!-- Message d'erreur score minimum -->
+                <div v-if="hasMinScoreError" class="rounded-2xl px-4 py-2.5 mt-4 text-center border" style="background-color: rgba(211, 47, 47, 0.07); border-color: rgba(211, 47, 47, 0.2);">
+                    <p class="text-xs font-normal" style="color: #D32F2F;">{{ scoreError }}</p>
                 </div>
             </div>
 
@@ -208,16 +225,14 @@ function getAvatarColor(name) {
                 <Button
                     @click="goToNext"
                     :disabled="!isValid"
-                    class="w-full text-base font-semibold gap-2 transition-all shadow-none"
-                    style="height: 45px; border-radius: 10px;"
+                    class="w-full text-sm font-semibold gap-2 transition-all shadow-none"
+                    style="height: 48px; border-radius: 16px;"
                     :class="isValid
             ? '!bg-[#27BDAE] hover:!bg-[#1fa99b] text-white'
             : '!bg-gray-100 text-gray-400 cursor-not-allowed'"
                 >
                     Continuer
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                    </svg>
+                    <ArrowRight class="w-4 h-4" />
                 </Button>
             </div>
 
