@@ -68,12 +68,11 @@ class AccountController extends Controller
     public function updatePhoto(Request $request): RedirectResponse
     {
         $request->validate([
-            'photo' => ['required', 'mimes:jpg,jpeg,png,webp,heic,heif'],
+            'photo' => ['required', 'mimes:jpg,jpeg,png,webp'],
         ], [
             'photo.required' => 'Veuillez sélectionner une photo.',
             'photo.image' => 'Le fichier doit être une image.',
             'photo.mimes' => 'L\'image doit être au format JPG, PNG ou WebP.',
-            'photo.max' => 'L\'image ne doit pas dépasser 2 Mo.',
         ]);
 
         /** @var User $user */
@@ -85,10 +84,16 @@ class AccountController extends Controller
         }
 
         Storage::disk('public')->makeDirectory('profile-photos');
-        $path = $request->file('photo')->store('profile-photos', 'public');
+
+        // Convertir l'image en WebP
+        $file = $request->file('photo');
+        $image = imagecreatefromstring(file_get_contents($file->getRealPath()));
+        $filename = 'profile-photos/' . uniqid() . '.webp';
+        $fullPath = storage_path('app/public/' . $filename);
+        imagewebp($image, $fullPath, 80);
 
         $user->update([
-            'profile_picture' => '/storage/' . $path,
+            'profile_picture' => '/storage/' . $filename,
         ]);
 
         return back();

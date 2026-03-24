@@ -52,9 +52,9 @@ function uploadPhoto(event) {
 
     photoError.value = null;
 
-const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
-    if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.heic') && !file.name.toLowerCase().endsWith('.heif')) {
-        photoError.value = 'L\'image doit être au format JPG, PNG, WebP ou HEIC.';
+const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
         photoInput.value.value = '';
         return;
     }
