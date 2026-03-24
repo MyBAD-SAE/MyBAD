@@ -15,7 +15,7 @@ defineProps({
 <template>
     <div class="flex items-start justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-foreground">Bonjour {{ firstName }} <PartyPopper class="inline h-5 w-5 -translate-y-0.5 text-amber-400" /></h1>
+            <h1 class="text-2xl font-semibold text-foreground">Bonjour {{ firstName }} <PartyPopper class="inline h-5 w-5 -translate-y-0.5 text-amber-400" /></h1>
             <div v-if="classes.length > 1" class="mt-2">
                 <ClassPicker :classes="classes" :selected-class-id="selectedClassId" />
             </div>
