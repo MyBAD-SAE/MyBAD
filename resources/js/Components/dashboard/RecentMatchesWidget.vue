@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, Clock, Frown, ChevronRight } from 'lucide-vue-next';
@@ -30,10 +31,10 @@ const getInitials = (name) => {
                     <h3 class="text-lg font-semibold text-foreground">Derniers matchs</h3>
                     <p class="text-sm text-muted-foreground">{{ matches.length }} matchs récents</p>
                 </div>
-                <button class="flex items-center gap-1 text-sm font-medium text-primary">
+                <Link :href="route('historique.matchs')" class="flex items-center gap-1 text-sm font-medium text-primary">
                     Tout voir
                     <ChevronRight class="h-4 w-4" />
-                </button>
+                </Link>
             </div>
 
             <div class="space-y-2">
