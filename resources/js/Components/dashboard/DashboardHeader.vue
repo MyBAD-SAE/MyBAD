@@ -19,6 +19,7 @@ defineProps({
             <div v-if="classes.length > 1" class="mt-2">
                 <ClassPicker :classes="classes" :selected-class-id="selectedClassId" />
             </div>
+            <div v-else class="mt-1" />
         </div>
         <Link :href="route('player.account.index')">
             <Avatar class="h-10 w-10">

@@ -91,10 +91,10 @@ function getAvatarColor(name) {
       <div class="px-4 pt-6 pb-8 relative flex items-center justify-center">
         <button
           @click="goBack"
-          class="absolute left-4 w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors"
+          class="absolute left-4 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors"
           style="background-color: #ffffff; border: 1px solid #e5e7eb;"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #352B2B;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #352B2B;">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
@@ -103,64 +103,37 @@ function getAvatarColor(name) {
 
       <!-- Content -->
       <div class="flex-1 flex flex-col px-4 pb-4">
-        <div class="flex-1 flex flex-col rounded-2xl p-4" style="border: 1px solid #F0EFED;">
 
-        <!-- Titre + bouton Nouveau -->
-        <div class="flex items-center justify-between mb-1">
-          <div>
-            <p class="text-lg font-bold" style="color: #352B2B;">Historique</p>
-            <!-- TODO: Remplacer matches.length par le total retourné par l'API -->
-            <p class="text-xs" style="color: #a8a29e;">{{ matches.length }} matchs</p>
+        <!-- Victoires / Défaites / Nouveau — même ligne -->
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="flex items-center gap-1.5 px-2.5 h-8"
+            style="background-color: #ECFDF5; border: 1px solid #D0FAE5; border-radius: 14px;"
+          >
+            <Trophy class="w-4 h-4 text-emerald-600" />
+            <span class="text-xs font-bold text-emerald-600">{{ winsCount }}</span>
           </div>
+
+          <div
+            class="flex items-center gap-1.5 px-2.5 h-8"
+            style="background-color: #FEF2F2; border: 1px solid #FFE2E2; border-radius: 14px;"
+          >
+            <Frown class="w-4 h-4 text-red-600" />
+            <span class="text-xs font-bold text-red-600">{{ lossesCount }}</span>
+          </div>
+
+          <div class="flex-1" />
+
           <Button
             @click="goToNewMatch"
-            class="!bg-[#27BDAE] hover:!bg-[#1fa99b] text-white shadow-none font-semibold text-sm gap-1"
-            style="height: 38px; border-radius: 14px; padding: 0 16px;"
+            class="!bg-[#27BDAE] hover:!bg-[#1fa99b] text-white shadow-none font-semibold text-xs gap-1 h-8 px-3"
+            style="border-radius: 14px;"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
             </svg>
             Nouveau
           </Button>
-        </div>
-
-        <!-- Compteurs victoires / défaites -->
-        <div class="flex items-center gap-4 mb-4 mt-3">
-
-        <!-- Victoires -->
-        <div class="flex items-center">
-          <div
-            class="flex items-center gap-1.5 px-2.5 h-8 rounded-full"
-            :style="{
-              backgroundColor: '#ECFDF5',
-              border: '1px solid #D0FAE5',
-              borderRadius: '14px'
-            }"
-          >
-            <Trophy class="w-4 h-4 text-emerald-600" />
-            <span class="text-xs font-bold text-emerald-600">
-              {{ winsCount }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Défaites -->
-        <div class="flex items-center">
-          <div
-            class="flex items-center gap-1.5 px-2.5 h-8 rounded-full"
-            :style="{
-              backgroundColor: '#FEF2F2',
-              border: '1px solid #FFE2E2',
-              borderRadius: '14px'
-            }"
-          >
-            <Frown class="w-4 h-4 text-red-600" />
-            <span class="text-xs font-bold text-red-600">
-              {{ lossesCount }}
-            </span>
-          </div>
-        </div>
-
         </div>
 
         <!-- Barre de recherche -->
@@ -179,25 +152,10 @@ function getAvatarColor(name) {
 
         <!-- Tabs filtre -->
         <Tabs v-model="activeTab" class="mb-4">
-          <TabsList class="w-full !bg-gray-100 rounded-xl p-1">
-            <TabsTrigger
-              value="all"
-              class="flex-1 text-sm font-semibold rounded-lg data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#352B2B] text-gray-400"
-            >
-              Tous
-            </TabsTrigger>
-            <TabsTrigger
-              value="win"
-              class="flex-1 text-sm font-semibold rounded-lg data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#352B2B] text-gray-400"
-            >
-              Victoires
-            </TabsTrigger>
-            <TabsTrigger
-              value="loss"
-              class="flex-1 text-sm font-semibold rounded-lg data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#352B2B] text-gray-400"
-            >
-              Défaites
-            </TabsTrigger>
+          <TabsList class="grid w-full grid-cols-3">
+            <TabsTrigger value="all">Tous</TabsTrigger>
+            <TabsTrigger value="win">Victoires</TabsTrigger>
+            <TabsTrigger value="loss">Défaites</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -208,35 +166,19 @@ function getAvatarColor(name) {
           <div
             v-for="match in filteredMatches"
             :key="match.id"
-            class="flex items-center gap-3 px-3"
-            style="height: 64px; border-radius: 16px;"
-            :style="match.result === 'win'
-              ? 'background-color: #ECFDF5; border: 1px solid #D0FAE5;'
-              : 'background-color: #FEF2F2; border: 1px solid #FFE2E2;'"
+            class="flex items-center gap-3 rounded-xl bg-[#F9FAFB] p-3"
           >
             <!-- Icône victoire/défaite -->
             <div
-              class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-              :style="{
-                backgroundColor: match.result === 'win' ? '#ECFDF5' : '#FEF2F2'
-              }"
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+              :class="match.result === 'win' ? 'bg-primary/10' : 'bg-destructive/10'"
             >
-              <Trophy
-                v-if="match.result === 'win'"
-                class="w-4 h-4"
-                stroke="#009966"
-                color="#009966"
-              />
-              <Frown
-                v-else
-                class="w-4 h-4"
-                stroke="#D32F2F"
-                color="#D32F2F"
-              />
+              <Trophy v-if="match.result === 'win'" class="h-4 w-4 text-primary" />
+              <Frown v-else class="h-4 w-4 text-destructive" />
             </div>
 
             <!-- Avatar -->
-            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+            <div class="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden">
               <img
                 v-if="match.opponent.avatar"
                 :src="match.opponent.avatar"
@@ -254,19 +196,16 @@ function getAvatarColor(name) {
 
             <!-- Infos -->
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold truncate" style="color: #352B2B;">{{ match.opponent.name }}</p>
-              <p class="text-xs" style="color: #a8a29e;">{{ match.myScore }} – {{ match.opponentScore }}</p>
+              <p class="text-sm font-semibold text-foreground truncate">{{ match.opponent.name }}</p>
+              <p class="text-xs text-muted-foreground">{{ match.myScore }} – {{ match.opponentScore }}</p>
             </div>
 
             <!-- ELO + date -->
-            <div class="flex flex-col items-end gap-0.5 flex-shrink-0">
-              <span
-                class="text-sm font-bold"
-                :style="match.eloChange >= 0 ? 'color: #009966;' : 'color: #D32F2F;'"
-              >
+            <div class="shrink-0 text-right">
+              <p class="text-sm font-bold" :class="match.eloChange >= 0 ? 'text-primary' : 'text-destructive'">
                 {{ match.eloChange >= 0 ? '+' : '' }}{{ match.eloChange }}
-              </span>
-              <span class="text-xs" style="color: #a8a29e;">{{ match.date }}</span>
+              </p>
+              <p class="text-xs text-muted-foreground">{{ match.date }}</p>
             </div>
 
           </div>
@@ -278,12 +217,7 @@ function getAvatarColor(name) {
 
           </div>
 
-          <!-- TODO: Remplacer par la pagination retournée par l'API -->
-          <p v-if="filteredMatches.length > 0" class="text-xs py-3 px-1" style="color: #a8a29e;">
-            {{ filteredMatches.length }} sur {{ matches.length }} matchs
-          </p>
 
-        </div>
         </div>
       </div>
 

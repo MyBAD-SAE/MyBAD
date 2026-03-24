@@ -3,7 +3,6 @@ import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
-import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, TrendingUp, TrendingDown, ArrowLeft, Crown } from 'lucide-vue-next';
 
@@ -33,19 +32,17 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
     <PlayerLayout>
         <div class="pb-20">
             <!-- Header -->
-            <div class="flex items-center gap-3 px-5 pt-5 pb-2">
-                <Link :href="route('home')" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-white">
-                    <ArrowLeft class="h-5 w-5 text-foreground" />
+            <div class="px-4 pt-6 pb-4 relative flex items-center justify-center">
+                <Link :href="route('home')" class="absolute left-4 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors" style="background-color: #ffffff; border: 1px solid #e5e7eb;">
+                    <ArrowLeft class="h-4 w-4 text-foreground" />
                 </Link>
-                <div class="flex-1" />
-                <ClassPicker v-if="classes.length > 1" :classes="classes" :selected-class-id="selectedClassId" />
+                <h1 class="text-lg font-bold" style="color: #352B2B;">Classement</h1>
+                <ClassPicker v-if="classes.length > 1" :classes="classes" :selected-class-id="selectedClassId" class="absolute right-4" />
             </div>
 
-            <div class="space-y-6 p-5">
-                <Card class="shadow-none">
-                    <CardContent class="p-4">
-                        <h3 class="text-lg font-bold text-foreground">Classement</h3>
-                        <p class="text-sm text-muted-foreground">{{ players.length }} joueurs · saison en cours</p>
+            <div class="px-5 pb-5">
+                <div>
+                        <p class="text-sm text-muted-foreground mb-2">{{ players.length }} joueurs · saison en cours</p>
 
                         <!-- Podium -->
                         <div v-if="players.length >= 3" class="mt-4 flex items-end justify-center gap-2">
@@ -116,8 +113,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
                         <div v-if="players.length === 0" class="py-8 text-center">
                             <p class="text-sm text-muted-foreground">Aucun joueur dans le classement pour le moment.</p>
                         </div>
-                    </CardContent>
-                </Card>
+                </div>
             </div>
         </div>
 
