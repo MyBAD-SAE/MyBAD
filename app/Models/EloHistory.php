@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class EloHistory extends Model
 {
     protected $fillable = [
-        'player_id',
+        'participant_id',
         'elo_before',
         'elo_after',
     ];
@@ -24,8 +24,8 @@ class EloHistory extends Model
         ];
     }
 
-    public function player(): BelongsTo
+    public function participant(): BelongsTo
     {
-        return $this->belongsTo(Player::class);
+        return $this->belongsTo(ClassParticipant::class);
     }
 }
