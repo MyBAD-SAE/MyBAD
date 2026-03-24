@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
+import { ArrowRight } from 'lucide-vue-next'
 
 const props = defineProps({
   currentPlayer: {
@@ -104,21 +105,21 @@ function getAvatarColor(name) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white flex items-center justify-center" style="font-family: 'Poppins', sans-serif;">
-    <div class="w-full max-w-sm min-h-screen bg-white flex flex-col">
+  <div class="h-screen bg-white flex items-center justify-center overflow-hidden" style="font-family: 'Poppins', sans-serif;">
+    <div class="w-full max-w-sm h-full bg-white flex flex-col">
 
       <!-- Header -->
-      <div class="px-4 pt-6 pb-4">
+      <div class="px-4 pt-6 pb-4 flex items-center gap-3">
         <button
           @click="$emit('back')"
-          class="mb-4 w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors"
+          class="w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors shrink-0"
           style="background-color: #ffffff; border: 1px solid #e5e7eb;"
         >
           <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
-        <h1 class="text-lg font-bold text-[#352B2B] text-center -mt-6">Déclarer un match</h1>
+        <h1 class="text-lg font-bold text-[#352B2B] flex-1 text-center pr-11">Déclarer un match</h1>
       </div>
 
       <!-- Stepper -->
@@ -186,13 +187,13 @@ function getAvatarColor(name) {
               variant="outline"
               @click="selectPlayer(player)"
               :disabled="player.already_played"
-              class="w-full flex items-center gap-3 px-3 border transition-all justify-start"
-              style="height: 52px; border-radius: 10px;"
+              class="w-full flex items-center gap-3 px-3 transition-all justify-start"
+              style="height: 58px; border-radius: 10px;"
               :class="player.already_played
-                ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                ? 'bg-gray-50 opacity-50 cursor-not-allowed border border-[#F3F4F6] !shadow-none'
                 : selectedPlayer?.id === player.id
-                  ? 'border-[#27BDAE] bg-[#ECFDF5] hover:bg-[#ECFDF5] shadow-sm'
-                  : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'"
+                  ? 'border border-[#27BDAE] bg-[#27BDAE]/5 hover:bg-[#27BDAE]/5 !shadow-none'
+                  : 'bg-white border border-[#F3F4F6] hover:border-gray-200 hover:bg-gray-50 !shadow-none'"
             >
               <div
                 class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
@@ -229,16 +230,14 @@ function getAvatarColor(name) {
         <Button
           @click="goToNext"
           :disabled="!selectedPlayer"
-          class="w-full text-base font-semibold gap-2 transition-all shadow-none"
-          style="height: 45px; border-radius: 10px;"
+          class="w-full text-sm font-semibold gap-2 transition-all shadow-none"
+          style="height: 44px; border-radius: 16px;"
           :class="selectedPlayer
             ? '!bg-[#27BDAE] hover:!bg-[#1fa99b] text-white'
             : '!bg-gray-100 text-gray-400 cursor-not-allowed'"
         >
           Continuer
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-          </svg>
+          <ArrowRight class="w-4 h-4" />
         </Button>
       </div>
 

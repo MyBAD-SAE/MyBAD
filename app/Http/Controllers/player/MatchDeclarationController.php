@@ -143,6 +143,13 @@ class MatchDeclarationController extends Controller
             'opponent_score' => ['required', 'integer', 'min:0', 'max:99'],
         ]);
 
+        // Au moins un des deux scores doit être >= 15
+        if ($request->my_score < 15 && $request->opponent_score < 15) {
+            return response()->json([
+                'error' => 'Au moins un des deux scores doit être de 15 points minimum.',
+            ], 422);
+        }
+
         $user = Auth::guard('player')->user();
         $player = $user->player;
 
