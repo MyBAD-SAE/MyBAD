@@ -173,7 +173,7 @@ function handleSave() {
             <div class="flex flex-col items-center py-4">
                 <div class="relative">
                     <Avatar class="h-24 w-24 border-4 border-background shadow-lg">
-                        <AvatarImage v-if="photoPreview || user?.profile_picture" :src="photoPreview || userInfo.profile_picture" :alt="userInfo?.first_name" />
+                        <AvatarImage v-if="photoPreview || user?.profile_picture" :src="photoPreview || user.profile_picture" :alt="user?.first_name" />
                         <AvatarFallback class="text-2xl">{{ user?.first_name?.charAt(0) }}</AvatarFallback>
                     </Avatar>
                     <button
