@@ -84,6 +84,7 @@ class AccountController extends Controller
             Storage::disk('public')->delete(str_replace('/storage/', '', $user->profile_picture));
         }
 
+        Storage::disk('public')->makeDirectory('profile-photos');
         $path = $request->file('photo')->store('profile-photos', 'public');
 
         $user->update([

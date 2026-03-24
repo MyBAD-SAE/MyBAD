@@ -40,6 +40,7 @@ const menuItems = [
 
 const photoInput = ref(null);
 const photoPreview = ref(null);
+const photoError = ref(null);
 
 function selectPhoto() {
     photoInput.value.click();
@@ -49,11 +50,31 @@ function uploadPhoto(event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    photoError.value = null;
+
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+        photoError.value = 'L\'image ne doit pas dépasser 2 Mo.';
+        photoInput.value.value = '';
+        return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
+        photoInput.value.value = '';
+        return;
+    }
+
     photoPreview.value = URL.createObjectURL(file);
 
     router.post(route('player.account.photo.update'), { photo: file }, {
         forceFormData: true,
         preserveScroll: true,
+        onError: (errors) => {
+            photoError.value = errors.photo;
+            photoPreview.value = null;
+        },
         onFinish: () => {
             photoInput.value.value = '';
         },
@@ -89,8 +110,10 @@ function logout() {
                 </div>
             </div>
 
+            <p v-if="photoError" class="ml-4 mt-14 text-xs text-destructive">{{ photoError }}</p>
+
             <!-- Nom + rang + ID — sous la bannière, décalé à droite de l'avatar -->
-            <div class="pl-32 pr-4 pt-3 pb-4">
+            <div class="pl-32 pr-4 pt-3 pb-4" :class="{ 'pt-1': photoError }">
                 <h1 class="text-xl font-bold text-foreground">{{ userInfo?.first_name }} {{ userInfo?.last_name }}</h1>
                 <div class="mt-0.5 flex items-center gap-2">
                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
