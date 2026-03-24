@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
+import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 import { Card, CardContent } from '@/Components/ui/card';
 import {
     ArrowLeft,
@@ -11,11 +12,38 @@ import {
     Lock,
     Eye,
     EyeOff,
+    Camera,
 } from 'lucide-vue-next';
 
 const props = defineProps({
     participant: { type: Object, required: true },
 });
+
+const userInfo = computed(() => props.participant.participantable.user);
+const photoInput = ref(null);
+const photoPreview = ref(null);
+const photoUploading = ref(false);
+
+function selectPhoto() {
+    photoInput.value.click();
+}
+
+function uploadPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    photoPreview.value = URL.createObjectURL(file);
+    photoUploading.value = true;
+
+    router.post(route('player.account.photo.update'), { photo: file }, {
+        forceFormData: true,
+        preserveScroll: true,
+        onFinish: () => {
+            photoUploading.value = false;
+            photoInput.value.value = '';
+        },
+    });
+}
 
 // Form
 const form = useForm({
@@ -126,6 +154,27 @@ function handleSave() {
                     <ArrowLeft class="h-5 w-5 text-foreground" />
                 </Link>
                 <h1 class="text-lg font-bold text-foreground">Informations personnelles</h1>
+            </div>
+
+            <!-- Photo de profil -->
+            <div class="flex flex-col items-center py-4">
+                <div class="relative">
+                    <Avatar class="h-24 w-24 border-4 border-background shadow-lg">
+                        <AvatarImage v-if="photoPreview || userInfo?.profile_picture" :src="photoPreview || userInfo.profile_picture" :alt="userInfo?.first_name" />
+                        <AvatarFallback class="text-2xl">{{ userInfo?.first_name?.charAt(0) }}</AvatarFallback>
+                    </Avatar>
+                    <button
+                        type="button"
+                        class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md"
+                        :class="{ 'opacity-50': photoUploading }"
+                        :disabled="photoUploading"
+                        @click="selectPhoto"
+                    >
+                        <Camera class="h-4 w-4" />
+                    </button>
+                </div>
+                <input ref="photoInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="uploadPhoto" />
+                <p class="mt-2 text-xs text-muted-foreground">Changer la photo de profil</p>
             </div>
 
             <!-- Identité -->
