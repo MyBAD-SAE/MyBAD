@@ -148,8 +148,8 @@ function getAvatarColor(name) {
 
       <!-- Content -->
       <div class="flex-1 flex flex-col px-4">
-        <p class="text-sm font-bold text-gray-700 mb-1">Sélectionnez le joueur défié</p>
-        <p class="text-xs text-gray-400 mb-3">Recherchez votre adversaire dans la liste ci-dessous</p>
+        <p class="text-sm font-bold text-gray-700 mb-0.5">Sélectionnez le joueur défié</p>
+        <p class="text-xs text-gray-400 mb-2">Recherchez votre adversaire dans la liste ci-dessous</p>
 
         <!-- Error message -->
         <div v-if="errorMessage" class="rounded-xl px-4 py-3 mb-4" style="background-color: #FEF2F2; border: 1px solid #fecaca;">

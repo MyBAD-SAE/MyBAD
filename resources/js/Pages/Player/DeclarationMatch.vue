@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import DeclarationMatchStep1 from '@/Components/Match/DeclarationMatchStep1.vue'
 import DeclarationMatchStep2 from '@/Components/Match/DeclarationMatchStep2.vue'
 import DeclarationMatchStep3 from '@/Components/Match/DeclarationMatchStep3.vue'
@@ -52,6 +52,8 @@ function handleBack() {
 </script>
 
 <template>
+    <Head title="Déclarer un match" />
+
     <DeclarationMatchStep1
       v-if="currentStep === 1"
       :current-player="currentPlayer"

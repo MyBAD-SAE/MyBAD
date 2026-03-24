@@ -1,0 +1,121 @@
+<?php
+
+namespace App\Services\Match;
+
+use App\Models\ClassParticipant;
+use App\Models\ClassSession;
+use App\Models\GameMatch;
+use App\Models\Player;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+
+class MatchDeclarationService
+{
+    public function __construct(
+        private readonly EloService $eloService,
+    ) {}
+
+    /**
+     * Récupère la séance active pour le joueur dans sa classe sélectionnée.
+     */
+    public function getActiveSession(Player $player): ?ClassSession
+    {
+        $classId = $player->selectedParticipation()?->school_class_id;
+
+        if (!$classId) {
+            return null;
+        }
+
+        return ClassSession::forClass($classId)
+            ->active()
+            ->latest('date')
+            ->first();
+    }
+
+    /**
+     * Retourne la liste des adversaires disponibles pour la séance active.
+     */
+    public function getOpponents(Player $player, ClassSession $session): Collection
+    {
+        $alreadyPlayedIds = $this->getAlreadyPlayedIds($player, $session);
+
+        return ClassParticipant::forClass($session->school_class_id)
+            ->forPlayerType()
+            ->where('participantable_id', '!=', $player->id)
+            ->with('participantable.user')
+            ->get()
+            ->map(fn (ClassParticipant $cp) => [
+                'id'             => $cp->participantable->id,
+                'name'           => $cp->participantable->user->full_name,
+                'firstName'      => $cp->participantable->user->first_name,
+                'avatar'         => $cp->participantable->user->profile_picture,
+                'elo'            => (float) $cp->elo_rating,
+                'already_played' => $alreadyPlayedIds->contains($cp->participantable->id),
+            ])
+            ->sortBy('already_played')
+            ->values();
+    }
+
+    /**
+     * Vérifie si deux joueurs se sont déjà affrontés dans une séance.
+     */
+    public function hasAlreadyPlayed(Player $player, string $opponentId, ClassSession $session): bool
+    {
+        return GameMatch::where('class_session_id', $session->id)
+            ->whereHas('players', fn ($q) => $q->where('player_id', $player->id))
+            ->whereHas('players', fn ($q) => $q->where('player_id', $opponentId))
+            ->exists();
+    }
+
+    /**
+     * Crée un match et met à jour les ELO des deux joueurs.
+     */
+    public function storeMatch(
+        Player $player,
+        string $opponentId,
+        int $myScore,
+        int $opponentScore,
+        ClassSession $session,
+    ): array {
+        $schoolClassId = $session->school_class_id;
+
+        $eloChange = $this->eloService->calculateEloChange(
+            $player->id,
+            $opponentId,
+            $myScore,
+            $opponentScore,
+            $schoolClassId,
+        );
+
+        $match = DB::transaction(function () use ($player, $opponentId, $myScore, $opponentScore, $session, $eloChange, $schoolClassId) {
+            $match = $session->gameMatches()->create();
+
+            $match->players()->attach([
+                $player->id => ['score' => $myScore, 'validated' => true],
+                $opponentId => ['score' => $opponentScore, 'validated' => true],
+            ]);
+
+            $this->eloService->updateElo($player->id, $eloChange, $schoolClassId);
+            $this->eloService->updateElo($opponentId, -$eloChange, $schoolClassId);
+
+            return $match;
+        });
+
+        return [
+            'match'     => $match,
+            'eloChange' => $eloChange,
+        ];
+    }
+
+    /**
+     * Récupère les IDs des joueurs déjà affrontés dans la séance.
+     */
+    private function getAlreadyPlayedIds(Player $player, ClassSession $session): Collection
+    {
+        return $session->gameMatches()
+            ->whereHas('players', fn ($q) => $q->where('player_id', $player->id))
+            ->with('players')
+            ->get()
+            ->flatMap(fn (GameMatch $match) => $match->players->where('id', '!=', $player->id)->pluck('id'));
+    }
+}

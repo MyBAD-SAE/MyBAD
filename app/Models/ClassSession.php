@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,5 +34,15 @@ class ClassSession extends Model
     public function gameMatches(): HasMany
     {
         return $this->hasMany(GameMatch::class, 'class_session_id');
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeForClass(Builder $query, int $classId): Builder
+    {
+        return $query->where('school_class_id', $classId);
     }
 }

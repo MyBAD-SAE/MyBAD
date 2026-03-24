@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,5 +40,21 @@ class ClassParticipant extends Model
     public function eloHistories(): HasMany
     {
         return $this->hasMany(EloHistory::class, 'participant_id');
+    }
+
+    public function scopeForClass(Builder $query, int $classId): Builder
+    {
+        return $query->where('school_class_id', $classId);
+    }
+
+    public function scopeForPlayer(Builder $query, string $playerId): Builder
+    {
+        return $query->where('participantable_type', Player::class)
+            ->where('participantable_id', $playerId);
+    }
+
+    public function scopeForPlayerType(Builder $query): Builder
+    {
+        return $query->where('participantable_type', Player::class);
     }
 }

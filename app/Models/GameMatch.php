@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -28,6 +29,13 @@ class GameMatch extends Model
             ->withTimestamps();
     }
 
+    public function scopeForClass(Builder $query, int $classId): Builder
+    {
+        return $query->whereHas('classSession', fn (Builder $q) => $q->where('school_class_id', $classId));
+    }
 
-
+    public function scopeForPlayer(Builder $query, string $playerId): Builder
+    {
+        return $query->whereHas('players', fn (Builder $q) => $q->where('player_id', $playerId));
+    }
 }
