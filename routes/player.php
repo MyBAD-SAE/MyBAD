@@ -16,6 +16,7 @@ Route::middleware('auth:player')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('matchs', fn() => Inertia::render('Player/Matchs'))->name('matchs');
     Route::get('classements', [ClassementController::class, 'index'])->name('classements');
+    Route::get('historique-matchs', fn () => Inertia::render('Player/HistoriqueMatchs'))->name('historique.matchs');
 
     Route::prefix('declarer-un-match')
         ->name('match.')
