@@ -23,24 +23,25 @@ const getInitials = (name) => {
 </script>
 
 <template>
-    <div>
-        <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-lg font-bold text-foreground">Derniers matchs</h3>
-                <p class="text-sm text-muted-foreground">{{ matches.length }} matchs récents</p>
+    <Card class="shadow-none">
+        <CardContent class="p-4">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="text-lg font-semibold text-foreground">Derniers matchs</h3>
+                    <p class="text-sm text-muted-foreground">{{ matches.length }} matchs récents</p>
+                </div>
+                <button class="flex items-center gap-1 text-sm font-medium text-primary">
+                    Tout voir
+                    <ChevronRight class="h-4 w-4" />
+                </button>
             </div>
-            <button class="flex items-center gap-1 text-sm font-medium text-primary">
-                Tout voir
-                <ChevronRight class="h-4 w-4" />
-            </button>
-        </div>
 
-        <div class="mt-3 space-y-2">
-            <div
-                v-for="(match, index) in matches"
-                :key="index"
-                class="flex items-center gap-3 rounded-xl border p-3"
-            >
+            <div class="space-y-2">
+                <div
+                    v-for="(match, index) in matches"
+                    :key="index"
+                    class="flex items-center gap-3 rounded-xl bg-[#F9FAFB] p-3"
+                >
                 <!-- Win/Loss icon -->
                 <div
                     class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
@@ -69,6 +70,7 @@ const getInitials = (name) => {
                     <p class="text-xs text-muted-foreground">{{ match.date }}</p>
                 </div>
             </div>
-        </div>
-    </div>
+            </div>
+        </CardContent>
+    </Card>
 </template>
