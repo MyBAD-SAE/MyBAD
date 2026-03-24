@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import { Card, CardContent } from '@/Components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-vue-next';
 
@@ -57,6 +58,7 @@ const chartData = computed(() => {
 </script>
 
 <template>
+    <Link :href="route('elo.details')" class="block">
     <Card class="shadow-none py-0 overflow-hidden">
         <CardContent class="p-4" :class="{ 'pb-0': hasMatches }">
             <div class="flex items-center justify-between">
@@ -127,4 +129,5 @@ const chartData = computed(() => {
             </button>
         </div>
     </Card>
+    </Link>
 </template>

@@ -7,6 +7,7 @@ use App\Http\Controllers\player\Auth\PasswordResetController;
 use App\Http\Controllers\player\Auth\RegisteredPlayerController;
 use App\Http\Controllers\player\ClassementController;
 use App\Http\Controllers\player\DashboardController;
+use App\Http\Controllers\player\EloDetailsController;
 use App\Http\Controllers\player\MatchDeclarationController;
 use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::middleware('auth:player')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('matchs', fn() => Inertia::render('Player/Matchs'))->name('matchs');
     Route::get('classements', [ClassementController::class, 'index'])->name('classements');
+    Route::get('elo-details', [EloDetailsController::class, 'index'])->name('elo.details');
     Route::get('historique-matchs', fn () => Inertia::render('Player/HistoriqueMatchs'))->name('historique.matchs');
 
     Route::prefix('declarer-un-match')
