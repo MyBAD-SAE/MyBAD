@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, nextTick } from 'vue';
-import { Head, usePage, Link, useForm } from '@inertiajs/vue3';
+import { ref, computed, nextTick, watch } from 'vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
@@ -9,24 +9,35 @@ import {
     UserRound,
     Mail,
     Lock,
-    ShieldCheck,
     Eye,
     EyeOff,
 } from 'lucide-vue-next';
 
-const user = usePage().props.auth.user;
+const props = defineProps({
+    participant: { type: Object, required: true },
+});
 
 // Form
 const form = useForm({
-    first_name: user.first_name,
-    last_name: user.last_name,
-    email: user.email,
+    first_name: props.participant.participantable.user.first_name,
+    last_name: props.participant.participantable.user.last_name,
+    email: props.participant.participantable.user.email,
     current_pin: '',
     new_pin: '',
     new_password_confirmation: '',
     current_password: '',
     new_password: '',
 });
+
+watch(
+    () => props.participant,
+    (newValue) => {
+        const user = newValue.participantable.user;
+        form.first_name = user.first_name;
+        form.last_name  = user.last_name;
+        form.email      = user.email;
+    }
+);
 
 // PIN fields (UI arrays)
 const currentPin = ref(['', '', '', '']);
@@ -75,9 +86,10 @@ const progressWidth = ref(0);
 function handleSave() {
     const currentPinStr = currentPin.value.join('');
     const newPinStr = newPin.value.join('');
+    if (pinMismatch.value) return;
+
     form.current_pin = currentPinStr.length === 4 ? currentPinStr : null;
     form.new_pin = newPinStr.length === 4 ? newPinStr : null;
-    form.new_password_confirmation = form.new_password_confirmation;
 
     form.put(route('player.account.infos.update'), {
         onSuccess: () => {
@@ -104,7 +116,7 @@ function handleSave() {
 </script>
 
 <template>
-    <Head title="Infos Personnelles" />
+    <Head title="Informations personnelles" />
 
     <PlayerLayout>
         <div class="pb-20">
@@ -113,7 +125,7 @@ function handleSave() {
                 <Link :href="route('player.account.index')" class="absolute left-5 flex h-10 w-10 items-center justify-center rounded-2xl border border-border/50">
                     <ArrowLeft class="h-5 w-5 text-foreground" />
                 </Link>
-                <h1 class="text-lg font-bold text-foreground">Infos Personnelles</h1>
+                <h1 class="text-lg font-bold text-foreground">Informations personnelles</h1>
             </div>
 
             <!-- Identité -->
@@ -121,18 +133,13 @@ function handleSave() {
                 <CardContent class="space-y-4 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Identité</span>
 
-                    <div v-if="form.errors.first_name || form.errors.last_name || form.errors.email" class="rounded-xl bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
-                        <p v-if="form.errors.first_name">{{ form.errors.first_name }}</p>
-                        <p v-if="form.errors.last_name">{{ form.errors.last_name }}</p>
-                        <p v-if="form.errors.email">{{ form.errors.email }}</p>
-                    </div>
-
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Nom</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl border border-transparent bg-muted/40 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <UserRound class="h-4 w-4 shrink-0 text-primary" />
                             <input v-model="form.last_name" type="text" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
+                        <p v-if="form.errors.last_name" class="mt-1.5 text-xs text-destructive">{{ form.errors.last_name }}</p>
                     </div>
 
                     <div>
@@ -141,6 +148,7 @@ function handleSave() {
                             <UserRound class="h-4 w-4 shrink-0 text-primary" />
                             <input v-model="form.first_name" type="text" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
+                        <p v-if="form.errors.first_name" class="mt-1.5 text-xs text-destructive">{{ form.errors.first_name }}</p>
                     </div>
                 </CardContent>
             </Card>
@@ -149,13 +157,13 @@ function handleSave() {
             <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-4 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Contact</span>
-
                     <div>
                         <label class="text-[11px] font-semibold uppercase tracking-widest text-foreground">Email</label>
                         <div class="mt-1.5 flex items-center gap-2.5 rounded-xl border border-transparent bg-muted/40 px-3.5 py-2 transition-colors focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
                             <Mail class="h-4 w-4 shrink-0 text-violet-500" />
                             <input v-model="form.email" type="email" class="flex-1 border-none bg-transparent text-sm text-foreground shadow-none outline-none ring-0 focus:ring-0" />
                         </div>
+                        <p v-if="form.errors.email" class="mt-1.5 text-xs text-destructive">{{ form.errors.email }}</p>
                     </div>
                 </CardContent>
             </Card>
@@ -164,7 +172,6 @@ function handleSave() {
             <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-5 px-4 py-0">
                     <div class="flex items-center gap-1.5">
-                        <ShieldCheck class="h-4 w-4 text-primary" />
                         <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Code PIN</span>
                     </div>
 
@@ -213,6 +220,7 @@ function handleSave() {
                                 <component :is="showNewPin ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/60" />
                             </button>
                         </div>
+                        <p v-if="form.errors.new_pin" class="mt-1.5 text-xs text-destructive">{{ form.errors.new_pin }}</p>
                     </div>
 
                     <!-- Confirmer code PIN -->
@@ -242,10 +250,6 @@ function handleSave() {
                         <p v-if="pinMismatch" class="mt-1.5 text-xs text-red-500">Les codes PIN ne correspondent pas</p>
                     </div>
 
-                    <!-- Erreurs PIN serveur -->
-                    <div v-if="form.errors.new_pin" class="rounded-xl bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
-                        <p>{{ form.errors.new_pin }}</p>
-                    </div>
                 </CardContent>
             </Card>
 
@@ -268,6 +272,7 @@ function handleSave() {
                                 <component :is="showCurrentPassword ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/50" />
                             </button>
                         </div>
+                        <p v-if="form.errors.current_password" class="mt-1.5 text-xs text-destructive">{{ form.errors.current_password }}</p>
                     </div>
 
                     <div>
@@ -284,6 +289,7 @@ function handleSave() {
                                 <component :is="showNewPassword ? EyeOff : Eye" class="h-4 w-4 text-muted-foreground/50" />
                             </button>
                         </div>
+                        <p v-if="form.errors.new_password" class="mt-1.5 text-xs text-destructive">{{ form.errors.new_password }}</p>
                     </div>
 
                     <div>
@@ -308,11 +314,6 @@ function handleSave() {
                         <p v-if="passwordMismatch" class="mt-1.5 text-xs text-red-500">Les mots de passe ne correspondent pas</p>
                     </div>
 
-                    <!-- Erreurs mot de passe serveur -->
-                    <div v-if="form.errors.current_password || form.errors.new_password" class="rounded-xl bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
-                        <p v-if="form.errors.current_password">{{ form.errors.current_password }}</p>
-                        <p v-if="form.errors.new_password">{{ form.errors.new_password }}</p>
-                    </div>
                 </CardContent>
             </Card>
 

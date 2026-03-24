@@ -37,9 +37,10 @@ class UpdateProfileRequest extends FormRequest
             'first_name.max'      => 'Le prénom ne peut pas dépasser 255 caractères.',
             'last_name.required'  => 'Le nom est obligatoire.',
             'last_name.max'       => 'Le nom ne peut pas dépasser 255 caractères.',
-            'email.required'      => 'L\'adresse email est obligatoire.',
-            'email.email'         => 'L\'adresse email n\'est pas valide.',
-            'email.unique'        => 'Cette adresse email est déjà utilisée.',
+            'email.required'   => 'L\'adresse email est obligatoire.',
+            'email.lowercase'  => 'L\'adresse email doit être en minuscules.',
+            'email.email'      => 'L\'adresse email n\'est pas valide.',
+            'email.unique'     => 'Cette adresse email est déjà utilisée.',
 
             'current_pin.digits'        => 'Le code PIN doit contenir exactement 4 chiffres.',
             'current_pin.required_with' => 'Le code PIN actuel est requis pour en définir un nouveau.',

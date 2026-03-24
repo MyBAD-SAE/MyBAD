@@ -12,36 +12,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class AccountController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $user = auth('player')->user();
-        $player = $user->player;
-
-        $participant = $player
-            ?->classParticipants()
-            ->with('participantable.user')
-            ->selectRaw('*, (
-                SELECT COUNT(*) + 1
-                FROM class_participants cp
-                WHERE cp.school_class_id = class_participants.school_class_id
-                  AND cp.elo_rating > class_participants.elo_rating
-            ) as `rank`')
-            ->first();
 
         return Inertia::render('Player/Profil', [
-            'participant' => $participant ? ClassParticipantResource::make($participant)->resolve() : null,
+            'participant' => $this->getParticipantWithRank($user),
             'user' => [
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
+                'first_name'      => $user->first_name,
+                'last_name'       => $user->last_name,
+                'email'           => $user->email,
                 'profile_picture' => $user->profile_picture,
             ],
-            'playerCode' => $player?->code,
+            'playerCode' => $user->player?->code,
         ]);
     }
+
+    public function infos(): Response
+    {
+        return Inertia::render('Player/InfosPersonnelles', [
+            'participant' => $this->getParticipantWithRank(auth('player')->user()),
+        ]);
+    }
+
     public function update(UpdateProfileRequest $request): RedirectResponse
     {
         /** @var User $user */
@@ -130,6 +127,22 @@ class AccountController extends Controller
         return response()->json($data, 200, [
             'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
         ]);
+    }
+
+    private function getParticipantWithRank($user): ?array
+    {
+        $participant = $user->player
+            ?->classParticipants()
+            ->with('participantable.user')
+            ->selectRaw('*, (
+                SELECT COUNT(*) + 1
+                FROM class_participants cp
+                WHERE cp.school_class_id = class_participants.school_class_id
+                  AND cp.elo_rating > class_participants.elo_rating
+            ) as `rank`')
+            ->first();
+
+        return $participant ? ClassParticipantResource::make($participant)->resolve() : null;
     }
 
     public function destroy(Request $request): RedirectResponse
