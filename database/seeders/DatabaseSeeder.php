@@ -259,7 +259,7 @@ class DatabaseSeeder extends Seeder
             $participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id' => $pid,
-                'elo_rating' => 100.0, // sera mis à jour à la fin
+                'elo_rating' => 100.0,
                 'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -275,6 +275,12 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ];
         DB::table('class_participants')->insert($participants);
+
+        // Map player_id → participant_id pour les elo_histories
+        $participantIdByPlayer = DB::table('class_participants')
+            ->where('school_class_id', $classId)
+            ->where('participantable_type', 'App\\Models\\Player')
+            ->pluck('id', 'participantable_id');
 
         // 7. Sessions de classe (8 séances hebdomadaires)
         $sessionIds = [];
@@ -396,14 +402,14 @@ class DatabaseSeeder extends Seeder
                 $eloHistories[] = [
                     'elo_before' => $eloBefore1,
                     'elo_after' => $elos[$p1],
-                    'player_id' => $p1,
+                    'participant_id' => $participantIdByPlayer[$p1],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
                 $eloHistories[] = [
                     'elo_before' => $eloBefore2,
                     'elo_after' => $elos[$p2],
-                    'player_id' => $p2,
+                    'participant_id' => $participantIdByPlayer[$p2],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

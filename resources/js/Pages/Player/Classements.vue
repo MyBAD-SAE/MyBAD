@@ -2,15 +2,15 @@
 import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
+import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, TrendingUp, TrendingDown, ArrowLeft, Crown } from 'lucide-vue-next';
 
 defineProps({
-    players: {
-        type: Array,
-        default: () => [],
-    },
+    players: { type: Array, default: () => [] },
+    classes: { type: Array, default: () => [] },
+    selectedClassId: { type: Number, default: null },
 });
 
 const getInitials = (name) => {
@@ -33,11 +33,12 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
     <PlayerLayout>
         <div class="pb-20">
             <!-- Header -->
-            <div class="relative flex items-center justify-center px-5 pt-5 pb-2">
-                <Link :href="route('home')" class="absolute left-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white">
+            <div class="flex items-center gap-3 px-5 pt-5 pb-2">
+                <Link :href="route('home')" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-white">
                     <ArrowLeft class="h-5 w-5 text-foreground" />
                 </Link>
-                <h1 class="text-lg font-bold text-foreground">Classement</h1>
+                <div class="flex-1" />
+                <ClassPicker v-if="classes.length > 1" :classes="classes" :selected-class-id="selectedClassId" />
             </div>
 
             <div class="space-y-6 p-5">
