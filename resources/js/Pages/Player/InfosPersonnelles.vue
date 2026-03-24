@@ -20,7 +20,6 @@ const props = defineProps({
 });
 
 const page = usePage();
-const userInfo = computed(() => props.participant.participantable.user);
 const photoInput = ref(null);
 const photoPreview = ref(null);
 const photoUploading = ref(false);
@@ -174,8 +173,8 @@ function handleSave() {
             <div class="flex flex-col items-center py-4">
                 <div class="relative">
                     <Avatar class="h-24 w-24 border-4 border-background shadow-lg">
-                        <AvatarImage v-if="photoPreview || userInfo?.profile_picture" :src="photoPreview || userInfo.profile_picture" :alt="userInfo?.first_name" />
-                        <AvatarFallback class="text-2xl">{{ userInfo?.first_name?.charAt(0) }}</AvatarFallback>
+                        <AvatarImage v-if="photoPreview || user?.profile_picture" :src="photoPreview || userInfo.profile_picture" :alt="userInfo?.first_name" />
+                        <AvatarFallback class="text-2xl">{{ user?.first_name?.charAt(0) }}</AvatarFallback>
                     </Avatar>
                     <button
                         type="button"
