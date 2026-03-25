@@ -90,14 +90,15 @@ const chartData = computed(() => {
 
     <PlayerLayout>
         <div class="pb-20">
-            <div class="space-y-5 p-5">
-                <!-- Header -->
-                <div class="flex items-center gap-3">
-                    <Link :href="route('home')" class="flex h-10 w-10 items-center justify-center rounded-full border border-border">
-                        <ArrowLeft class="h-5 w-5 text-foreground" />
-                    </Link>
-                    <h1 class="text-xl font-bold text-foreground">Classement ELO</h1>
-                </div>
+            <!-- Header -->
+            <div class="relative flex items-center justify-center px-5 pt-6 pb-5">
+                <Link :href="route('home')" class="absolute left-5 flex h-10 w-10 items-center justify-center rounded-2xl border border-border/50">
+                    <ArrowLeft class="h-5 w-5 text-foreground" />
+                </Link>
+                <h1 class="text-lg font-bold text-foreground">Classement ELO</h1>
+            </div>
+
+            <div class="space-y-5 px-5">
 
                 <!-- Current ELO Card -->
                 <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#27BDAE] to-[#5DC9BC] p-6 text-white">
@@ -135,7 +136,6 @@ const chartData = computed(() => {
                             </div>
                             <p class="mt-3 text-2xl font-bold text-foreground">#{{ rank ?? '-' }}</p>
                             <p class="text-sm text-muted-foreground">Classement</p>
-                            <p v-if="totalPlayers > 0" class="text-xs font-medium text-primary">sur {{ totalPlayers }} joueurs</p>
                         </CardContent>
                     </Card>
                 </div>

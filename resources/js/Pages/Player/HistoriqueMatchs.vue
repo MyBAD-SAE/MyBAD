@@ -84,11 +84,10 @@ function getAvatarColor(name) {
 
 <template>
   <PlayerLayout>
-  <div class="min-h-screen bg-white flex items-center justify-center" style="font-family: 'Poppins', sans-serif;">
-    <div class="w-full max-w-sm min-h-screen bg-white flex flex-col pb-16">
+  <div class="pb-20">
 
       <!-- Header -->
-      <div class="px-4 pt-6 pb-8 relative flex items-center justify-center">
+      <div class="px-5 pt-6 pb-5 relative flex items-center justify-center">
         <button
           @click="goBack"
           class="absolute left-4 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors"
@@ -102,7 +101,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Content -->
-      <div class="flex-1 flex flex-col px-4 pb-4">
+      <div class="flex-1 flex flex-col px-5 pb-5">
 
         <!-- Victoires / Défaites / Nouveau — même ligne -->
         <div class="flex items-center gap-3 mb-4">
@@ -221,7 +220,6 @@ function getAvatarColor(name) {
         </div>
       </div>
 
-    </div>
   </div>
   <BottomNavBar active="matchs" />
   </PlayerLayout>
