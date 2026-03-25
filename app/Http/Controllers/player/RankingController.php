@@ -24,7 +24,7 @@ class RankingController extends Controller
 
         $classes = $player ? $this->dashboardService->getPlayerClasses($player) : [];
 
-        return Inertia::render('Player/Classements', [
+        return Inertia::render('Player/Rankings', [
             'players'         => $this->rankingService->getRankingForClass($player, $classId),
             'classes'         => $classes,
             'selectedClassId' => $classId,

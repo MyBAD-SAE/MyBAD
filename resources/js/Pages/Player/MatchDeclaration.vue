@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { Head, usePage } from '@inertiajs/vue3'
-import DeclarationMatchStep1 from '@/Components/Match/DeclarationMatchStep1.vue'
-import DeclarationMatchStep2 from '@/Components/Match/DeclarationMatchStep2.vue'
-import DeclarationMatchStep3 from '@/Components/Match/DeclarationMatchStep3.vue'
-import DeclarationMatchStep4 from '@/Components/Match/DeclarationMatchStep4.vue'
+import DeclarationMatchStep1 from '@/Components/Match/MatchDeclarationStep1.vue'
+import DeclarationMatchStep2 from '@/Components/Match/MatchDeclarationStep2.vue'
+import DeclarationMatchStep3 from '@/Components/Match/MatchDeclarationStep3.vue'
+import DeclarationMatchStep4 from '@/Components/Match/MatchDeclarationStep4.vue'
 
 const page = usePage()
 

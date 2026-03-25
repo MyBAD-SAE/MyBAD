@@ -27,7 +27,7 @@ class MatchDeclarationController extends Controller
         $player = $this->currentPlayer();
         $user = $player->user;
 
-        return Inertia::render('Player/DeclarationMatch', [
+        return Inertia::render('Player/MatchDeclaration', [
             'currentPlayer' => [
                 'id'        => $player->id,
                 'name'      => $user->full_name,
