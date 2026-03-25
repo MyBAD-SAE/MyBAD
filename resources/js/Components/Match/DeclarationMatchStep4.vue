@@ -50,11 +50,10 @@ function getAvatarColor(name) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white flex items-center justify-center" style="font-family: 'Poppins', sans-serif;">
-    <div class="w-full max-w-sm min-h-screen bg-white flex flex-col">
+  <div class="min-h-screen bg-white flex flex-col">
 
       <!-- Header -->
-      <div class="px-4 pt-6 pb-4">
+      <div class="px-5 pt-6 pb-4">
         <h1 class="text-lg font-bold text-[#352B2B] text-center">Terminé</h1>
       </div>
 
@@ -74,7 +73,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Content -->
-      <div class="flex-1 flex flex-col items-center px-4">
+      <div class="flex-1 flex flex-col items-center px-5">
 
         <!-- Big check icon -->
         <div class="w-16 h-16 rounded-full flex items-center justify-center mb-5" style="background-color: rgba(39, 189, 174, 0.1);">
@@ -191,7 +190,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Footer button -->
-      <div class="px-4 pb-8 pt-2">
+      <div class="px-5 pb-8 pt-2">
         <Button
           @click="goToRanking"
           class="w-full text-sm font-semibold gap-2 transition-all shadow-none !bg-[#27BDAE] hover:!bg-[#1fa99b] text-white"
@@ -204,7 +203,6 @@ function getAvatarColor(name) {
         </Button>
       </div>
 
-    </div>
   </div>
 </template>
 

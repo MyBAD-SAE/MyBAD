@@ -105,11 +105,10 @@ function getAvatarColor(name) {
 </script>
 
 <template>
-  <div class="h-screen bg-white flex items-center justify-center overflow-hidden" style="font-family: 'Poppins', sans-serif;">
-    <div class="w-full max-w-sm h-full bg-white flex flex-col">
+  <div class="h-screen bg-white flex flex-col overflow-hidden">
 
       <!-- Header -->
-      <div class="px-4 pt-6 pb-4 flex items-center gap-3">
+      <div class="px-5 pt-6 pb-4 flex items-center gap-3">
         <button
           @click="$emit('back')"
           class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors shrink-0"
@@ -147,7 +146,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Content -->
-      <div class="flex-1 flex flex-col px-4">
+      <div class="flex-1 flex flex-col px-5">
         <p class="text-sm font-bold text-gray-700 mb-0.5">Sélectionnez le joueur défié</p>
         <p class="text-xs text-gray-400 mb-2">Recherchez votre adversaire dans la liste ci-dessous</p>
 
@@ -226,7 +225,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Footer button -->
-      <div class="px-4 pb-8 pt-2">
+      <div class="px-5 pb-8 pt-2">
         <Button
           @click="goToNext"
           :disabled="!selectedPlayer"
@@ -241,7 +240,6 @@ function getAvatarColor(name) {
         </Button>
       </div>
 
-    </div>
   </div>
 </template>
 

@@ -122,11 +122,10 @@ function getAvatarColor(name) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white flex items-center justify-center" style="font-family: 'Poppins', sans-serif;">
-    <div class="w-full max-w-sm min-h-screen bg-white flex flex-col">
+  <div class="min-h-screen bg-white flex flex-col">
 
       <!-- Header -->
-      <div class="px-4 pt-6 pb-4 flex items-center gap-3">
+      <div class="px-5 pt-6 pb-4 flex items-center gap-3">
         <button
           @click="$emit('back')"
           class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors shrink-0"
@@ -164,7 +163,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Content -->
-      <div class="flex-1 flex flex-col px-4">
+      <div class="flex-1 flex flex-col px-5">
 
         <p class="text-sm font-bold text-[#352B2B] mb-1 text-center">Validation par l'adversaire</p>
 
@@ -221,7 +220,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Footer button -->
-      <div class="px-4 pb-8 pt-2">
+      <div class="px-5 pb-8 pt-2">
         <Button
           @click="validatePin"
           :disabled="!pinComplete || isLoading"
@@ -245,7 +244,6 @@ function getAvatarColor(name) {
         </Button>
       </div>
 
-    </div>
   </div>
 </template>
 
