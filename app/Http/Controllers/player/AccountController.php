@@ -5,6 +5,7 @@ namespace App\Http\Controllers\player;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Player\UpdateProfileRequest;
 use App\Http\Resources\ClassParticipantResource;
+use App\Http\Resources\PlayerResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\Player\PlayerExportService;
@@ -25,8 +26,13 @@ class AccountController extends Controller
         $player = $user->player;
         $classId = $player?->selectedParticipation()?->school_class_id;
 
+        $participant = $this->getParticipantWithRank($user, $classId);
+
         return Inertia::render('Player/Profil', [
-            'participant' => $this->getParticipantWithRank($user, $classId),
+            'participant' => $participant,
+            'player' => $participant === null && $player
+                ? PlayerResource::make($player->load('user'))->resolve()
+                : null,
             'classes' => $this->getAllClasses($player),
             'selectedClassId' => $classId,
             'matchCount' => $player?->gameMatches()->count() ?? 0,

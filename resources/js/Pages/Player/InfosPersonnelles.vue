@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue';
-import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
@@ -19,7 +19,6 @@ const props = defineProps({
     user: { type: Object, required: true },
 });
 
-const page = usePage();
 const photoInput = ref(null);
 const photoPreview = ref(null);
 const photoUploading = ref(false);
@@ -317,7 +316,7 @@ function handleSave() {
             </Card>
 
             <!-- Mot de passe -->
-            <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
+            <Card v-if="!user.has_google" class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-5 px-4 py-0">
                     <span class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">Mot de passe</span>
 
