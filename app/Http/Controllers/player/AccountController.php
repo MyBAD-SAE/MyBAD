@@ -28,7 +28,7 @@ class AccountController extends Controller
 
         $participant = $this->getParticipantWithRank($user, $classId);
 
-        return Inertia::render('Player/Profil', [
+        return Inertia::render('Player/Profile', [
             'participant' => $participant,
             'player' => $participant === null && $player
                 ? PlayerResource::make($player->load('user'))->resolve()
@@ -44,7 +44,7 @@ class AccountController extends Controller
         /** @var User $user */
         $user = Auth::guard('player')->user();
 
-        return Inertia::render('Player/InfosPersonnelles', [
+        return Inertia::render('Player/PersonalInfo', [
             'user' => UserResource::make($user)->resolve(),
         ]);
     }
@@ -79,7 +79,7 @@ class AccountController extends Controller
         /** @var User $user */
         $user = Auth::guard('player')->user();
 
-        return Inertia::render('Player/Confidentialite', $export->summary($user));
+        return Inertia::render('Player/Privacy', $export->summary($user));
     }
 
     public function download(PlayerExportService $export): JsonResponse
