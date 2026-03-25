@@ -13,7 +13,7 @@ import RecentMatchesWidget from '@/Components/dashboard/RecentMatchesWidget.vue'
 import BottomNavBar from '@/Components/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Clock, Copy, Check, UserPlus } from 'lucide-vue-next';
+import { Clock, Copy, Check, UserPlus, PartyPopper } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -56,7 +56,7 @@ function copyCode() {
                 <!-- Pas inscrit dans un cours -->
                 <template v-if="!participant">
                     <div class="flex items-center justify-between">
-                        <h1 class="text-lg font-semibold text-foreground">Bonjour {{ firstName }} 👋</h1>
+                        <h1 class="text-lg font-semibold text-foreground">Bonjour {{ firstName }} <PartyPopper class="inline h-5 w-5 -translate-y-0.5 text-amber-400" /></h1>
                         <Link :href="route('player.account.index')">
                             <Avatar class="h-8 w-8">
                                 <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="Avatar" />
@@ -74,7 +74,7 @@ function copyCode() {
                                 </div>
                                 <h2 class="mt-2.5 text-center text-sm font-semibold text-foreground">Rejoindre un cours</h2>
                                 <p class="mt-0.5 text-center text-xs leading-relaxed text-muted-foreground">
-                                    Communiquez ce code à votre professeur<br />pour être ajouté à une séance.
+                                    Communiquez ce code à votre professeur<br />pour être ajouté à un cours.
                                 </p>
                             </div>
 
@@ -104,7 +104,7 @@ function copyCode() {
                                 <div>
                                     <p class="text-xs font-semibold text-foreground">En attente d'un cours</p>
                                     <p class="text-[11px] leading-relaxed text-muted-foreground">
-                                        Vos statistiques apparaîtront une fois ajouté à une séance.
+                                        Vos statistiques apparaîtront une fois ajouté à un cours.
                                     </p>
                                 </div>
                             </div>

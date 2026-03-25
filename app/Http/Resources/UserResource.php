@@ -17,6 +17,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'profile_picture' => $this->profile_picture,
             'is_active' => $this->is_active,
+            'has_google' => !is_null($this->google_id),
         ];
     }
 }

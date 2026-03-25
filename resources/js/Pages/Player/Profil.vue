@@ -21,6 +21,7 @@ import {
 
 const props = defineProps({
     participant: Object,
+    player: Object,
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
     matchCount: { type: Number, default: 0 },
@@ -29,8 +30,8 @@ const props = defineProps({
 const logoutForm = useForm({});
 const showLogoutModal = ref(false);
 
-const player = computed(() => props.participant?.participantable);
-const userInfo = computed(() => player.value?.user);
+const playerData = computed(() => props.participant?.participantable ?? props.player);
+const userInfo = computed(() => playerData.value?.user);
 
 const menuItems = [
     { icon: UserRound, title: 'Informations personnelles', subtitle: 'Nom, email, mot de passe', color: 'text-blue-500', bg: 'bg-blue-50', routeName: 'player.account.infos' },
@@ -52,7 +53,7 @@ function uploadPhoto(event) {
 
     photoError.value = null;
 
-const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
         photoError.value = 'L\'image doit être au format JPG, PNG ou WebP.';
         photoInput.value.value = '';
@@ -105,14 +106,14 @@ function logout() {
 
             <p v-if="photoError" class="ml-4 mt-14 text-xs text-destructive">{{ photoError }}</p>
 
-            <!-- Nom + rang + ID — sous la bannière, décalé à droite de l'avatar -->
+            <!-- Nom + rang + ID -->
             <div class="pl-32 pr-4 pt-3 pb-4" :class="{ 'pt-1': photoError }">
                 <h1 class="text-xl font-bold text-foreground">{{ userInfo?.first_name }} {{ userInfo?.last_name }}</h1>
                 <div class="mt-0.5 flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
-                        <Crown class="h-3 w-3" /> #{{ participant?.rank }}
+                    <span v-if="participant?.rank" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
+                        <Crown class="h-3 w-3" /> #{{ participant.rank }}
                     </span>
-                    <span class="text-sm text-muted-foreground">ID : {{ player?.code }}</span>
+                    <span class="text-sm text-muted-foreground">ID : {{ playerData?.code }}</span>
                 </div>
             </div>
 
@@ -123,7 +124,6 @@ function logout() {
                     Modifier le profil
                 </Link>
             </div>
-
 
             <!-- Menu Compte -->
             <Card class="mx-4 mt-4 gap-0 py-3 shadow-none border-border/50">
