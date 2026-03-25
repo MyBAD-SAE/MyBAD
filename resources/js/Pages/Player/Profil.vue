@@ -177,9 +177,6 @@ function logout() {
                         <LogOut class="h-4 w-4" />
                         Se déconnecter
                     </button>
-
-                    <!-- Version -->
-                    <p class="mt-3 text-center text-xs text-muted-foreground">MyBAD v1.2.0 · Mars 2026</p>
                 </CardContent>
             </Card>
         </div>

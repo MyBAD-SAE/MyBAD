@@ -29,7 +29,7 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
     <Card class="shadow-none">
         <CardContent class="p-4">
             <h3 class="text-lg font-semibold text-foreground">Classement</h3>
-            <p class="text-sm text-muted-foreground">{{ players.length }} joueurs · saison en cours</p>
+            <p class="text-sm text-muted-foreground">Les 8 premiers joueurs</p>
 
             <!-- Podium -->
             <div v-if="players.length >= 3" class="mt-4 flex items-end justify-center gap-1.5">

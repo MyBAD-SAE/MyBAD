@@ -42,7 +42,6 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
 
             <div class="px-5 pb-5">
                 <div>
-                        <p class="text-sm text-muted-foreground mb-2">{{ players.length }} joueurs · saison en cours</p>
 
                         <!-- Podium -->
                         <div v-if="players.length >= 3" class="mt-4 flex items-end justify-center gap-2">
