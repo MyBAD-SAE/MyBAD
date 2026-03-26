@@ -39,10 +39,10 @@ function select(cls) {
     <Sheet v-model:open="open">
         <SheetTrigger as-child>
             <slot name="trigger">
-                <button class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
-                    <GraduationCap class="h-3.5 w-3.5" />
-                    {{ selectedClass()?.name ?? 'Choisir un cours' }}
-                    <ChevronDown class="h-3.5 w-3.5" />
+                <button class="ml-auto inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm font-medium text-primary max-w-[200px]">
+                    <GraduationCap class="h-3.5 w-3.5 shrink-0" />
+                    <span class="truncate">{{ selectedClass()?.name ?? 'Choisir un cours' }}</span>
+                    <ChevronDown class="h-3.5 w-3.5 shrink-0" />
                 </button>
             </slot>
         </SheetTrigger>
