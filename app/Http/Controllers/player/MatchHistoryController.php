@@ -6,16 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\GameMatchResource;
 use App\Models\EloHistory;
 use App\Models\GameMatch;
+use App\Services\Dashboard\DashboardService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class MatchHistoryController extends Controller
 {
+    public function __construct(private readonly DashboardService $dashboardService) {}
+
     public function index(): Response
     {
-        $player       = Auth::guard('player')->user()->player;
+        $player        = Auth::guard('player')->user()->player;
         $participation = $player->selectedParticipation();
+        $classId       = $participation?->school_class_id;
+
+        $classes = $player ? $this->dashboardService->getPlayerClasses($player) : [];
 
         $eloHistoriesByMatchId = $participation
             ? EloHistory::where('participant_id', $participation->id)
@@ -25,6 +31,7 @@ class MatchHistoryController extends Controller
             : collect();
 
         $matches = GameMatch::forPlayer($player->id)
+            ->when($classId, fn ($q) => $q->forClass($classId))
             ->with(['players.user'])
             ->latest()
             ->get()
@@ -38,7 +45,9 @@ class MatchHistoryController extends Controller
             ->values();
 
         return Inertia::render('Player/MatchHistory', [
-            'matches' => $matches,
+            'matches'         => $matches,
+            'classes'         => $classes,
+            'selectedClassId' => $classId,
         ]);
     }
 }

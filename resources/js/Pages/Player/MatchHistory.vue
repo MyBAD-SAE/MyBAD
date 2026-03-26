@@ -3,16 +3,16 @@ import { ref, computed } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import PlayerLayout from '@/Layouts/PlayerLayout.vue'
 import BottomNavBar from '@/Components/BottomNavBar.vue'
+import ClassPicker from '@/Components/dashboard/ClassPicker.vue'
 import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs'
 import { Trophy, Frown } from 'lucide-vue-next'
 
 const props = defineProps({
-  matches: {
-    type: Array,
-    default: () => [],
-  },
+  matches: { type: Array, default: () => [] },
+  classes: { type: Array, default: () => [] },
+  selectedClassId: { type: Number, default: null },
 })
 
 const matches = ref(props.matches)
@@ -79,6 +79,7 @@ function getAvatarColor(name) {
           </svg>
         </button>
         <h1 class="text-lg font-bold" style="color: #352B2B;">Historique des matchs</h1>
+        <ClassPicker v-if="classes.length >= 2" class="absolute right-4" :classes="classes" :selected-class-id="selectedClassId" />
       </div>
 
       <!-- Content -->
