@@ -29,6 +29,7 @@ const props = defineProps({
     rankingPlayers: Array,
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
+    recentMatches: { type: Array, default: () => [] },
 })
 
 const formattedCode = (code) => {
@@ -146,7 +147,7 @@ function copyCode() {
                     <RankingWidget :players="rankingPlayers" />
 
                     <!-- Derniers matchs -->
-                    <RecentMatchesWidget />
+                    <RecentMatchesWidget v-if="recentMatches.length > 0" :matches="recentMatches" />
                 </template>
             </div>
         </div>

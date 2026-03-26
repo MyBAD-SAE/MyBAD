@@ -1,6 +1,9 @@
 <script setup>
 import { LayoutDashboard, Swords, Trophy, User, Plus } from 'lucide-vue-next';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const hasActiveSession = computed(() => usePage().props.hasActiveSession);
 
 defineProps({
     active: { type: String, default: 'dashboard' },
@@ -8,9 +11,9 @@ defineProps({
 
 const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: 'home' },
-    { key: 'matchs', label: 'Matchs', icon: Swords, route: 'historique.matchs' },
+    { key: 'matchs', label: 'Matchs', icon: Swords, route: 'matches.history' },
     { key: 'add', label: '', icon: Plus, route: 'match.declare' },
-    { key: 'classement', label: 'Classement', icon: Trophy, route: 'classements' },
+    { key: 'classement', label: 'Classement', icon: Trophy, route: 'ranking' },
     { key: 'profil', label: 'Profil', icon: User, route: 'player.account.index' },
 ];
 </script>
@@ -20,15 +23,22 @@ const navItems = [
         <div class="flex items-center justify-around py-2">
             <template v-for="item in navItems" :key="item.key">
                 <!-- Center add button -->
-                <Link
-                    v-if="item.key === 'add'"
-                    :href="route(item.route)"
-                    class="flex flex-col items-center gap-0.5"
-                >
-                    <div class="flex h-12 w-12 -mt-5 items-center justify-center rounded-full bg-[#27BDAE] text-white" style="box-shadow: 0 4px 14px rgba(39, 189, 174, 0.4);">
-                        <Plus class="h-6 w-6" />
+                <template v-if="item.key === 'add'">
+                    <Link
+                        v-if="hasActiveSession"
+                        :href="route(item.route)"
+                        class="flex flex-col items-center gap-0.5"
+                    >
+                        <div class="flex h-12 w-12 -mt-5 items-center justify-center rounded-full bg-[#27BDAE] text-white" style="box-shadow: 0 4px 14px rgba(39, 189, 174, 0.4);">
+                            <Plus class="h-6 w-6" />
+                        </div>
+                    </Link>
+                    <div v-else class="flex flex-col items-center gap-0.5 cursor-not-allowed">
+                        <div class="flex h-12 w-12 -mt-5 items-center justify-center rounded-full bg-gray-200 text-gray-400">
+                            <Plus class="h-6 w-6" />
+                        </div>
                     </div>
-                </Link>
+                </template>
 
                 <Link
                     v-else

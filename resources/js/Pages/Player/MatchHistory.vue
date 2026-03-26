@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import PlayerLayout from '@/Layouts/PlayerLayout.vue'
 import BottomNavBar from '@/Components/BottomNavBar.vue'
 import { Button } from '@/Components/ui/button'
@@ -8,34 +8,15 @@ import { Input } from '@/Components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs'
 import { Trophy, Frown } from 'lucide-vue-next'
 
-// ─────────────────────────────────────────────
-// TODO: Remplacer par usePage().props.auth.player via Inertia
-// ─────────────────────────────────────────────
-const currentPlayer = ref({
-  id: 1,
-  name: 'Vous',
-  firstName: 'Vous',
+const props = defineProps({
+  matches: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-// ─────────────────────────────────────────────
-// TODO: Remplacer par un appel API Laravel :
-// GET /api/player/matches
-// Retourne la liste des matchs du joueur connecté
-// avec : id, opponent (name, avatar), myScore,
-// opponentScore, eloChange, date, result ('win'|'loss')
-// ─────────────────────────────────────────────
-const matches = ref([
-  { id: 1,  opponent: { name: 'Quentin UGUEN',  avatar: null }, myScore: 15, opponentScore: 7,  eloChange: +15, date: '10 mar.', result: 'win'  },
-  { id: 2,  opponent: { name: 'Amélie DUBOIS',  avatar: null }, myScore: 15, opponentScore: 4,  eloChange: +22, date: '10 mar.', result: 'win'  },
-  { id: 3,  opponent: { name: 'Kenji TANAKA',   avatar: null }, myScore: 6,  opponentScore: 15, eloChange: -12, date: '10 mar.', result: 'loss' },
-  { id: 4,  opponent: { name: 'Clara MARTIN',   avatar: null }, myScore: 15, opponentScore: 12, eloChange: +8,  date: '10 mar.', result: 'win'  },
-  { id: 5,  opponent: { name: 'Hugo LEROUX',    avatar: null }, myScore: 4,  opponentScore: 15, eloChange: -18, date: '10 mar.', result: 'loss' },
-  { id: 6,  opponent: { name: 'Maxime LEROY',   avatar: null }, myScore: 15, opponentScore: 9,  eloChange: +11, date: '3 mar.',  result: 'win'  },
-  { id: 7,  opponent: { name: 'Sophie BERNARD', avatar: null }, myScore: 7,  opponentScore: 15, eloChange: -15, date: '3 mar.',  result: 'loss' },
-  { id: 8,  opponent: { name: 'Thomas PETIT',   avatar: null }, myScore: 17, opponentScore: 15, eloChange: +6,  date: '3 mar.',  result: 'win'  },
-  { id: 9,  opponent: { name: 'Emma ROUX',      avatar: null }, myScore: 15, opponentScore: 3,  eloChange: +19, date: '3 mar.',  result: 'win'  },
-  { id: 10, opponent: { name: 'Hugo GARNIER',   avatar: null }, myScore: 15, opponentScore: 2,  eloChange: -20, date: '3 mar.',  result: 'loss' },
-])
+const matches = ref(props.matches)
+const hasActiveSession = computed(() => usePage().props.hasActiveSession)
 
 // État des filtres
 const activeTab   = ref('all')   // 'all' | 'win' | 'loss'
@@ -84,7 +65,7 @@ function getAvatarColor(name) {
 
 <template>
   <PlayerLayout>
-  <div class="pb-20">
+  <div class="h-dvh overflow-hidden flex flex-col">
 
       <!-- Header -->
       <div class="px-5 pt-6 pb-5 relative flex items-center justify-center">
@@ -101,7 +82,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Content -->
-      <div class="flex-1 flex flex-col px-5 pb-5">
+      <div class="flex-1 min-h-0 flex flex-col px-5">
 
         <!-- Victoires / Défaites / Nouveau — même ligne -->
         <div class="flex items-center gap-3 mb-4">
@@ -125,7 +106,9 @@ function getAvatarColor(name) {
 
           <Button
             @click="goToNewMatch"
-            class="!bg-[#27BDAE] hover:!bg-[#1fa99b] text-white shadow-none font-semibold text-xs gap-1 h-8 px-3"
+            :disabled="!hasActiveSession"
+            class="shadow-none font-semibold text-xs gap-1 h-8 px-3"
+            :class="hasActiveSession ? '!bg-[#27BDAE] hover:!bg-[#1fa99b] text-white' : '!bg-gray-100 text-gray-400 cursor-not-allowed'"
             style="border-radius: 14px;"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,7 +142,7 @@ function getAvatarColor(name) {
         </Tabs>
 
         <!-- Liste des matchs -->
-        <div class="flex-1 overflow-y-auto pb-4">
+        <div class="flex-1 min-h-0 overflow-y-auto pb-20">
           <div class="space-y-2">
 
           <div
@@ -211,7 +194,7 @@ function getAvatarColor(name) {
 
           <!-- Message si aucun résultat -->
           <p v-if="filteredMatches.length === 0" class="text-center text-sm py-6" style="color: #a8a29e;">
-            Aucun match trouvé
+            Vous n'avez joué aucun match
           </p>
 
           </div>
@@ -227,4 +210,4 @@ function getAvatarColor(name) {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-</style>  
+</style>

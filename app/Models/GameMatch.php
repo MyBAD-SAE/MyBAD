@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,6 +28,21 @@ class GameMatch extends Model
             ->using(MatchPlayer::class)
             ->withPivot('score', 'validated')
             ->withTimestamps();
+    }
+
+    protected function formattedDate(): Attribute
+    {
+        return Attribute::get(fn () => $this->created_at->format('d/m'));
+    }
+
+    public function opponentFor(Player $player): ?Player
+    {
+        return $this->players->first(fn (Player $p) => $p->id !== $player->id);
+    }
+
+    public function myScoreFor(Player $player): ?int
+    {
+        return $this->players->firstWhere('id', $player->id)?->pivot->score;
     }
 
     public function scopeForClass(Builder $query, int $classId): Builder
