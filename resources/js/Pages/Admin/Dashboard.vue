@@ -37,13 +37,16 @@ defineProps({
                         title="Nouvelle seance"
                         description="Lancer une session de jeu pour le groupe"
                         :icon="Play"
-                        :highlighted="true"
+                        icon-bg-class="bg-primary/10"
+                        icon-color-class="text-primary"
                     />
                     <AdminActionCard
                         title="Joueurs"
                         description="Gerer les joueurs et leurs profils"
                         :icon="Users"
                         :badge="playerCount"
+                        icon-bg-class="bg-violet-100"
+                        icon-color-class="text-violet-500"
                     />
                     <AdminActionCard
                         title="Matchs"
@@ -51,12 +54,16 @@ defineProps({
                         :icon="Swords"
                         :badge="matchCount"
                         :href="route('admin.matchs')"
+                        icon-bg-class="bg-orange-100"
+                        icon-color-class="text-orange-500"
                     />
                     <AdminActionCard
                         title="Regles et defis"
                         description="Configurer les regles et creer des defis"
                         :icon="Trophy"
                         :href="route('admin.regles')"
+                        icon-bg-class="bg-red-100"
+                        icon-color-class="text-red-500"
                     />
                 </div>
             </div>

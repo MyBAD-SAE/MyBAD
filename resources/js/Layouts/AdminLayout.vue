@@ -43,36 +43,36 @@ const getInitials = (name) => {
     <!-- Desktop : contenu normal -->
     <div class="hidden lg:flex h-screen bg-gray-50">
         <!-- Sidebar -->
-        <aside class="flex w-[280px] shrink-0 flex-col border-r bg-white">
+        <aside class="flex w-[280px] shrink-0 flex-col bg-gray-50">
             <!-- Logo -->
             <div class="px-6 pt-6 pb-4">
                 <span class="text-xl font-bold text-foreground">MyBAD</span>
             </div>
 
             <!-- Nouvelle seance button -->
-            <div class="px-4 pb-6">
-                <Button class="w-full justify-start gap-2 bg-primary text-white hover:bg-primary/90">
-                    <Plus class="h-4 w-4" />
-                    Nouvelle seance
-                </Button>
+            <div class="px-4 pb-8">
+                <button class="flex w-full items-center gap-3 rounded-2xl bg-primary px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-primary/90">
+                    <Plus class="h-5 w-5" />
+                    Nouvelle séance
+                </button>
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 space-y-1 px-3">
+            <nav class="flex-1 space-y-2 px-4">
                 <Link
                     v-for="item in navItems"
                     :key="item.routeName"
                     :href="route(item.routeName)"
-                    class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
-                    :class="isActive(item.routeName) ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-gray-100 hover:text-foreground'"
+                    class="flex items-center gap-4 rounded-lg px-4 py-3 text-base font-medium transition-colors"
+                    :class="isActive(item.routeName) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
                 >
-                    <component :is="item.icon" class="h-5 w-5" />
+                    <component :is="item.icon" class="h-6 w-6" />
                     {{ item.label }}
                 </Link>
             </nav>
 
             <!-- Admin profile -->
-            <div class="border-t p-4">
+            <div class="p-4">
                 <div class="flex items-center gap-3">
                     <Avatar class="h-10 w-10">
                         <AvatarImage v-if="adminUser.avatar" :src="adminUser.avatar" />
@@ -88,8 +88,10 @@ const getInitials = (name) => {
         </aside>
 
         <!-- Main content -->
-        <main class="flex-1 overflow-y-auto">
-            <slot />
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="rounded-2xl border border-gray-200 bg-white min-h-full">
+                <slot />
+            </div>
         </main>
     </div>
 </template>

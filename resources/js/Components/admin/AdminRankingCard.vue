@@ -20,7 +20,7 @@ const getRankBadgeClass = (rank) => {
     if (rank === 1) return 'bg-yellow-100 text-yellow-700';
     if (rank === 2) return 'bg-gray-100 text-gray-600';
     if (rank === 3) return 'bg-orange-100 text-orange-700';
-    return 'bg-transparent text-muted-foreground';
+    return 'bg-gray-100 text-muted-foreground';
 };
 
 const getWinRateColor = (winRate) => {
@@ -63,7 +63,7 @@ const getWinRateColor = (winRate) => {
                     <tr v-for="player in players" :key="player.rank" class="group">
                         <!-- Rank -->
                         <td class="py-4">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-semibold" :class="getRankBadgeClass(player.rank)">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold" :class="getRankBadgeClass(player.rank)">
                                 <Trophy v-if="player.rank === 1" class="h-4 w-4" />
                                 <span v-else>{{ player.rank }}</span>
                             </div>
@@ -76,7 +76,7 @@ const getWinRateColor = (winRate) => {
                                     <AvatarImage v-if="player.avatar" :src="player.avatar" />
                                     <AvatarFallback class="text-xs">{{ getInitials(player.name) }}</AvatarFallback>
                                 </Avatar>
-                                <span class="text-sm font-semibold text-foreground">{{ player.name }}</span>
+                                <span class="text-sm font-medium text-foreground">{{ player.name }}</span>
                             </div>
                         </td>
 

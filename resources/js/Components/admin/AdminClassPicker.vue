@@ -36,7 +36,7 @@ function close(e) {
 <template>
     <div class="class-picker-container relative" v-if="classes.length > 1" @focusout="close">
         <button
-            class="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-gray-50"
+            class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-gray-200"
             @click="open = !open"
         >
             <span class="h-2 w-2 rounded-full bg-primary" />
