@@ -95,8 +95,8 @@ class MatchDeclarationService
                 $opponentId => ['score' => $opponentScore, 'validated' => true],
             ]);
 
-            $this->eloService->updateElo($player->id, $eloChange, $schoolClassId);
-            $this->eloService->updateElo($opponentId, -$eloChange, $schoolClassId);
+            $this->eloService->updateElo($player->id, $eloChange, $schoolClassId, $match->id);
+            $this->eloService->updateElo($opponentId, -$eloChange, $schoolClassId, $match->id);
 
             return $match;
         });

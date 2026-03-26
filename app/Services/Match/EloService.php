@@ -58,7 +58,7 @@ class EloService
     /**
      * Met à jour l'ELO d'un joueur et enregistre l'historique.
      */
-    public function updateElo(string $playerId, float $eloChange, int $schoolClassId): void
+    public function updateElo(string $playerId, float $eloChange, int $schoolClassId, int $gameMatchId): void
     {
         $participation = ClassParticipant::forClass($schoolClassId)
             ->forPlayer($playerId)
@@ -74,8 +74,9 @@ class EloService
         $participation->update(['elo_rating' => $eloAfter]);
 
         $participation->eloHistories()->create([
-            'elo_before' => $eloBefore,
-            'elo_after'  => $eloAfter,
+            'game_match_id' => $gameMatchId,
+            'elo_before'    => $eloBefore,
+            'elo_after'     => $eloAfter,
         ]);
     }
 

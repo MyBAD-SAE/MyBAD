@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { Head, usePage } from '@inertiajs/vue3'
+import { Head, usePage, router } from '@inertiajs/vue3'
 import PlayerLayout from '@/Layouts/PlayerLayout.vue'
 import DeclarationMatchStep1 from '@/Components/Match/MatchDeclarationStep1.vue'
 import DeclarationMatchStep2 from '@/Components/Match/MatchDeclarationStep2.vue'
@@ -56,6 +56,24 @@ function handleBack() {
     <Head title="Déclarer un match" />
 
     <PlayerLayout>
+    <!-- Pas de séance active -->
+    <div v-if="!activeSession" class="h-dvh flex flex-col items-center justify-center px-8 text-center bg-white">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center mb-5 bg-gray-100">
+        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-[#352B2B] mb-2">Aucune séance active</h2>
+      <p class="text-sm text-gray-400 leading-5">La déclaration de match n'est disponible que pendant une séance ouverte par votre professeur.</p>
+      <button
+        @click="router.visit(route('home'))"
+        class="mt-8 text-sm font-semibold text-[#27BDAE]"
+      >
+        Retour au dashboard
+      </button>
+    </div>
+
+    <template v-else>
     <DeclarationMatchStep1
       v-if="currentStep === 1"
       :current-player="currentPlayer"
@@ -92,5 +110,6 @@ function handleBack() {
       :elo-change="matchData.eloChange"
       @restart="handleRestart"
     />
+    </template>
     </PlayerLayout>
 </template>

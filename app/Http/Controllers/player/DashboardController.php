@@ -32,10 +32,13 @@ class DashboardController extends Controller
         $totalMatches = 0;
         $winStreak = 0;
 
+        $recentMatches = [];
+
         if ($player) {
             $matchData = $this->dashboardService->getMatchStats($player, $classId);
             $matchStats = $matchData['matchStats'];
             $totalMatches = $matchData['totalMatches'];
+            $recentMatches = $this->dashboardService->getRecentMatches($player, $classId);
 
             if ($participation) {
                 $eloData = $this->dashboardService->getEloData($participation, $matchStats['total']);
@@ -59,6 +62,7 @@ class DashboardController extends Controller
             'totalMatches'    => $totalMatches,
             'winStreak'       => $winStreak,
             'rankingPlayers'  => $this->rankingService->getRankingForClass($player, $classId),
+            'recentMatches'   => $recentMatches,
         ]);
     }
 }

@@ -74,7 +74,7 @@ class AccountController extends Controller
         return redirect()->route('player.account.infos');
     }
 
-    public function confidentialite(PlayerExportService $export): Response
+    public function privacy(PlayerExportService $export): Response
     {
         /** @var User $user */
         $user = Auth::guard('player')->user();

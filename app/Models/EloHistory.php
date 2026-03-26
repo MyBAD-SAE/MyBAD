@@ -12,6 +12,7 @@ class EloHistory extends Model
 {
     protected $fillable = [
         'participant_id',
+        'game_match_id',
         'elo_before',
         'elo_after',
     ];
@@ -27,5 +28,10 @@ class EloHistory extends Model
     public function participant(): BelongsTo
     {
         return $this->belongsTo(ClassParticipant::class);
+    }
+
+    public function gameMatch(): BelongsTo
+    {
+        return $this->belongsTo(GameMatch::class);
     }
 }

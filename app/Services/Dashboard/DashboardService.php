@@ -2,8 +2,10 @@
 
 namespace App\Services\Dashboard;
 
-use App\Models\GameMatch;
+use App\Http\Resources\GameMatchResource;
 use App\Models\ClassParticipant;
+use App\Models\EloHistory;
+use App\Models\GameMatch;
 use App\Models\Player;
 use Carbon\Carbon;
 
@@ -110,6 +112,36 @@ class DashboardService
         }
 
         return $streak;
+    }
+
+    /**
+     * Retourne les 5 derniers matchs du joueur formatés pour le widget du dashboard.
+     */
+    public function getRecentMatches(Player $player, ?int $classId): array
+    {
+        $participation = $player->selectedParticipation();
+
+        $matches = GameMatch::forPlayer($player->id)
+            ->when($classId, fn ($q) => $q->forClass($classId))
+            ->with(['players.user'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $eloHistoriesByMatchId = $participation
+            ? EloHistory::where('participant_id', $participation->id)
+                ->whereIn('game_match_id', $matches->pluck('id'))
+                ->get()
+                ->keyBy('game_match_id')
+            : collect();
+
+        return $matches->map(fn (GameMatch $m) => GameMatchResource::make($m)
+            ->additional([
+                'player'     => $player,
+                'eloHistory' => $eloHistoriesByMatchId->get($m->id),
+            ])
+            ->resolve()
+        )->values()->all();
     }
 
     /**
