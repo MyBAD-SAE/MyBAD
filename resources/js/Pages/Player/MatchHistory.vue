@@ -7,7 +7,7 @@ import ClassPicker from '@/Components/dashboard/ClassPicker.vue'
 import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs'
-import { Trophy, Frown } from 'lucide-vue-next'
+import { Trophy, Frown, ArrowLeft } from 'lucide-vue-next'
 
 const props = defineProps({
   matches: { type: Array, default: () => [] },
@@ -43,7 +43,7 @@ const filteredMatches = computed(() => {
 
 // Navigation
 function goBack() {
-  router.visit(route('home'))
+  window.history.back()
 }
 
 function goToNewMatch() {
@@ -68,18 +68,19 @@ function getAvatarColor(name) {
   <div class="h-dvh overflow-hidden flex flex-col">
 
       <!-- Header -->
-      <div class="px-5 pt-6 pb-5 relative flex items-center justify-center">
-        <button
-          @click="goBack"
-          class="absolute left-4 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors"
-          style="background-color: #ffffff; border: 1px solid #e5e7eb;"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #352B2B;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-          </svg>
-        </button>
-        <h1 class="text-lg font-bold" style="color: #352B2B;">Historique des matchs</h1>
-        <ClassPicker v-if="classes.length >= 2" class="absolute right-4" :classes="classes" :selected-class-id="selectedClassId" />
+      <div class="px-4 pt-6 pb-4">
+        <div class="relative flex items-center justify-center">
+          <button
+            @click="goBack"
+            class="absolute left-0 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors"
+            style="background-color: #ffffff; border: 1px solid #e5e7eb;"
+          >
+            <ArrowLeft class="h-4 w-4 text-foreground" />
+          </button>
+          <h1 v-if="classes.length < 2" class="text-lg font-bold">Historique des matchs</h1>
+          <ClassPicker v-if="classes.length >= 2" class="absolute right-0" :classes="classes" :selected-class-id="selectedClassId" />
+        </div>
+        <h1 v-if="classes.length >= 2" class="text-lg font-bold text-center mt-3">Historique des matchs</h1>
       </div>
 
       <!-- Content -->
