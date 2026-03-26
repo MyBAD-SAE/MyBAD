@@ -1,31 +1,68 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import AdminClassPicker from '@/Components/admin/AdminClassPicker.vue';
+import AdminActionCard from '@/Components/admin/AdminActionCard.vue';
+import AdminRankingCard from '@/Components/admin/AdminRankingCard.vue';
+import { Play, Users, Swords, Trophy } from 'lucide-vue-next';
 
-const user = usePage().props.auth.user;
+defineProps({
+    classes: { type: Array, default: () => [] },
+    selectedClassId: { type: Number, default: null },
+    playerCount: { type: Number, default: 0 },
+    matchCount: { type: Number, default: 0 },
+    rankingPlayers: { type: Array, default: () => [] },
+    adminUser: { type: Object, default: () => ({}) },
+});
 </script>
 
 <template>
     <Head title="Dashboard Admin" />
 
-    <div class="flex min-h-screen items-center justify-center bg-background">
-        <div class="w-full max-w-md space-y-6 p-8 text-center">
-            <h1 class="text-3xl font-bold">Bienvenue, {{ user.first_name }}</h1>
-            <p class="text-muted-foreground">Espace administrateur</p>
+    <AdminLayout>
+        <div class="p-8 space-y-8">
+            <!-- Gestion section -->
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-2xl font-bold text-foreground">Gestion</h2>
+                        <p class="mt-1 text-sm text-muted-foreground">Actions rapides administrateur</p>
+                    </div>
+                    <AdminClassPicker :classes="classes" :selected-class-id="selectedClassId" />
+                </div>
 
-            <div class="rounded-lg border p-4 text-left text-sm space-y-1">
-                <p><span class="font-medium">Nom :</span> {{ user.last_name }}</p>
-                <p><span class="font-medium">Prénom :</span> {{ user.first_name }}</p>
-                <p><span class="font-medium">Email :</span> {{ user.email }}</p>
+                <!-- Action cards -->
+                <div class="grid grid-cols-4 gap-4">
+                    <AdminActionCard
+                        title="Nouvelle seance"
+                        description="Lancer une session de jeu pour le groupe"
+                        :icon="Play"
+                        :highlighted="true"
+                    />
+                    <AdminActionCard
+                        title="Joueurs"
+                        description="Gerer les joueurs et leurs profils"
+                        :icon="Users"
+                        :badge="playerCount"
+                    />
+                    <AdminActionCard
+                        title="Matchs"
+                        description="Historique et validation des matchs"
+                        :icon="Swords"
+                        :badge="matchCount"
+                        :href="route('admin.matchs')"
+                    />
+                    <AdminActionCard
+                        title="Regles et defis"
+                        description="Configurer les regles et creer des defis"
+                        :icon="Trophy"
+                        :href="route('admin.regles')"
+                    />
+                </div>
             </div>
 
-            <Link
-                :href="route('admin.logout')"
-                method="post"
-                as="button"
-                class="inline-flex items-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90"
-            >
-                Se déconnecter
-            </Link>
+            <!-- Classement section -->
+            <AdminRankingCard :players="rankingPlayers" :player-count="playerCount" />
         </div>
-    </div>
+    </AdminLayout>
 </template>

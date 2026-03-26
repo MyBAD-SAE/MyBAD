@@ -23,16 +23,22 @@ class RankingService
             return [];
         }
 
-        $schoolClassId = $participation->school_class_id;
+        return $this->getRankingForClassId($participation->school_class_id);
+    }
 
-        $participants = ClassParticipant::forClass($schoolClassId)
+    /**
+     * Retourne le classement complet d'une classe par son ID.
+     */
+    public function getRankingForClassId(int $classId): array
+    {
+        $participants = ClassParticipant::forClass($classId)
             ->forPlayerType()
             ->with('participantable.user')
             ->orderByDesc('elo_rating')
             ->get();
 
         $playerIds = $participants->pluck('participantable_id');
-        $matchStats = $this->getBulkMatchStats($playerIds, $schoolClassId);
+        $matchStats = $this->getBulkMatchStats($playerIds, $classId);
         $eloTrends = $this->getBulkEloTrends($participants);
 
         return $participants->values()->map(function (ClassParticipant $participant, int $index) use ($matchStats, $eloTrends) {

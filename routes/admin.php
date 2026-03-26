@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\admin\Auth\RegisteredAdminController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])
             ->name('logout');
 
-        Route::get('dashboard', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+        Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::post('class/select', [AdminDashboardController::class, 'selectClass'])->name('class.select');
+
+        Route::get('matchs', fn () => Inertia::render('Admin/Matchs'))->name('matchs');
+        Route::get('regles', fn () => Inertia::render('Admin/Regles'))->name('regles');
     });
 });
