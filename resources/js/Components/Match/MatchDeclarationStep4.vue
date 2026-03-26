@@ -34,7 +34,7 @@ const currentStep = ref(4)
 const isVictory = props.myScore > props.opponentScore
 
 function goToRanking() {
-  router.visit(route('classements'))
+  router.visit(route('ranking'))
 }
 
 function getInitials(name) {
