@@ -12,7 +12,6 @@ defineProps({
     playerCount: { type: Number, default: 0 },
     matchCount: { type: Number, default: 0 },
     rankingPlayers: { type: Array, default: () => [] },
-    adminUser: { type: Object, default: () => ({}) },
 });
 </script>
 
@@ -45,6 +44,7 @@ defineProps({
                         description="Gerer les joueurs et leurs profils"
                         :icon="Users"
                         :badge="playerCount"
+                        :href="route('admin.joueurs')"
                         icon-bg-class="bg-violet-100"
                         icon-color-class="text-violet-500"
                     />

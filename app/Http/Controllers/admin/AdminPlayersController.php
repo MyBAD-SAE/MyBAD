@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminUser;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
 use App\Services\Ranking\RankingService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AdminDashboardController extends Controller
+class AdminPlayersController extends Controller
 {
     public function __construct(
         private readonly RankingService $rankingService,
@@ -39,45 +36,33 @@ class AdminDashboardController extends Controller
             $selectedClassId = $classes[0]['id'] ?? null;
         }
 
+        $players = [];
         $playerCount = 0;
         $matchCount = 0;
-        $rankingPlayers = [];
+        $averageElo = 0;
 
         if ($selectedClassId) {
-            $playerCount = ClassParticipant::forClass($selectedClassId)
-                ->forPlayerType()
-                ->count();
-
+            $players = $this->rankingService->getRankingForClassId($selectedClassId);
+            $playerCount = count($players);
             $matchCount = GameMatch::forClass($selectedClassId)->count();
 
-            $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId);
+            if ($playerCount > 0) {
+                $averageElo = round(
+                    ClassParticipant::forClass($selectedClassId)
+                        ->forPlayerType()
+                        ->avg('elo_rating'),
+                    1
+                );
+            }
         }
 
-        return Inertia::render('Admin/Dashboard', [
-            'classes'         => $classes,
-            'selectedClassId' => $selectedClassId,
+        return Inertia::render('Admin/Joueurs', [
+            'players'         => $players,
             'playerCount'     => $playerCount,
             'matchCount'      => $matchCount,
-            'rankingPlayers'  => $rankingPlayers,
+            'averageElo'      => $averageElo,
+            'classes'         => $classes,
+            'selectedClassId' => $selectedClassId,
         ]);
-    }
-
-    public function selectClass(Request $request): RedirectResponse
-    {
-        $request->validate(['class_id' => 'required|integer']);
-
-        $adminUser = auth('admin')->user()->adminUser;
-
-        $hasAccess = $adminUser->classParticipants()
-            ->whereHas('schoolClass', fn ($q) => $q->where('id', $request->class_id))
-            ->exists();
-
-        if (!$hasAccess) {
-            abort(403);
-        }
-
-        session(['admin_selected_class_id' => (int) $request->class_id]);
-
-        return back();
     }
 }

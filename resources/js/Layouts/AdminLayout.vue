@@ -51,29 +51,29 @@ const getInitials = (name) => {
 
             <!-- Nouvelle seance button -->
             <div class="px-4 pb-8">
-                <button class="flex w-full items-center gap-3 rounded-2xl bg-primary px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-primary/90">
+                <button class="flex w-full items-center gap-3 rounded-2xl bg-primary px-5 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90">
                     <Plus class="h-5 w-5" />
                     Nouvelle séance
                 </button>
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 space-y-2 px-4">
+            <nav class="flex-1 space-y-1 px-4">
                 <Link
                     v-for="item in navItems"
                     :key="item.routeName"
                     :href="route(item.routeName)"
-                    class="flex items-center gap-4 rounded-lg px-4 py-3 text-base font-medium transition-colors"
+                    class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-normal transition-colors"
                     :class="isActive(item.routeName) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
                 >
-                    <component :is="item.icon" class="h-6 w-6" />
+                    <component :is="item.icon" class="h-5 w-5" />
                     {{ item.label }}
                 </Link>
             </nav>
 
             <!-- Admin profile -->
             <div class="p-4">
-                <div class="flex items-center gap-3">
+                <Link :href="route('admin.account')" class="flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-gray-100">
                     <Avatar class="h-10 w-10">
                         <AvatarImage v-if="adminUser.avatar" :src="adminUser.avatar" />
                         <AvatarFallback class="text-xs">{{ getInitials(adminUser.fullName) }}</AvatarFallback>
@@ -83,7 +83,7 @@ const getInitials = (name) => {
                         <p class="text-xs text-muted-foreground">Administrateur</p>
                     </div>
                     <ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-                </div>
+                </Link>
             </div>
         </aside>
 
