@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Head, usePage } from '@inertiajs/vue3'
+import PlayerLayout from '@/Layouts/PlayerLayout.vue'
 import DeclarationMatchStep1 from '@/Components/Match/MatchDeclarationStep1.vue'
 import DeclarationMatchStep2 from '@/Components/Match/MatchDeclarationStep2.vue'
 import DeclarationMatchStep3 from '@/Components/Match/MatchDeclarationStep3.vue'
@@ -54,6 +55,7 @@ function handleBack() {
 <template>
     <Head title="Déclarer un match" />
 
+    <PlayerLayout>
     <DeclarationMatchStep1
       v-if="currentStep === 1"
       :current-player="currentPlayer"
@@ -90,4 +92,5 @@ function handleBack() {
       :elo-change="matchData.eloChange"
       @restart="handleRestart"
     />
+    </PlayerLayout>
 </template>

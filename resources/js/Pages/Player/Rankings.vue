@@ -33,13 +33,13 @@ const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
         <div class="pb-20">
             <!-- Header -->
             <div class="px-4 pt-6 pb-4">
-                <div class="flex items-center justify-between mb-3">
-                    <Link :href="route('home')" class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors" style="background-color: #ffffff; border: 1px solid #e5e7eb;">
+                <div class="relative flex items-center justify-center">
+                    <Link :href="route('home')" class="absolute left-0 w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors" style="background-color: #ffffff; border: 1px solid #e5e7eb;">
                         <ArrowLeft class="h-4 w-4 text-foreground" />
                     </Link>
-                    <ClassPicker v-if="classes.length > 1" :classes="classes" :selected-class-id="selectedClassId" />
+                    <h1 class="text-lg font-bold">Classement</h1>
+                    <ClassPicker v-if="classes.length > 1" class="absolute right-0" :classes="classes" :selected-class-id="selectedClassId" />
                 </div>
-                <h1 class="text-lg font-bold text-center">Classement</h1>
             </div>
 
             <div class="px-5 pb-5">
