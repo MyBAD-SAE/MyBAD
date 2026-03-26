@@ -2,7 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Button } from '@/Components/ui/button';
-import { LayoutDashboard, Swords, Trophy, Plus, ChevronDown, Smartphone } from 'lucide-vue-next';
+import { LayoutDashboard, Users, Swords, Trophy, Plus, ChevronDown, Smartphone } from 'lucide-vue-next';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -14,6 +14,7 @@ const adminUser = page.props.adminUser ?? {
 
 const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, routeName: 'admin.dashboard' },
+    { label: 'Joueurs', icon: Users, routeName: 'admin.joueurs' },
     { label: 'Matchs', icon: Swords, routeName: 'admin.matchs' },
     { label: 'Regles et defis', icon: Trophy, routeName: 'admin.regles' },
 ];
