@@ -18,15 +18,5 @@ php artisan migrate
 php artisan optimize:clear
 php artisan optimize
 
-Salut claude, analyse toute la structure, les models, resources, controller, routes...
-Optimise le tout, utilise autant que possible Eloquent, les resources qu'on a créées, crée des fichiers request lorsque c'est nécessaire, tu peux aussi créer des services.php pour déplacer certaines fonctions logiques hors des controller...
-Rend mon projet plus clair et maintenable
-
-Pour rappel :
-Controller : C'est le point d'entrée d'une requête HTTP. Il reçoit la requête, appelle les bons services, et retourne une réponse (JSON, vue, etc.). Il ne doit pas contenir de logique métier, juste coordonner.
-Request : C'est une classe dédiée à la validation des données entrantes. Avant même d'entrer dans le controller, Laravel vérifie que les données respectent les règles définies (champ requis, format email, etc.). Si ce n'est pas le cas, une erreur est renvoyée automatiquement.
-Resource : C'est un transformateur de données. Il permet de formater proprement un modèle Eloquent avant de le renvoyer en JSON, par exemple pour cacher certains champs, renommer des propriétés ou ajouter des données calculées.
-Service : C'est là où vit la logique métier. Le controller lui délègue le travail complexe (calculs, appels à la base de données, règles métier). Cela permet de garder le code organisé et réutilisable depuis plusieurs endroits.
-En résumé, le flux typique est : Request (validation) → Controller (coordination) → Service (logique) → Resource (formatage de la réponse).
 php artisan storage:link
 mkdir -p storage/app/public/profile-photos/
