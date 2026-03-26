@@ -1,7 +1,11 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
-const user = usePage().props.auth.user;
+const props = defineProps({
+    auth: Object,
+});
+
+const user = props.auth.user;
 </script>
 
 <template>

@@ -1,7 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-
 import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
 import SuggestionCard from '@/Components/dashboard/SuggestionCard.vue';
 import EloCard from '@/Components/dashboard/EloCard.vue';
