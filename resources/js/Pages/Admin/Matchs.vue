@@ -322,7 +322,7 @@ const getInitials = (name) => {
                 <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
                     <div class="absolute inset-0 bg-black/40" @click="closeEditModal" />
 
-                    <div class="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                    <div class="relative z-10 mx-4 w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
                         <!-- Icon -->
                         <div class="mb-4 flex justify-center">
                             <div class="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
@@ -336,14 +336,14 @@ const getInitials = (name) => {
                         </h3>
 
                         <!-- Match scores card -->
-                        <div v-if="matchToEdit" class="mb-5 flex items-center justify-center gap-4 rounded-xl bg-gray-50 px-5 py-4">
+                        <div v-if="matchToEdit" class="mb-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 overflow-hidden rounded-xl bg-gray-50 px-6 py-5">
                             <!-- Player 1 -->
-                            <div class="flex items-center gap-2.5">
+                            <div class="flex items-center gap-2.5 justify-self-start">
                                 <Avatar class="h-10 w-10 shrink-0">
                                     <AvatarImage v-if="matchToEdit.player1.avatar" :src="matchToEdit.player1.avatar" />
                                     <AvatarFallback class="text-xs">{{ getInitials(matchToEdit.player1.name) }}</AvatarFallback>
                                 </Avatar>
-                                <span class="text-sm font-semibold text-foreground">{{ matchToEdit.player1.name.split(' ')[0] }}</span>
+                                <span class="text-sm font-semibold text-foreground truncate">{{ matchToEdit.player1.name.split(' ')[0] }}</span>
                             </div>
 
                             <!-- Score inputs -->
@@ -366,8 +366,8 @@ const getInitials = (name) => {
                             </div>
 
                             <!-- Player 2 -->
-                            <div class="flex items-center gap-2.5">
-                                <span class="text-sm font-semibold text-foreground">{{ matchToEdit.player2.name.split(' ')[0] }}</span>
+                            <div class="flex items-center gap-2.5 justify-self-end">
+                                <span class="text-sm font-semibold text-foreground truncate">{{ matchToEdit.player2.name.split(' ')[0] }}</span>
                                 <Avatar class="h-10 w-10 shrink-0">
                                     <AvatarImage v-if="matchToEdit.player2.avatar" :src="matchToEdit.player2.avatar" />
                                     <AvatarFallback class="text-xs">{{ getInitials(matchToEdit.player2.name) }}</AvatarFallback>
