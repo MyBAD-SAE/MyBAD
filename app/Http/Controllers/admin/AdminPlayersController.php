@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
 use App\Services\Ranking\RankingService;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -64,5 +65,13 @@ class AdminPlayersController extends Controller
             'classes'         => $classes,
             'selectedClassId' => $selectedClassId,
         ]);
+    }
+
+    public function destroy(ClassParticipant $participant): RedirectResponse
+    {
+        $participant->eloHistories()->delete();
+        $participant->delete();
+
+        return redirect()->route('admin.joueurs');
     }
 }

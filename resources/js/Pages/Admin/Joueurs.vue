@@ -1,9 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Input } from '@/Components/ui/input';
+import { Button } from '@/Components/ui/button';
 import {
     ArrowLeft,
     Users,
@@ -15,6 +16,7 @@ import {
     Pencil,
     Trash2,
     Plus,
+    AlertTriangle,
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -29,6 +31,28 @@ const props = defineProps({
 const search = ref('');
 const sortBy = ref('elo');
 const sortOpen = ref(false);
+
+// Delete modal
+const showDeleteModal = ref(false);
+const playerToDelete = ref(null);
+const deleteForm = useForm({});
+
+const openDeleteModal = (player) => {
+    playerToDelete.value = player;
+    showDeleteModal.value = true;
+};
+
+const closeDeleteModal = () => {
+    showDeleteModal.value = false;
+    playerToDelete.value = null;
+};
+
+const confirmDelete = () => {
+    if (!playerToDelete.value) return;
+    deleteForm.delete(route('admin.joueurs.destroy', playerToDelete.value.participantId), {
+        onSuccess: () => closeDeleteModal(),
+    });
+};
 
 const sortOptions = [
     { value: 'elo', label: 'ELO' },
@@ -202,7 +226,10 @@ const getWinRateDot = (winRate) => {
                         <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-gray-100">
                             <Pencil class="h-4 w-4 text-muted-foreground" />
                         </button>
-                        <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-red-50">
+                        <button
+                            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-red-50"
+                            @click="openDeleteModal(player)"
+                        >
                             <Trash2 class="h-4 w-4 text-destructive" />
                         </button>
                     </div>
@@ -214,5 +241,77 @@ const getWinRateDot = (winRate) => {
                 </div>
             </div>
         </div>
+
+        <!-- Delete confirmation modal -->
+        <Teleport to="body">
+            <Transition name="fade">
+                <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center">
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-black/40" @click="closeDeleteModal" />
+
+                    <!-- Modal -->
+                    <div class="relative z-10 mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+                        <!-- Warning icon -->
+                        <div class="mb-4 flex justify-center">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+                                <AlertTriangle class="h-7 w-7 text-destructive" />
+                            </div>
+                        </div>
+
+                        <!-- Title -->
+                        <h3 class="mb-4 text-center text-lg font-bold text-foreground">
+                            Retirer ce joueur ?
+                        </h3>
+
+                        <!-- Player info card -->
+                        <div v-if="playerToDelete" class="mb-4 flex items-center justify-center gap-3 rounded-xl bg-gray-50 px-4 py-3">
+                            <Avatar class="h-10 w-10 shrink-0">
+                                <AvatarImage v-if="playerToDelete.avatar" :src="playerToDelete.avatar" />
+                                <AvatarFallback class="text-xs">{{ getInitials(playerToDelete.name) }}</AvatarFallback>
+                            </Avatar>
+                            <span class="text-sm font-semibold text-foreground">{{ playerToDelete.name }}</span>
+                        </div>
+
+                        <!-- Warning text -->
+                        <p class="mb-6 text-center text-sm text-muted-foreground">
+                            Le joueur sera retiré de la séance et son historique ELO sera supprimé.
+                        </p>
+
+                        <!-- Actions -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                class="rounded-xl"
+                                @click="closeDeleteModal"
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="lg"
+                                class="rounded-xl"
+                                :disabled="deleteForm.processing"
+                                @click="confirmDelete"
+                            >
+                                <Trash2 class="h-4 w-4" />
+                                Supprimer
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
     </AdminLayout>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

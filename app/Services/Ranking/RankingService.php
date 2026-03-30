@@ -50,6 +50,7 @@ class RankingService
             $total = $wins + $losses;
 
             return [
+                'participantId' => $participant->id,
                 'rank'    => $index + 1,
                 'name'    => $user->full_name,
                 'avatar'  => $user->profile_picture,
