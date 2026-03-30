@@ -5,6 +5,8 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Input } from '@/Components/ui/input';
 import { Button } from '@/Components/ui/button';
+import { Switch } from '@/Components/ui/switch';
+import { Label } from '@/Components/ui/label';
 import {
     ArrowLeft,
     Users,
@@ -17,6 +19,9 @@ import {
     Trash2,
     Plus,
     AlertTriangle,
+    Crown,
+    Save,
+    Check,
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -51,6 +56,37 @@ const confirmDelete = () => {
     if (!playerToDelete.value) return;
     deleteForm.delete(route('admin.joueurs.destroy', playerToDelete.value.participantId), {
         onSuccess: () => closeDeleteModal(),
+    });
+};
+
+// Edit modal
+const showEditModal = ref(false);
+const playerToEdit = ref(null);
+const editForm = useForm({
+    elo: 0,
+    is_active: true,
+    make_admin: false,
+    user_id: null,
+});
+
+const openEditModal = (player) => {
+    playerToEdit.value = player;
+    editForm.elo = player.elo;
+    editForm.is_active = player.isActive;
+    editForm.make_admin = player.isAdmin;
+    editForm.user_id = player.userId;
+    showEditModal.value = true;
+};
+
+const closeEditModal = () => {
+    showEditModal.value = false;
+    playerToEdit.value = null;
+};
+
+const confirmEdit = () => {
+    if (!playerToEdit.value) return;
+    editForm.put(route('admin.joueurs.update', playerToEdit.value.participantId), {
+        onSuccess: () => closeEditModal(),
     });
 };
 
@@ -223,7 +259,10 @@ const getWinRateDot = (winRate) => {
 
                     <!-- Actions -->
                     <div class="flex items-center gap-2 shrink-0">
-                        <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-gray-100">
+                        <button
+                            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
+                            @click="openEditModal(player)"
+                        >
                             <Pencil class="h-4 w-4 text-muted-foreground" />
                         </button>
                         <button
@@ -242,28 +281,111 @@ const getWinRateDot = (winRate) => {
             </div>
         </div>
 
+        <!-- Edit modal -->
+        <Teleport to="body">
+            <Transition name="fade">
+                <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-black/40" @click="closeEditModal" />
+
+                    <div class="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                        <!-- Player header -->
+                        <div v-if="playerToEdit" class="mb-6 flex items-center gap-4 border-b border-border pb-5">
+                            <Avatar class="h-14 w-14 shrink-0">
+                                <AvatarImage v-if="playerToEdit.avatar" :src="playerToEdit.avatar" />
+                                <AvatarFallback class="text-sm">{{ getInitials(playerToEdit.name) }}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <h3 class="text-lg font-bold text-foreground">{{ playerToEdit.name }}</h3>
+                                <p class="text-sm text-muted-foreground">Modifier le classement ELO</p>
+                            </div>
+                        </div>
+
+                        <!-- Current ELO -->
+                        <div class="mb-5 flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
+                            <span class="text-sm text-muted-foreground">ELO actuel</span>
+                            <span class="text-lg font-bold text-foreground">{{ playerToEdit?.elo }}</span>
+                        </div>
+
+                        <!-- New ELO input -->
+                        <div class="mb-5">
+                            <Label for="edit-elo" class="mb-2 block text-sm font-medium text-muted-foreground">Nouveau ELO</Label>
+                            <Input
+                                id="edit-elo"
+                                v-model.number="editForm.elo"
+                                type="number"
+                                min="0"
+                                class="h-12 rounded-xl bg-gray-50 text-lg font-semibold border-0 shadow-none focus-visible:ring-1 focus-visible:ring-primary"
+                            />
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="mb-5 border-t border-border" />
+
+                        <!-- Toggle options -->
+                        <div class="mb-6 grid grid-cols-2 gap-3">
+                            <div class="flex items-center justify-between gap-5 rounded-2xl border border-border bg-gray-50/50 px-5 py-4">
+                                <span class="whitespace-nowrap text-sm text-muted-foreground">Joueur actif</span>
+                                <Switch
+                                    id="edit-active"
+                                    :checked="editForm.is_active"
+                                    class="h-7 w-12 shrink-0"
+                                    @update:checked="editForm.is_active = $event"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                class="flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-border bg-gray-50/50 px-4 py-3.5 text-sm text-muted-foreground transition-colors cursor-pointer hover:bg-gray-100"
+                                :class="editForm.make_admin && 'bg-primary/10 border-primary text-primary'"
+                                @click="editForm.make_admin = !editForm.make_admin"
+                            >
+                                <Crown v-if="!editForm.make_admin" class="h-4 w-4 shrink-0" />
+                                <Check v-else class="h-4 w-4 shrink-0" />
+                                {{ editForm.make_admin ? 'Retirer admin' : 'Nommer admin' }}
+                            </button>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                class="rounded-xl"
+                                @click="closeEditModal"
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                size="lg"
+                                class="rounded-xl"
+                                :disabled="editForm.processing"
+                                @click="confirmEdit"
+                            >
+                                <Save class="h-4 w-4" />
+                                Enregistrer
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
+
         <!-- Delete confirmation modal -->
         <Teleport to="body">
             <Transition name="fade">
                 <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center">
-                    <!-- Overlay -->
                     <div class="absolute inset-0 bg-black/40" @click="closeDeleteModal" />
 
-                    <!-- Modal -->
                     <div class="relative z-10 mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-                        <!-- Warning icon -->
                         <div class="mb-4 flex justify-center">
                             <div class="flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
                                 <AlertTriangle class="h-7 w-7 text-destructive" />
                             </div>
                         </div>
 
-                        <!-- Title -->
                         <h3 class="mb-4 text-center text-lg font-bold text-foreground">
                             Retirer ce joueur ?
                         </h3>
 
-                        <!-- Player info card -->
                         <div v-if="playerToDelete" class="mb-4 flex items-center justify-center gap-3 rounded-xl bg-gray-50 px-4 py-3">
                             <Avatar class="h-10 w-10 shrink-0">
                                 <AvatarImage v-if="playerToDelete.avatar" :src="playerToDelete.avatar" />
@@ -272,12 +394,10 @@ const getWinRateDot = (winRate) => {
                             <span class="text-sm font-semibold text-foreground">{{ playerToDelete.name }}</span>
                         </div>
 
-                        <!-- Warning text -->
                         <p class="mb-6 text-center text-sm text-muted-foreground">
                             Le joueur sera retiré de la séance et son historique ELO sera supprimé.
                         </p>
 
-                        <!-- Actions -->
                         <div class="grid grid-cols-2 gap-3">
                             <Button
                                 variant="outline"

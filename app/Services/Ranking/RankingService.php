@@ -33,7 +33,7 @@ class RankingService
     {
         $participants = ClassParticipant::forClass($classId)
             ->forPlayerType()
-            ->with('participantable.user')
+            ->with('participantable.user.adminUser')
             ->orderByDesc('elo_rating')
             ->get();
 
@@ -51,10 +51,13 @@ class RankingService
 
             return [
                 'participantId' => $participant->id,
+                'userId'  => $user->id,
                 'rank'    => $index + 1,
                 'name'    => $user->full_name,
                 'avatar'  => $user->profile_picture,
                 'elo'     => (float) $participant->elo_rating,
+                'isActive' => (bool) $user->is_active,
+                'isAdmin'  => $user->adminUser !== null,
                 'wins'    => $wins,
                 'losses'  => $losses,
                 'trend'   => $eloTrends[$playerId] ?? 0,

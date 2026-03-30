@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminUser;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
+use App\Models\User;
 use App\Services\Ranking\RankingService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,7 +28,7 @@ class AdminPlayersController extends Controller
         $classes = $adminUser->classParticipants()
             ->with('schoolClass')
             ->get()
-            ->map(fn ($cp) => [
+            ->map(fn($cp) => [
                 'id'   => $cp->schoolClass->id,
                 'name' => $cp->schoolClass->name,
             ])
@@ -65,6 +69,45 @@ class AdminPlayersController extends Controller
             'classes'         => $classes,
             'selectedClassId' => $selectedClassId,
         ]);
+    }
+
+    public function update(Request $request, ClassParticipant $participant): RedirectResponse
+    {
+        $validated = $request->validate([
+            'elo'        => 'required|numeric|min:0',
+            'is_active'  => 'required|boolean',
+            'make_admin' => 'sometimes|boolean',
+        ]);
+
+        $participant->update(['elo_rating' => $validated['elo']]);
+
+        $user = User::find($request->input('user_id'));
+
+        if ($user) {
+            $user->update(['is_active' => $validated['is_active']]);
+
+            if ($request->boolean('make_admin') && !$user->adminUser) {
+                $newAdmin = AdminUser::create([
+                    'id' => Str::uuid()->toString(),
+                    'user_id' => $user->id,
+                ]);
+
+                ClassParticipant::create([
+                    'participantable_type' => AdminUser::class,
+                    'participantable_id'   => $newAdmin->id,
+                    'elo_rating'           => null,
+                    'school_class_id'      => $participant->school_class_id,
+                ]);
+            } elseif (!$request->boolean('make_admin') && $user->adminUser) {
+                ClassParticipant::where('participantable_type', AdminUser::class)
+                    ->where('participantable_id', $user->adminUser->id)
+                    ->delete();
+
+                $user->adminUser->delete();
+            }
+        }
+
+        return redirect()->route('admin.joueurs');
     }
 
     public function destroy(ClassParticipant $participant): RedirectResponse

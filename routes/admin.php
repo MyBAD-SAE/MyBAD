@@ -33,6 +33,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('account/password', [AdminAccountController::class, 'updatePassword'])->name('account.password');
 
         Route::get('joueurs', [AdminPlayersController::class, 'index'])->name('joueurs');
+        Route::put('joueurs/{participant}', [AdminPlayersController::class, 'update'])->name('joueurs.update');
         Route::delete('joueurs/{participant}', [AdminPlayersController::class, 'destroy'])->name('joueurs.destroy');
 
         Route::get('matchs', [AdminMatchsController::class, 'index'])->name('matchs');
