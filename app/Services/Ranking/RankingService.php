@@ -84,6 +84,10 @@ class RankingService
                 $a = $match->players->first();
                 $b = $match->players->last();
 
+                if (!isset($stats[$a->id]) || !isset($stats[$b->id])) {
+                    return;
+                }
+
                 if ($a->pivot->score > $b->pivot->score) {
                     $stats[$a->id]['wins']++;
                     $stats[$b->id]['losses']++;

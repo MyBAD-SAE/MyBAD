@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
+use App\Models\Player;
 use App\Models\User;
 use App\Services\Ranking\RankingService;
 use Illuminate\Http\RedirectResponse;
@@ -69,6 +70,52 @@ class AdminPlayersController extends Controller
             'classes'         => $classes,
             'selectedClassId' => $selectedClassId,
         ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|size:6',
+            'elo'  => 'required|numeric|min:0',
+        ]);
+
+        $player = Player::where('code', $validated['code'])->first();
+
+        if (!$player) {
+            return redirect()->route('admin.joueurs')->withErrors(['code' => 'Aucun joueur trouvé avec ce code.']);
+        }
+
+        $user = auth('admin')->user();
+        $adminUser = $user->adminUser;
+
+        $classIds = $adminUser->classParticipants()->pluck('school_class_id');
+        $selectedClassId = session('admin_selected_class_id');
+
+        if (!$selectedClassId || !$classIds->contains($selectedClassId)) {
+            $selectedClassId = $classIds->first();
+        }
+
+        if (!$selectedClassId) {
+            return redirect()->route('admin.joueurs');
+        }
+
+        $exists = ClassParticipant::forClass($selectedClassId)
+            ->where('participantable_type', Player::class)
+            ->where('participantable_id', $player->id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->route('admin.joueurs')->withErrors(['code' => 'Ce joueur est déjà dans la classe.']);
+        }
+
+        ClassParticipant::create([
+            'participantable_type' => Player::class,
+            'participantable_id'   => $player->id,
+            'elo_rating'           => $validated['elo'],
+            'school_class_id'      => $selectedClassId,
+        ]);
+
+        return redirect()->route('admin.joueurs');
     }
 
     public function update(Request $request, ClassParticipant $participant): RedirectResponse

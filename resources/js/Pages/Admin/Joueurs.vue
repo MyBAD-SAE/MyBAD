@@ -21,7 +21,8 @@ import {
     AlertTriangle,
     Crown,
     Save,
-    Check,
+    ShieldOff,
+    UserPlus,
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -90,6 +91,34 @@ const confirmEdit = () => {
     });
 };
 
+// Add player modal
+const showAddModal = ref(false);
+const addForm = useForm({
+    code: '',
+    elo: 100,
+});
+
+const openAddModal = () => {
+    addForm.reset();
+    addForm.clearErrors();
+    showAddModal.value = true;
+};
+
+const closeAddModal = () => {
+    showAddModal.value = false;
+};
+
+const confirmAdd = () => {
+    addForm.post(route('admin.joueurs.store'), {
+        onSuccess: () => closeAddModal(),
+    });
+};
+
+const formatCode = (e) => {
+    const raw = addForm.code.replace(/\D/g, '').slice(0, 6);
+    addForm.code = raw;
+};
+
 const sortOptions = [
     { value: 'elo', label: 'ELO' },
     { value: 'name', label: 'Nom' },
@@ -151,7 +180,10 @@ const getWinRateDot = (winRate) => {
                             <p class="text-sm text-muted-foreground">Gérer les joueurs, ELO et statistiques</p>
                         </div>
                     </div>
-                    <button class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90">
+                    <button
+                        class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+                        @click="openAddModal"
+                    >
                         <Plus class="h-4 w-4" />
                         Ajouter un joueur
                     </button>
@@ -281,6 +313,79 @@ const getWinRateDot = (winRate) => {
             </div>
         </div>
 
+        <!-- Add player modal -->
+        <Teleport to="body">
+            <Transition name="fade">
+                <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-black/40" @click="closeAddModal" />
+
+                    <div class="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                        <!-- Header -->
+                        <div class="mb-6 flex items-center gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-violet-100">
+                                <UserPlus class="h-7 w-7 text-violet-500" />
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-foreground">Nouveau joueur</h3>
+                                <p class="text-sm text-muted-foreground">Ajouter un joueur au groupe</p>
+                            </div>
+                        </div>
+
+                        <!-- Code input -->
+                        <div class="mb-5">
+                            <Label for="add-code" class="mb-2 block text-sm text-muted-foreground">Code à 6 chiffres</Label>
+                            <Input
+                                id="add-code"
+                                v-model="addForm.code"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="6"
+                                placeholder="0 0 0 – 0 0 0"
+                                class="h-12 rounded-xl bg-gray-50 text-lg tracking-widest shadow-none focus-visible:ring-1 focus-visible:ring-primary"
+                                @input="formatCode"
+                            />
+                            <p v-if="addForm.errors.code" class="mt-1.5 text-sm text-destructive">{{ addForm.errors.code }}</p>
+                        </div>
+
+                        <!-- ELO input -->
+                        <div class="mb-6">
+                            <Label for="add-elo" class="mb-2 block text-sm text-muted-foreground">
+                                ELO de départ <span class="text-muted-foreground/60">(par défaut 100.0)</span>
+                            </Label>
+                            <Input
+                                id="add-elo"
+                                v-model.number="addForm.elo"
+                                type="number"
+                                min="0"
+                                class="h-12 rounded-xl bg-gray-50 text-lg font-semibold shadow-none focus-visible:ring-1 focus-visible:ring-primary"
+                            />
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                class="rounded-xl"
+                                @click="closeAddModal"
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                size="lg"
+                                class="rounded-xl"
+                                :disabled="addForm.processing"
+                                @click="confirmAdd"
+                            >
+                                <UserPlus class="h-4 w-4" />
+                                Ajouter
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
+
         <!-- Edit modal -->
         <Teleport to="body">
             <Transition name="fade">
@@ -314,7 +419,7 @@ const getWinRateDot = (winRate) => {
                                 v-model.number="editForm.elo"
                                 type="number"
                                 min="0"
-                                class="h-12 rounded-xl bg-gray-50 text-lg font-semibold border-0 shadow-none focus-visible:ring-1 focus-visible:ring-primary"
+                                class="h-12 rounded-xl bg-gray-50 text-lg font-semibold shadow-none focus-visible:ring-1 focus-visible:ring-primary"
                             />
                         </div>
 
@@ -334,12 +439,14 @@ const getWinRateDot = (winRate) => {
                             </div>
                             <button
                                 type="button"
-                                class="flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-border bg-gray-50/50 px-4 py-3.5 text-sm text-muted-foreground transition-colors cursor-pointer hover:bg-gray-100"
-                                :class="editForm.make_admin && 'bg-primary/10 border-primary text-primary'"
+                                class="flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3.5 text-sm font-medium transition-all cursor-pointer"
+                                :class="editForm.make_admin
+                                    ? 'bg-destructive/10 border-destructive/30 text-destructive hover:bg-destructive/15'
+                                    : 'bg-gray-50/50 border-border text-muted-foreground hover:bg-amber-50 hover:border-amber-300 hover:text-amber-600'"
                                 @click="editForm.make_admin = !editForm.make_admin"
                             >
-                                <Crown v-if="!editForm.make_admin" class="h-4 w-4 shrink-0" />
-                                <Check v-else class="h-4 w-4 shrink-0" />
+                                <ShieldOff v-if="editForm.make_admin" class="h-4 w-4 shrink-0" />
+                                <Crown v-else class="h-4 w-4 shrink-0" />
                                 {{ editForm.make_admin ? 'Retirer admin' : 'Nommer admin' }}
                             </button>
                         </div>

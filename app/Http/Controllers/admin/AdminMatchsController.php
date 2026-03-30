@@ -5,6 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\ClassSession;
 use App\Models\GameMatch;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -124,5 +126,30 @@ class AdminMatchsController extends Controller
             'classes'          => $classes,
             'selectedClassId'  => $selectedClassId,
         ]);
+    }
+
+    public function update(Request $request, GameMatch $gameMatch): RedirectResponse
+    {
+        $validated = $request->validate([
+            'score1' => 'required|integer|min:0|max:30',
+            'score2' => 'required|integer|min:0|max:30',
+        ]);
+
+        $players = $gameMatch->players()->get();
+
+        if ($players->count() === 2) {
+            $gameMatch->players()->updateExistingPivot($players->first()->id, ['score' => $validated['score1']]);
+            $gameMatch->players()->updateExistingPivot($players->last()->id, ['score' => $validated['score2']]);
+        }
+
+        return redirect()->route('admin.matchs');
+    }
+
+    public function destroy(GameMatch $gameMatch): RedirectResponse
+    {
+        $gameMatch->players()->detach();
+        $gameMatch->delete();
+
+        return redirect()->route('admin.matchs');
     }
 }
