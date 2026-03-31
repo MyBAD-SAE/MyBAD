@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
-use App\Services\Dashboard\DashboardService;
+use App\Services\Player\PlayerProfileService;
 use App\Services\Ranking\RankingService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,20 +13,18 @@ class RankingController extends Controller
 {
     public function __construct(
         private readonly RankingService $rankingService,
-        private readonly DashboardService $dashboardService,
+        private readonly PlayerProfileService $profileService,
     ) {}
 
     public function index(): Response
     {
-        $user = Auth::guard('player')->user();
-        $player = $user->player;
+        $user    = Auth::guard('player')->user();
+        $player  = $user->player;
         $classId = $player?->selectedParticipation()?->school_class_id;
-
-        $classes = $player ? $this->dashboardService->getPlayerClasses($player) : [];
 
         return Inertia::render('Player/Rankings', [
             'players'         => $this->rankingService->getRankingForClass($player, $classId),
-            'classes'         => $classes,
+            'classes'         => $this->profileService->getPlayerClasses($player),
             'selectedClassId' => $classId,
         ]);
     }
