@@ -23,7 +23,7 @@ const getInitials = (name) => {
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h3 class="text-lg font-semibold text-foreground">Derniers matchs</h3>
-                    <p class="text-sm text-muted-foreground">{{ matches.length }} derniers matchs</p>
+                    <p class="text-sm text-muted-foreground">{{ matches.length }} dernier{{ matches.length > 1 ? 's' : '' }} match{{ matches.length > 1 ? 's' : '' }}</p>
                 </div>
                 <Link :href="route('matches.history')" class="flex items-center gap-1 text-sm font-medium text-primary">
                     Tout voir
