@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ExcelSeeder extends Seeder
 {
@@ -168,13 +169,167 @@ class ExcelSeeder extends Seeder
 
         DB::table('class_participants')->insert($participantRows);
 
-        // --- Séance ---
-        DB::table('class_sessions')->insert([
-            'date'            => now()->toDateString(),
-            'is_active'       => true,
-            'school_class_id' => $classId,
-            'created_at'      => now(),
-            'updated_at'      => now(),
-        ]);
+        // Map player_id → participant_id pour les elo_histories
+        $participantIdByPlayer = DB::table('class_participants')
+            ->where('school_class_id', $classId)
+            ->where('participantable_type', 'App\\Models\\Player')
+            ->pluck('id', 'participantable_id');
+
+        // --- Séances (8 semaines) ---
+        $sessionIds = [];
+        for ($i = 7; $i >= 0; $i--) {
+            $sessionIds[] = DB::table('class_sessions')->insertGetId([
+                'date'            => Carbon::now()->subWeeks($i)->toDateString(),
+                'is_active'       => $i === 0,
+                'school_class_id' => $classId,
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+        }
+
+        // --- Barème elo (même que algorithm_parameters) ---
+        $bareme = [
+            ['min' => -20, 'max' => -12, 'base' => -0.7],
+            ['min' => -11, 'max' => -7,  'base' => -0.2],
+            ['min' => -6,  'max' => -1,  'base' => 0.0],
+            ['min' => 0,   'max' => 6,   'base' => 0.5],
+            ['min' => 7,   'max' => 11,  'base' => 1.0],
+            ['min' => 12,  'max' => 20,  'base' => 1.6],
+        ];
+
+        $vlookup = function (int $ecart) use ($bareme): float {
+            foreach ($bareme as $row) {
+                if ($ecart >= $row['min'] && $ecart <= $row['max']) {
+                    return $row['base'];
+                }
+            }
+            return 0.0;
+        };
+
+        // --- Matchs ---
+        // Les elos du playersData servent de niveaux de force pour déterminer les vainqueurs
+        $skillLevels = [];
+        foreach ($playersData as $index => [$fn, $ln, $elo]) {
+            $skillLevels[$playerIds[$index]] = $elo;
+        }
+
+        // Initialiser les elos courants depuis le playersData
+        $elos = [];
+        foreach ($playersData as $index => [$fn, $ln, $elo]) {
+            $elos[$playerIds[$index]] = $elo;
+        }
+
+        $matchPlayers = [];
+        $eloHistories = [];
+        $playerCount = count($playerIds);
+
+        foreach ($sessionIds as $sessionId) {
+            // Mélanger les indices et créer des paires pour cette session
+            $indices = range(0, $playerCount - 1);
+            shuffle($indices);
+
+            // Créer ~21 matchups par session (chaque joueur joue ~1 match)
+            $matchups = [];
+            for ($i = 0; $i + 1 < $playerCount; $i += 2) {
+                $matchups[] = [$indices[$i], $indices[$i + 1]];
+            }
+
+            foreach ($matchups as $pair) {
+                $p1 = $playerIds[$pair[0]];
+                $p2 = $playerIds[$pair[1]];
+
+                // Déterminer le vainqueur basé sur les skill levels
+                $s1 = $skillLevels[$p1];
+                $s2 = $skillLevels[$p2];
+                $p1WinChance = $s1 / ($s1 + $s2);
+                $roll = mt_rand(1, 100) / 100;
+                $p1Wins = $roll < $p1WinChance;
+
+                // Scores réalistes badminton (en 15)
+                if ($p1Wins) {
+                    $score1 = 15;
+                    $gap = abs($s1 - $s2);
+                    $minLoser = max(3, 13 - intdiv((int) $gap, 2));
+                    $score2 = rand(min($minLoser, 13), 13);
+                } else {
+                    $score2 = 15;
+                    $gap = abs($s1 - $s2);
+                    $minLoser = max(3, 13 - intdiv((int) $gap, 2));
+                    $score1 = rand(min($minLoser, 13), 13);
+                }
+
+                $matchId = DB::table('game_matches')->insertGetId([
+                    'class_session_id' => $sessionId,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ]);
+
+                $matchPlayers[] = [
+                    'game_match_id' => $matchId,
+                    'player_id'     => $p1,
+                    'score'         => $score1,
+                    'validated'     => true,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ];
+                $matchPlayers[] = [
+                    'game_match_id' => $matchId,
+                    'player_id'     => $p2,
+                    'score'         => $score2,
+                    'validated'     => true,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ];
+
+                // Calcul Elo avec la vraie formule du projet
+                // écart = score_vainqueur - score_perdant (toujours positif)
+                $eloBefore1 = $elos[$p1];
+                $eloBefore2 = $elos[$p2];
+                $ecart = abs($score1 - $score2);
+
+                if ($score1 > $score2) {
+                    // p1 gagne
+                    $bonusP1 = $vlookup($ecart) + $ecart / 10;
+                    $malusP2 = $vlookup(-$ecart) - $ecart / 10;
+                    $elos[$p1] = round($eloBefore1 + $bonusP1, 2);
+                    $elos[$p2] = round($eloBefore2 + $malusP2, 2);
+                } else {
+                    // p2 gagne
+                    $bonusP2 = $vlookup($ecart) + $ecart / 10;
+                    $malusP1 = $vlookup(-$ecart) - $ecart / 10;
+                    $elos[$p1] = round($eloBefore1 + $malusP1, 2);
+                    $elos[$p2] = round($eloBefore2 + $bonusP2, 2);
+                }
+
+                $eloHistories[] = [
+                    'participant_id' => $participantIdByPlayer[$p1],
+                    'game_match_id'  => $matchId,
+                    'elo_before'     => $eloBefore1,
+                    'elo_after'      => $elos[$p1],
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ];
+                $eloHistories[] = [
+                    'participant_id' => $participantIdByPlayer[$p2],
+                    'game_match_id'  => $matchId,
+                    'elo_before'     => $eloBefore2,
+                    'elo_after'      => $elos[$p2],
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ];
+            }
+        }
+
+        DB::table('match_player')->insert($matchPlayers);
+        DB::table('elo_histories')->insert($eloHistories);
+
+        // Mettre à jour les elo_rating finaux des participants
+        foreach ($elos as $pid => $elo) {
+            DB::table('class_participants')
+                ->where('participantable_type', 'App\\Models\\Player')
+                ->where('participantable_id', $pid)
+                ->where('school_class_id', $classId)
+                ->update(['elo_rating' => $elo]);
+        }
     }
 }
