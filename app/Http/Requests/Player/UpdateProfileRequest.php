@@ -4,6 +4,7 @@ namespace App\Http\Requests\Player;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UpdateProfileRequest extends FormRequest
@@ -28,6 +29,18 @@ class UpdateProfileRequest extends FormRequest
             'current_password' => ['nullable', 'string', 'required_with:new_password', 'current_password:player'],
             'new_password'     => ['nullable', 'string', 'min:8', 'required_with:current_password', 'confirmed'],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->filled('new_pin')) {
+                $user = Auth::guard('player')->user();
+                if (!Hash::check($this->current_pin, $user->player->pin ?? '')) {
+                    $validator->errors()->add('current_pin', 'Le code PIN actuel est incorrect.');
+                }
+            }
+        });
     }
 
     public function messages(): array

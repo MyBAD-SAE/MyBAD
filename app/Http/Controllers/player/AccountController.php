@@ -3,40 +3,30 @@
 namespace App\Http\Controllers\player;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Player\DeleteAccountRequest;
+use App\Http\Requests\Player\SelectClassRequest;
+use App\Http\Requests\Player\UpdatePhotoRequest;
 use App\Http\Requests\Player\UpdateProfileRequest;
-use App\Http\Resources\ClassParticipantResource;
-use App\Http\Resources\PlayerResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\Player\PlayerExportService;
+use App\Services\Player\PlayerProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AccountController extends Controller
 {
+    public function __construct(private PlayerProfileService $profileService) {}
+
     public function index(): Response
     {
+        /** @var User $user */
         $user = auth('player')->user();
-        $player = $user->player;
-        $classId = $player?->selectedParticipation()?->school_class_id;
 
-        $participant = $this->getParticipantWithRank($user, $classId);
-
-        return Inertia::render('Player/Profile', [
-            'participant' => $participant,
-            'player' => $participant === null && $player
-                ? PlayerResource::make($player->load('user'))->resolve()
-                : null,
-            'classes' => $this->getAllClasses($player),
-            'selectedClassId' => $classId,
-            'matchCount' => $player?->gameMatches()->count() ?? 0,
-        ]);
+        return Inertia::render('Player/Profile', $this->profileService->getProfileData($user));
     }
 
     public function infos(): Response
@@ -54,22 +44,7 @@ class AccountController extends Controller
         /** @var User $user */
         $user = Auth::guard('player')->user();
 
-        $user->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-        ]);
-
-        if ($request->filled('new_pin')) {
-            if (!Hash::check($request->current_pin, $user->player->pin ?? '')) {
-                return back()->withErrors(['current_pin' => 'Le code PIN actuel est incorrect.']);
-            }
-            $user->player->update(['pin' => $request->new_pin]);
-        }
-
-        if ($request->filled('new_password')) {
-            $user->update(['password' => Hash::make($request->new_password)]);
-        }
+        $this->profileService->updateProfile($user, $request->validated());
 
         return redirect()->route('player.account.infos');
     }
@@ -92,63 +67,23 @@ class AccountController extends Controller
         ]);
     }
 
-    public function selectClass(Request $request): RedirectResponse
+    public function selectClass(SelectClassRequest $request): RedirectResponse
     {
-        $request->validate(['class_id' => 'required|integer']);
-
         $player = auth('player')->user()->player;
-        $classIds = $player->classParticipants()->pluck('school_class_id');
 
-        if ($classIds->contains($request->class_id)) {
-            session(['selected_class_id' => (int)$request->class_id]);
+        if ($this->profileService->playerBelongsToClass($player, $request->class_id)) {
+            session(['selected_class_id' => (int) $request->class_id]);
         }
 
         return redirect()->back();
     }
 
-    private function getParticipantWithRank($user, ?int $classId = null): ?array
+    public function destroy(DeleteAccountRequest $request): RedirectResponse
     {
-        $query = $user->player?->classParticipants()->with('participantable.user');
-
-        if ($classId) {
-            $query = $query->where('school_class_id', $classId);
-        }
-
-        $participant = $query?->selectRaw('*, (
-                SELECT COUNT(*) + 1
-                FROM class_participants cp
-                WHERE cp.school_class_id = class_participants.school_class_id
-                  AND cp.elo_rating > class_participants.elo_rating
-            ) as `rank`')
-            ->first();
-
-        return $participant ? ClassParticipantResource::make($participant)->resolve() : null;
-    }
-
-    private function getAllClasses($player): array
-    {
-        if (!$player) {
-            return [];
-        }
-
-        return $player->classParticipants()
-            ->with('schoolClass')
-            ->get()
-            ->map(fn($cp) => ['id' => $cp->school_class_id, 'name' => $cp->schoolClass->name])
-            ->values()
-            ->all();
-    }
-
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'confirmation' => ['required', 'in:SUPPRIMER'],
-        ]);
-
         /** @var User $user */
         $user = Auth::guard('player')->user();
 
-        $user->delete();
+        $this->profileService->deleteAccount($user);
 
         Auth::guard('player')->logout();
         $request->session()->invalidate();
@@ -157,30 +92,12 @@ class AccountController extends Controller
         return redirect()->route('player.login');
     }
 
-    public function updatePhoto(Request $request): RedirectResponse
+    public function updatePhoto(UpdatePhotoRequest $request): RedirectResponse
     {
-        $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-        ], [
-            'photo.required' => 'Veuillez sélectionner une photo.',
-            'photo.image' => 'Le fichier doit être une image.',
-            'photo.mimes' => 'L\'image doit être au format JPG, PNG ou WebP.',
-            'photo.max' => 'L\'image ne doit pas dépasser 2 Mo.',
-        ]);
-
         /** @var User $user */
         $user = Auth::guard('player')->user();
 
-        // Delete old photo from storage if it was a local upload
-        if ($user->profile_picture && str_starts_with($user->profile_picture, '/storage/profile-photos/')) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $user->profile_picture));
-        }
-
-        $path = $request->file('photo')->store('profile-photos', 'public');
-
-        $user->update([
-            'profile_picture' => '/storage/' . $path,
-        ]);
+        $this->profileService->updatePhoto($user, $request->file('photo'));
 
         return back();
     }

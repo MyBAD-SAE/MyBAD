@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Player;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StorePinRequest extends FormRequest
+class SelectClassRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +15,7 @@ class StorePinRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'pin' => ['required', 'digits:4'],
+            'class_id' => ['required', 'integer', Rule::exists('school_classes', 'id')],
         ];
     }
 }

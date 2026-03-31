@@ -2,15 +2,66 @@
 
 namespace App\Services\Dashboard;
 
-use App\Http\Resources\GameMatchResource;
+use App\Http\Resources\ClassParticipantResource;
 use App\Models\ClassParticipant;
-use App\Models\EloHistory;
 use App\Models\GameMatch;
 use App\Models\Player;
+use App\Models\User;
+use App\Services\Player\MatchHistoryService;
+use App\Services\Player\PlayerProfileService;
 use Carbon\Carbon;
 
 class DashboardService
 {
+    public function __construct(
+        private readonly MatchHistoryService $matchHistoryService,
+        private readonly PlayerProfileService $profileService,
+    ) {}
+
+    public function getDashboardData(User $user): array
+    {
+        $player        = $user->player;
+        $participation = $player?->selectedParticipation()?->load('participantable.user');
+        $classId       = $participation?->school_class_id;
+
+        $classes       = $this->profileService->getPlayerClasses($player);
+        $eloDiff       = 0;
+        $eloHistory    = [];
+        $matchStats    = ['wins' => 0, 'losses' => 0, 'total' => 0, 'sessions' => []];
+        $totalMatches  = 0;
+        $winStreak     = 0;
+        $recentMatches = [];
+
+        if ($player) {
+            $matchData     = $this->getMatchStats($player, $classId);
+            $matchStats    = $matchData['matchStats'];
+            $totalMatches  = $matchData['totalMatches'];
+            $recentMatches = $this->getRecentMatches($player, $classId);
+            $winStreak     = $this->getWinStreak($player, $matchData['matches']);
+
+            if ($participation) {
+                $eloData    = $this->getEloData($participation, $matchStats['total']);
+                $eloDiff    = $eloData['eloDiff'];
+                $eloHistory = $eloData['eloHistory'];
+            }
+        }
+
+        return [
+            'participant'     => $participation ? ClassParticipantResource::make($participation)->resolve() : null,
+            'classes'         => $classes,
+            'selectedClassId' => $classId,
+            'playerCode'      => $player?->code,
+            'firstName'       => $user->first_name,
+            'avatarUrl'       => $user->profile_picture,
+            'eloDiff'         => $eloDiff,
+            'eloHistory'      => $eloHistory,
+            'matchStats'      => $matchStats,
+            'totalMatches'    => $totalMatches,
+            'winStreak'       => $winStreak,
+            'recentMatches'   => $recentMatches,
+        ];
+    }
+
     /**
      * Récupère les stats de matchs groupées par séance (4 dernières séances).
      */
@@ -119,45 +170,7 @@ class DashboardService
      */
     public function getRecentMatches(Player $player, ?int $classId): array
     {
-        $participation = $player->selectedParticipation();
-
-        $matches = GameMatch::forPlayer($player->id)
-            ->when($classId, fn ($q) => $q->forClass($classId))
-            ->with(['players.user'])
-            ->latest()
-            ->take(5)
-            ->get();
-
-        $eloHistoriesByMatchId = $participation
-            ? EloHistory::where('participant_id', $participation->id)
-                ->whereIn('game_match_id', $matches->pluck('id'))
-                ->get()
-                ->keyBy('game_match_id')
-            : collect();
-
-        return $matches->map(fn (GameMatch $m) => GameMatchResource::make($m)
-            ->additional([
-                'player'     => $player,
-                'eloHistory' => $eloHistoriesByMatchId->get($m->id),
-            ])
-            ->resolve()
-        )->values()->all();
-    }
-
-    /**
-     * Récupère la liste des classes du joueur.
-     */
-    public function getPlayerClasses(Player $player): array
-    {
-        return $player->classParticipants()
-            ->with('schoolClass')
-            ->get()
-            ->map(fn (ClassParticipant $cp) => [
-                'id'   => $cp->school_class_id,
-                'name' => $cp->schoolClass->name,
-            ])
-            ->values()
-            ->all();
+        return $this->matchHistoryService->getMatches($player, $classId, 5);
     }
 
     /**

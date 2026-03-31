@@ -5,11 +5,11 @@ namespace App\Http\Controllers\player;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Player\StoreMatchRequest;
 use App\Http\Requests\Player\VerifyPinRequest;
+use App\Http\Resources\PlayerCardResource;
 use App\Models\Player;
 use App\Services\Match\MatchDeclarationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,15 +25,9 @@ class MatchDeclarationController extends Controller
     public function create(): Response
     {
         $player = $this->currentPlayer();
-        $user = $player->user;
 
         return Inertia::render('Player/MatchDeclaration', [
-            'currentPlayer' => [
-                'id'        => $player->id,
-                'name'      => $user->full_name,
-                'firstName' => $user->first_name,
-                'avatar'    => $user->profile_picture,
-            ],
+            'currentPlayer' => PlayerCardResource::make($player->load('user'))->resolve(),
             'activeSession' => $this->matchService->getActiveSession($player)?->id,
         ]);
     }
@@ -63,16 +57,7 @@ class MatchDeclarationController extends Controller
     {
         $opponent = Player::findOrFail($request->player_id);
 
-        if (!$opponent->pin) {
-            return response()->json([
-                'valid'   => false,
-                'message' => "Ce joueur n'a pas encore défini de code PIN.",
-            ]);
-        }
-
-        return response()->json([
-            'valid' => Hash::check($request->pin, $opponent->pin),
-        ]);
+        return response()->json($this->matchService->verifyOpponentPin($opponent, $request->pin));
     }
 
     /**

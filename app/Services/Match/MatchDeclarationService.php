@@ -2,12 +2,14 @@
 
 namespace App\Services\Match;
 
+use App\Http\Resources\PlayerCardResource;
 use App\Models\ClassParticipant;
 use App\Models\ClassSession;
 use App\Models\GameMatch;
 use App\Models\Player;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class MatchDeclarationService
 {
@@ -45,15 +47,27 @@ class MatchDeclarationService
             ->with('participantable.user')
             ->get()
             ->map(fn (ClassParticipant $cp) => [
-                'id'             => $cp->participantable->id,
-                'name'           => $cp->participantable->user->full_name,
-                'firstName'      => $cp->participantable->user->first_name,
-                'avatar'         => $cp->participantable->user->profile_picture,
+                ...PlayerCardResource::make($cp->participantable)->resolve(),
                 'elo'            => (float) $cp->elo_rating,
                 'already_played' => $alreadyPlayedIds->contains($cp->participantable->id),
             ])
             ->sortBy('already_played')
             ->values();
+    }
+
+    /**
+     * Vérifie le PIN d'un adversaire.
+     */
+    public function verifyOpponentPin(Player $opponent, string $pin): array
+    {
+        if (!$opponent->pin) {
+            return [
+                'valid'   => false,
+                'message' => "Ce joueur n'a pas encore défini de code PIN.",
+            ];
+        }
+
+        return ['valid' => Hash::check($pin, $opponent->pin)];
     }
 
     /**
