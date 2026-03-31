@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Button } from '@/Components/ui/button';
@@ -9,11 +9,15 @@ import { Card, CardContent } from '@/Components/ui/card';
 import ConditionsFooter from '@/Components/ConditionsFooter.vue';
 import { Mail, ArrowLeft, ArrowRight, CheckCircle, RefreshCw, LoaderCircle } from 'lucide-vue-next';
 
+const props = defineProps({
+    flash: Object,
+});
+
 const form = useForm({
     email: '',
 });
 
-const emailSent = computed(() => usePage().props.flash?.success === true);
+const emailSent = computed(() => props.flash?.success === true);
 const emailTouched = ref(false);
 
 const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);

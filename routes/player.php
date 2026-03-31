@@ -9,16 +9,17 @@ use App\Http\Controllers\player\RankingController;
 use App\Http\Controllers\player\DashboardController;
 use App\Http\Controllers\player\EloDetailsController;
 use App\Http\Controllers\player\MatchDeclarationController;
+use App\Http\Controllers\player\MatchHistoryController;
 use App\Http\Controllers\player\PinController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth:player')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
-    Route::get('matchs', fn() => Inertia::render('Player/Matches'))->name('matchs');
-    Route::get('classements', [RankingController::class, 'index'])->name('classements');
+    Route::get('matchs', fn() => Inertia::render('Player/Matches'))->name('matches');
+    Route::get('classements', [RankingController::class, 'index'])->name('ranking');
     Route::get('elo-details', [EloDetailsController::class, 'index'])->name('elo.details');
-    Route::get('historique-matchs', fn () => Inertia::render('Player/MatchHistory'))->name('historique.matchs');
+    Route::get('historique-matchs', [MatchHistoryController::class, 'index'])->name('matches.history');
 
     Route::prefix('declarer-un-match')
         ->name('match.')
@@ -39,7 +40,7 @@ Route::middleware('auth:player')->group(function () {
             Route::get('infos', [AccountController::class, 'infos'])->name('infos');
             Route::put('infos', [AccountController::class, 'update'])->name('infos.update');
             Route::post('photo', [AccountController::class, 'updatePhoto'])->name('photo.update');
-            Route::get('confidentialite', [AccountController::class, 'confidentialite'])->name('confidentialite');
+            Route::get('confidentialite', [AccountController::class, 'privacy'])->name('privacy');
         });
 
         Route::post('classe', [AccountController::class, 'selectClass'])->name('class.select');
@@ -75,5 +76,5 @@ Route::prefix('player')->name('player.')->group(function () {
     });
 
     Route::get('conditions-utilisation', fn() => Inertia::render('Terms'))->name('terms');
-    Route::get('politique-de-confidentialite', fn() => Inertia::render('Privacy'))->name('privacy');
+    Route::get('politique-de-confidentialite', fn() => Inertia::render('Privacy'))->name('privacy.policy');
 });

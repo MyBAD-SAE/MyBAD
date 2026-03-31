@@ -105,7 +105,7 @@ function getAvatarColor(name) {
 </script>
 
 <template>
-  <div class="h-screen bg-white flex flex-col overflow-hidden">
+  <div class="h-dvh bg-white flex flex-col overflow-hidden">
 
       <!-- Header -->
       <div class="px-5 pt-6 pb-4 flex items-center gap-3">
@@ -146,7 +146,7 @@ function getAvatarColor(name) {
       </div>
 
       <!-- Content -->
-      <div class="flex-1 flex flex-col px-5">
+      <div class="flex-1 min-h-0 flex flex-col px-5">
         <p class="text-sm font-bold text-gray-700 mb-0.5">Sélectionnez le joueur défié</p>
         <p class="text-xs text-gray-400 mb-2">Recherchez votre adversaire dans la liste ci-dessous</p>
 
@@ -179,7 +179,7 @@ function getAvatarColor(name) {
           </div>
 
           <!-- Player list -->
-          <div class="flex-1 overflow-y-auto space-y-2 pb-4">
+          <div class="flex-1 min-h-0 overflow-y-auto space-y-2 pb-4">
             <Button
               v-for="player in filteredPlayers"
               :key="player.id"

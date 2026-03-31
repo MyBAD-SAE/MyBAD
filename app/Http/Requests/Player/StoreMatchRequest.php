@@ -14,8 +14,8 @@ class StoreMatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'opponent_id'    => ['required', 'exists:players,id'],
-            'my_score'       => ['required', 'integer', 'min:0', 'max:21'],
+            'opponent_id' => ['required', 'exists:players,id'],
+            'my_score' => ['required', 'integer', 'min:0', 'max:21'],
             'opponent_score' => ['required', 'integer', 'min:0', 'max:21'],
         ];
     }

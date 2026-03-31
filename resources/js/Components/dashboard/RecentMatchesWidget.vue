@@ -7,13 +7,7 @@ import { Trophy, Clock, Frown, ChevronRight } from 'lucide-vue-next';
 defineProps({
     matches: {
         type: Array,
-        default: () => [
-            { opponent: 'Quentin UGUEN', score: '15 - 7', eloDiff: 15, date: '10 mar.', won: true },
-            { opponent: 'Amélie DUBOIS', score: '15 - 4', eloDiff: 22, date: '10 mar.', won: true },
-            { opponent: 'Kenji TANAKA', score: '6 - 15', eloDiff: -12, date: '10 mar.', won: false },
-            { opponent: 'Clara MARTIN', score: '15 - 12', eloDiff: 8, date: '10 mar.', won: true },
-            { opponent: 'Hugo LEROUX', score: '4 - 15', eloDiff: -18, date: '10 mar.', won: false },
-        ],
+        default: () => [],
     },
 });
 
@@ -29,9 +23,9 @@ const getInitials = (name) => {
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h3 class="text-lg font-semibold text-foreground">Derniers matchs</h3>
-                    <p class="text-sm text-muted-foreground">{{ matches.length }} matchs récents</p>
+                    <p class="text-sm text-muted-foreground">{{ matches.length }} derniers matchs</p>
                 </div>
-                <Link :href="route('historique.matchs')" class="flex items-center gap-1 text-sm font-medium text-primary">
+                <Link :href="route('matches.history')" class="flex items-center gap-1 text-sm font-medium text-primary">
                     Tout voir
                     <ChevronRight class="h-4 w-4" />
                 </Link>
@@ -46,27 +40,27 @@ const getInitials = (name) => {
                 <!-- Win/Loss icon -->
                 <div
                     class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                    :class="match.won ? 'bg-primary/10' : 'bg-destructive/10'"
+                    :class="match.result === 'win' ? 'bg-primary/10' : 'bg-destructive/10'"
                 >
-                    <Trophy v-if="match.won" class="h-4 w-4 text-primary" />
+                    <Trophy v-if="match.result === 'win'" class="h-4 w-4 text-primary" />
                     <Frown v-else class="h-4 w-4 text-destructive" />
                 </div>
 
                 <!-- Avatar -->
                 <Avatar class="h-9 w-9 shrink-0">
-                    <AvatarFallback class="text-xs">{{ getInitials(match.opponent) }}</AvatarFallback>
+                    <AvatarFallback class="text-xs">{{ getInitials(match.opponent?.name ?? '') }}</AvatarFallback>
                 </Avatar>
 
                 <!-- Info -->
                 <div class="min-w-0 flex-1">
-                    <p class="text-sm font-semibold text-foreground truncate">{{ match.opponent }}</p>
-                    <p class="text-xs text-muted-foreground">{{ match.score }}</p>
+                    <p class="text-sm font-semibold text-foreground truncate">{{ match.opponent?.name }}</p>
+                    <p class="text-xs text-muted-foreground">{{ match.myScore }} – {{ match.opponentScore }}</p>
                 </div>
 
                 <!-- ELO diff & date -->
                 <div class="shrink-0 text-right">
-                    <p class="text-sm font-bold" :class="match.eloDiff > 0 ? 'text-primary' : 'text-destructive'">
-                        {{ match.eloDiff > 0 ? '+' : '' }}{{ match.eloDiff }}
+                    <p class="text-sm font-bold" :class="match.eloChange > 0 ? 'text-primary' : 'text-destructive'">
+                        {{ match.eloChange > 0 ? '+' : '' }}{{ match.eloChange }}
                     </p>
                     <p class="text-xs text-muted-foreground">{{ match.date }}</p>
                 </div>

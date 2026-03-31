@@ -400,18 +400,20 @@ class DatabaseSeeder extends Seeder
                 $elos[$p2] = round($eloBefore2 + $kFactor * ($scoreB - $expectedB), 2);
 
                 $eloHistories[] = [
-                    'elo_before' => $eloBefore1,
-                    'elo_after' => $elos[$p1],
                     'participant_id' => $participantIdByPlayer[$p1],
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'game_match_id'  => $matchId,
+                    'elo_before'     => $eloBefore1,
+                    'elo_after'      => $elos[$p1],
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
                 ];
                 $eloHistories[] = [
-                    'elo_before' => $eloBefore2,
-                    'elo_after' => $elos[$p2],
                     'participant_id' => $participantIdByPlayer[$p2],
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'game_match_id'  => $matchId,
+                    'elo_before'     => $eloBefore2,
+                    'elo_after'      => $elos[$p2],
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
                 ];
             }
         }

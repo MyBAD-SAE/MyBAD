@@ -74,7 +74,7 @@ class AccountController extends Controller
         return redirect()->route('player.account.infos');
     }
 
-    public function confidentialite(PlayerExportService $export): Response
+    public function privacy(PlayerExportService $export): Response
     {
         /** @var User $user */
         $user = Auth::guard('player')->user();
@@ -155,5 +155,33 @@ class AccountController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('player.login');
+    }
+
+    public function updatePhoto(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ], [
+            'photo.required' => 'Veuillez sélectionner une photo.',
+            'photo.image' => 'Le fichier doit être une image.',
+            'photo.mimes' => 'L\'image doit être au format JPG, PNG ou WebP.',
+            'photo.max' => 'L\'image ne doit pas dépasser 2 Mo.',
+        ]);
+
+        /** @var User $user */
+        $user = Auth::guard('player')->user();
+
+        // Delete old photo from storage if it was a local upload
+        if ($user->profile_picture && str_starts_with($user->profile_picture, '/storage/profile-photos/')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $user->profile_picture));
+        }
+
+        $path = $request->file('photo')->store('profile-photos', 'public');
+
+        $user->update([
+            'profile_picture' => '/storage/' . $path,
+        ]);
+
+        return back();
     }
 }

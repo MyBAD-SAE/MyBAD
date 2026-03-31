@@ -1,7 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-
 import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
 import SuggestionCard from '@/Components/dashboard/SuggestionCard.vue';
 import EloCard from '@/Components/dashboard/EloCard.vue';
@@ -29,6 +28,7 @@ const props = defineProps({
     rankingPlayers: Array,
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
+    recentMatches: { type: Array, default: () => [] },
 })
 
 const formattedCode = (code) => {
@@ -146,7 +146,7 @@ function copyCode() {
                     <RankingWidget :players="rankingPlayers" />
 
                     <!-- Derniers matchs -->
-                    <RecentMatchesWidget />
+                    <RecentMatchesWidget v-if="recentMatches.length > 0" :matches="recentMatches" />
                 </template>
             </div>
         </div>
