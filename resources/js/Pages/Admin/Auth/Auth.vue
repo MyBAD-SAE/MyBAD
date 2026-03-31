@@ -32,7 +32,7 @@ const activeTab = ref('login');
                 </div>
                 <!-- Desktop: wrapped in Card -->
                 <div class="hidden lg:block">
-                    <Card>
+                    <Card class="py-6">
                         <CardHeader>
                             <CardTitle class="text-xl">Connexion Admin</CardTitle>
                             <CardDescription>Connectez-vous pour accéder à votre espace de gestion</CardDescription>
@@ -51,8 +51,8 @@ const activeTab = ref('login');
                 </div>
                 <!-- Desktop: wrapped in Card -->
                 <div class="hidden lg:block">
-                    <Card>
-                        <CardContent class="pt-6">
+                    <Card class="py-6">
+                        <CardContent>
                             <RegisterForm />
                         </CardContent>
                     </Card>
