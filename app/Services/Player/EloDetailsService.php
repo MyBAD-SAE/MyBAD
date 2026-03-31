@@ -37,10 +37,7 @@ class EloDetailsService
 
             $bestElo = max($currentElo, $histories->max('elo_after'), $histories->max('elo_before'));
 
-            $recentHistories = $histories->filter(fn ($h) => $h->created_at->gte(now()->subDays(7)));
-            if ($recentHistories->isNotEmpty()) {
-                $eloWeekDiff = round($currentElo - (float) $recentHistories->first()->elo_before, 1);
-            }
+            $eloWeekDiff = round($currentElo - (float) $histories->first()->elo_before, 1);
         }
 
         $totalPlayers = ClassParticipant::forClass($classId)->forPlayerType()->count();
