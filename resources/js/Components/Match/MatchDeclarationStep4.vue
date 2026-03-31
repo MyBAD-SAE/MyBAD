@@ -24,6 +24,10 @@ const props = defineProps({
   eloChange: {
     type: Number,
     default: 0
+  },
+  eloChangeOpponent: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -114,6 +118,15 @@ function getAvatarColor(name) {
               <span class="font-semibold text-gray-400 tracking-widest uppercase" style="font-size: 9px;">
                 {{ currentPlayer?.firstName || 'Vous' }}
               </span>
+              <span
+                v-if="eloChange !== 0"
+                class="text-xs font-bold flex items-center gap-0.5"
+                :style="eloChange > 0 ? 'color: #009966;' : 'color: #D32F2F;'"
+              >
+                <TrendingUp v-if="eloChange > 0" class="w-3 h-3" />
+                <TrendingDown v-else class="w-3 h-3" />
+                {{ eloChange > 0 ? '+' : '' }}{{ eloChange }}
+              </span>
             </div>
 
             <!-- Score -->
@@ -147,12 +160,21 @@ function getAvatarColor(name) {
               <span class="font-semibold text-gray-400 tracking-widest uppercase" style="font-size: 9px;">
                 {{ opponent?.firstName || opponent?.name?.split(' ')[0] || 'Adversaire' }}
               </span>
+              <span
+                v-if="eloChangeOpponent !== 0"
+                class="text-xs font-bold flex items-center gap-0.5"
+                :style="eloChangeOpponent > 0 ? 'color: #009966;' : 'color: #D32F2F;'"
+              >
+                <TrendingUp v-if="eloChangeOpponent > 0" class="w-3 h-3" />
+                <TrendingDown v-else class="w-3 h-3" />
+                {{ eloChangeOpponent > 0 ? '+' : '' }}{{ eloChangeOpponent }}
+              </span>
             </div>
 
           </div>
 
-          <!-- Badges centrés -->
-          <div class="flex items-center justify-center gap-2">
+          <!-- Badge victoire/défaite -->
+          <div class="flex items-center justify-center">
             <span
               class="text-[10px] font-bold px-2.5 py-1 rounded-full"
               :style="isVictory
@@ -160,17 +182,6 @@ function getAvatarColor(name) {
                 : 'color: #D32F2F; background-color: #FEF2F2;'"
             >
               {{ isVictory ? 'VICTOIRE' : 'DÉFAITE' }}
-            </span>
-            <span
-              v-if="eloChange !== 0"
-              class="text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1"
-              :style="eloChange > 0
-                ? 'color: #009966; background-color: #ECFDF5;'
-                : 'color: #D32F2F; background-color: #FEF2F2;'"
-            >
-              <TrendingUp v-if="eloChange > 0" class="w-3 h-3" />
-              <TrendingDown v-else class="w-3 h-3" />
-              {{ eloChange > 0 ? '+' : '' }}{{ eloChange }} ELO
             </span>
           </div>
 

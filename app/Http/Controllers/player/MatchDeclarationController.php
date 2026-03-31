@@ -100,9 +100,10 @@ class MatchDeclarationController extends Controller
         );
 
         return response()->json([
-            'success'   => true,
-            'eloChange' => $result['eloChange'],
-            'match_id'  => $result['match']->id,
+            'success'            => true,
+            'eloChange'          => $result['eloChange'],
+            'eloChangeOpponent'  => $result['eloChangeOpponent'],
+            'match_id'           => $result['match']->id,
         ]);
     }
 

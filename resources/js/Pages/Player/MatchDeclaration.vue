@@ -18,6 +18,7 @@ const matchData = ref({
   myScore: null,
   opponentScore: null,
   eloChange: 0,
+  eloChangeOpponent: 0,
 })
 
 function handleStep1(data) {
@@ -33,6 +34,7 @@ function handleStep2(data) {
 
 function handleStep3(data) {
   matchData.value.eloChange = data?.eloChange ?? 0
+  matchData.value.eloChangeOpponent = data?.eloChangeOpponent ?? 0
   currentStep.value = 4
 }
 
@@ -42,6 +44,7 @@ function handleRestart() {
     myScore: null,
     opponentScore: null,
     eloChange: 0,
+    eloChangeOpponent: 0,
   }
   currentStep.value = 1
 }
@@ -108,6 +111,7 @@ function handleBack() {
       :my-score="matchData.myScore"
       :opponent-score="matchData.opponentScore"
       :elo-change="matchData.eloChange"
+      :elo-change-opponent="matchData.eloChangeOpponent"
       @restart="handleRestart"
     />
     </template>

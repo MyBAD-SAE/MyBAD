@@ -79,7 +79,7 @@ class MatchDeclarationService
     ): array {
         $schoolClassId = $session->school_class_id;
 
-        $eloChange = $this->eloService->calculateEloChange(
+        $eloChangePlayer = $this->eloService->calculateEloChange(
             $player->id,
             $opponentId,
             $myScore,
@@ -87,7 +87,15 @@ class MatchDeclarationService
             $schoolClassId,
         );
 
-        $match = DB::transaction(function () use ($player, $opponentId, $myScore, $opponentScore, $session, $eloChange, $schoolClassId) {
+        $eloChangeOpponent = $this->eloService->calculateEloChange(
+            $opponentId,
+            $player->id,
+            $opponentScore,
+            $myScore,
+            $schoolClassId,
+        );
+
+        $match = DB::transaction(function () use ($player, $opponentId, $myScore, $opponentScore, $session, $eloChangePlayer, $eloChangeOpponent, $schoolClassId) {
             $match = $session->gameMatches()->create();
 
             $match->players()->attach([
@@ -95,15 +103,16 @@ class MatchDeclarationService
                 $opponentId => ['score' => $opponentScore, 'validated' => true],
             ]);
 
-            $this->eloService->updateElo($player->id, $eloChange, $schoolClassId, $match->id);
-            $this->eloService->updateElo($opponentId, -$eloChange, $schoolClassId, $match->id);
+            $this->eloService->updateElo($player->id, $eloChangePlayer, $schoolClassId, $match->id);
+            $this->eloService->updateElo($opponentId, $eloChangeOpponent, $schoolClassId, $match->id);
 
             return $match;
         });
 
         return [
-            'match'     => $match,
-            'eloChange' => $eloChange,
+            'match'              => $match,
+            'eloChange'          => $eloChangePlayer,
+            'eloChangeOpponent'  => $eloChangeOpponent,
         ];
     }
 

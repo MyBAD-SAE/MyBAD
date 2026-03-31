@@ -94,7 +94,10 @@ async function validatePin() {
     }
 
     // 3. Succès -> passer à l'étape 4 avec le changement d'ELO
-    emit('next', { eloChange: matchResponse.data.eloChange ?? 0 })
+    emit('next', {
+      eloChange: matchResponse.data.eloChange ?? 0,
+      eloChangeOpponent: matchResponse.data.eloChangeOpponent ?? 0,
+    })
   } catch (e) {
     if (e.response?.data?.errors) {
       const firstError = Object.values(e.response.data.errors)[0]

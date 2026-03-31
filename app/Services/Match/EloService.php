@@ -52,7 +52,7 @@ class EloService
         }
 
         $eloBefore = (float) $participation->elo_rating;
-        $eloAfter = max(0, min(10, $eloBefore + $eloChange));
+        $eloAfter = max(0, round($eloBefore + $eloChange, 2));
 
         $participation->update(['elo_rating' => $eloAfter]);
 
