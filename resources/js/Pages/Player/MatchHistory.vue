@@ -19,7 +19,7 @@ const matches = ref(props.matches)
 const hasActiveSession = computed(() => usePage().props.hasActiveSession)
 
 // État des filtres
-const activeTab   = ref('all')   // 'all' | 'win' | 'loss'
+const activeTab   = ref('all')
 const searchQuery = ref('')
 
 // Compteurs dynamiques
@@ -196,7 +196,9 @@ function getAvatarColor(name) {
 
           <!-- Message si aucun résultat -->
           <p v-if="filteredMatches.length === 0" class="text-center text-sm py-6" style="color: #a8a29e;">
-            Vous n'avez joué aucun match
+            <template v-if="activeTab === 'win'">Vous n'avez remporté aucun match</template>
+            <template v-else-if="activeTab === 'loss'">Vous n'avez perdu aucun match</template>
+            <template v-else>Vous n'avez joué aucun match</template>
           </p>
 
           </div>
