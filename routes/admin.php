@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\AdminAccountController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminMatchsController;
 use App\Http\Controllers\admin\AdminPlayersController;
+use App\Http\Controllers\admin\AdminReglesController;
 use App\Http\Controllers\admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\admin\Auth\RegisteredAdminController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('matchs', [AdminMatchsController::class, 'index'])->name('matchs');
         Route::put('matchs/{gameMatch}', [AdminMatchsController::class, 'update'])->name('matchs.update');
         Route::delete('matchs/{gameMatch}', [AdminMatchsController::class, 'destroy'])->name('matchs.destroy');
-        Route::get('regles', fn () => Inertia::render('Admin/Regles'))->name('regles');
+        Route::get('regles', [AdminReglesController::class, 'index'])->name('regles');
+        Route::put('regles', [AdminReglesController::class, 'update'])->name('regles.update');
     });
 });
