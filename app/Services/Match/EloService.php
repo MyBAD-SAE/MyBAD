@@ -10,10 +10,7 @@ use App\Models\Player;
 class EloService
 {
     /**
-     * Calcule le changement d'ELO basé sur l'écart de rang entre les joueurs.
-     *
-     * Formule : winner_points (depuis algorithm_parameters) + écart_rang / 10
-     * Plafonné entre 0 et 10. Le perdant reçoit l'inverse.
+     * Calcule le changement d'ELO basé sur l'écart de score entre les joueurs
      */
     public function calculateEloChange(
         string $playerId,
@@ -26,33 +23,19 @@ class EloService
             return 0;
         }
 
-        $rankings = ClassParticipant::forClass($schoolClassId)
-            ->forPlayerType()
-            ->orderByDesc('elo_rating')
-            ->pluck('participantable_id')
-            ->values();
-
-        $myRank = $rankings->search($playerId);
-        $opponentRank = $rankings->search($opponentId);
-
-        if ($myRank === false || $opponentRank === false) {
-            return 0;
-        }
-
-        $myRank += 1;
-        $opponentRank += 1;
-
         $isWinner = $myScore > $opponentScore;
 
-        $winnerRank = $isWinner ? $myRank : $opponentRank;
-        $loserRank = $isWinner ? $opponentRank : $myRank;
-        $rankDiff = $winnerRank - $loserRank;
+        $winnerScore = $isWinner ? $myScore : $opponentScore;
+        $loserScore = $isWinner ? $opponentScore : $myScore;
+        $scoreDiff = $winnerScore - $loserScore;
 
-        $basePoints = $this->getBasePoints($schoolClassId, $rankDiff);
+        if ($isWinner) {
+            $basePoints = $this->getBasePoints($schoolClassId, $scoreDiff);
+            return round($basePoints + ($scoreDiff / 10), 1);
+        }
 
-        $winnerChange = max(0, min(10, $basePoints + ($rankDiff / 10)));
-
-        return $isWinner ? $winnerChange : -$winnerChange;
+        $basePoints = $this->getBasePoints($schoolClassId, -$scoreDiff);
+        return round($basePoints - ($scoreDiff / 10), 1);
     }
 
     /**
@@ -69,7 +52,7 @@ class EloService
         }
 
         $eloBefore = (float) $participation->elo_rating;
-        $eloAfter = $eloBefore + $eloChange;
+        $eloAfter = max(0, min(10, $eloBefore + $eloChange));
 
         $participation->update(['elo_rating' => $eloAfter]);
 
@@ -83,16 +66,16 @@ class EloService
     /**
      * Récupère les points de base depuis les paramètres de l'algorithme.
      */
-    private function getBasePoints(int $schoolClassId, int $rankDiff): float
+    private function getBasePoints(int $schoolClassId, int $scoreDiff): float
     {
         $param = AlgorithmParameter::where('school_class_id', $schoolClassId)
-            ->where('min_diff', '<=', $rankDiff)
-            ->where('max_diff', '>=', $rankDiff)
+            ->where('min_diff', '<=', $scoreDiff)
+            ->where('max_diff', '>=', $scoreDiff)
             ->first();
 
         if (!$param) {
             $param = AlgorithmParameter::where('school_class_id', $schoolClassId)
-                ->orderByRaw('ABS(min_diff + max_diff - ?) ASC', [$rankDiff * 2])
+                ->orderByRaw('ABS(min_diff + max_diff - ?) ASC', [$scoreDiff * 2])
                 ->first();
         }
 
