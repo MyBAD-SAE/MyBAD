@@ -23,16 +23,22 @@ class RankingService
             return [];
         }
 
-        $schoolClassId = $participation->school_class_id;
+        return $this->getRankingForClassId($participation->school_class_id);
+    }
 
-        $participants = ClassParticipant::forClass($schoolClassId)
+    /**
+     * Retourne le classement complet d'une classe par son ID.
+     */
+    public function getRankingForClassId(int $classId): array
+    {
+        $participants = ClassParticipant::forClass($classId)
             ->forPlayerType()
-            ->with('participantable.user')
+            ->with('participantable.user.adminUser')
             ->orderByDesc('elo_rating')
             ->get();
 
         $playerIds = $participants->pluck('participantable_id');
-        $matchStats = $this->getBulkMatchStats($playerIds, $schoolClassId);
+        $matchStats = $this->getBulkMatchStats($playerIds, $classId);
         $eloTrends = $this->getBulkEloTrends($participants);
 
         return $participants->values()->map(function (ClassParticipant $participant, int $index) use ($matchStats, $eloTrends) {
@@ -44,10 +50,14 @@ class RankingService
             $total = $wins + $losses;
 
             return [
+                'participantId' => $participant->id,
+                'userId'  => $user->id,
                 'rank'    => $index + 1,
                 'name'    => $user->full_name,
                 'avatar'  => $user->profile_picture,
                 'elo'     => (float) $participant->elo_rating,
+                'isActive' => (bool) $user->is_active,
+                'isAdmin'  => $user->adminUser !== null,
                 'wins'    => $wins,
                 'losses'  => $losses,
                 'trend'   => $eloTrends[$playerId] ?? 0,
@@ -73,6 +83,10 @@ class RankingService
 
                 $a = $match->players->first();
                 $b = $match->players->last();
+
+                if (!isset($stats[$a->id]) || !isset($stats[$b->id])) {
+                    return;
+                }
 
                 if ($a->pivot->score > $b->pivot->score) {
                     $stats[$a->id]['wins']++;

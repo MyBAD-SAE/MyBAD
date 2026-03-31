@@ -17,12 +17,19 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
+        $adminUser = $request->user('admin');
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user('player')?->load('player') ?? $request->user('admin'),
+                'user' => $request->user('player')?->load('player') ?? $adminUser,
                 'hasPin' => $request->user('player') ? (bool) $request->user('player')->player?->pin : null,
             ],
+            'adminUser' => $adminUser ? [
+                'firstName' => $adminUser->first_name,
+                'fullName'  => $adminUser->first_name . ' ' . mb_substr($adminUser->last_name, 0, 1) . '.',
+                'avatar'    => $adminUser->profile_picture,
+            ] : null,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
             ],

@@ -1,7 +1,8 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
+import { Shield } from 'lucide-vue-next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/Components/ui/tabs';
 import LoginForm from '@/Components/LoginForm.vue';
 import RegisterForm from '@/Components/RegisterForm.vue';
@@ -49,6 +50,13 @@ const activeTab = ref('login');
                     <RegisterForm />
                 </TabsContent>
             </Tabs>
+
+            <div class="mt-6 text-center">
+                <Link :href="route('admin.login')" class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Shield class="h-3.5 w-3.5" />
+                    Se connecter en tant qu'administrateur
+                </Link>
+            </div>
         </div>
     </PlayerLayout>
 </template>
