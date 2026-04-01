@@ -1,7 +1,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 </script>
 
 <template>

@@ -7,7 +7,7 @@ import {
     SheetTitle,
     SheetDescription,
     SheetTrigger,
-} from '@/Components/ui/sheet';
+} from '@/Components/ui/sheet/index.ts';
 import { CalendarDays, ChevronDown } from 'lucide-vue-next';
 
 const props = defineProps({

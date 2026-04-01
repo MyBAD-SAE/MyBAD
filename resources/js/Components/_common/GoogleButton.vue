@@ -1,5 +1,5 @@
 <script setup>
-import { Button } from '@/Components/ui/button';
+import { Button } from '@/Components/ui/button/index.ts';
 
 defineProps({
     label: { type: String, default: 'Continuer avec Google' },

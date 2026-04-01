@@ -2,7 +2,7 @@
 import { ref, computed, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import {

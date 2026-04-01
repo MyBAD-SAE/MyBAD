@@ -2,7 +2,7 @@
 import { ref, computed, nextTick, watch } from 'vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 import { Card, CardContent } from '@/Components/ui/card';
 import {

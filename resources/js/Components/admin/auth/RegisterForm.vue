@@ -1,13 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Button } from '@/Components/ui/button';
-import { Input } from '@/Components/ui/input';
-import { Label } from '@/Components/ui/label';
-import { Checkbox } from '@/Components/ui/checkbox';
-import GoogleButton from '@/Components/GoogleButton.vue';
-import SocialDivider from '@/Components/SocialDivider.vue';
-import { Link, useForm } from '@inertiajs/vue3';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-vue-next';
+import { useForm } from '@inertiajs/vue3';
+import { Button } from '@/Components/ui/button/index.ts';
+import { Input } from '@/Components/ui/input/index.ts';
+import { Label } from '@/Components/ui/label/index.ts';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, User, LoaderCircle } from 'lucide-vue-next';
 
 const form = useForm({
     first_name: '',
@@ -17,7 +14,6 @@ const form = useForm({
     password_confirmation: '',
 });
 
-const acceptTerms = ref(false);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
 
@@ -43,28 +39,28 @@ const strengthColor = computed(() => {
     return colors[passwordStrength.value] || '';
 });
 
-const storeUser = () => {
-    form.post(route('player.register'), {
+const submit = () => {
+    form.post(route('admin.register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
 </script>
 
 <template>
-    <form class="space-y-6" @submit.prevent="storeUser">
+    <form class="space-y-6" @submit.prevent="submit">
         <div>
             <h2 class="text-xl font-bold">Créer un compte</h2>
-            <p class="mt-1 text-sm text-muted-foreground">Rejoignez la communauté MyBAD en quelques secondes</p>
+            <p class="mt-1 text-sm text-muted-foreground">Créez votre espace administrateur</p>
         </div>
 
         <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <Label for="register-firstname">Prénom</Label>
+                    <Label for="admin-register-firstname">Prénom</Label>
                     <div class="relative">
                         <User class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            id="register-firstname"
+                            id="admin-register-firstname"
                             v-model="form.first_name"
                             placeholder="Julien"
                             class="pl-10"
@@ -73,9 +69,9 @@ const storeUser = () => {
                     <p v-if="form.errors.first_name" class="text-sm text-destructive">{{ form.errors.first_name }}</p>
                 </div>
                 <div class="space-y-2">
-                    <Label for="register-lastname">Nom</Label>
+                    <Label for="admin-register-lastname">Nom</Label>
                     <Input
-                        id="register-lastname"
+                        id="admin-register-lastname"
                         v-model="form.last_name"
                         placeholder="Dupont"
                     />
@@ -84,11 +80,11 @@ const storeUser = () => {
             </div>
 
             <div class="space-y-2">
-                <Label for="register-email">Email</Label>
+                <Label for="admin-register-email">Email</Label>
                 <div class="relative">
                     <Mail class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                        id="register-email"
+                        id="admin-register-email"
                         v-model="form.email"
                         type="email"
                         placeholder="nom@exemple.com"
@@ -99,11 +95,11 @@ const storeUser = () => {
             </div>
 
             <div class="space-y-2">
-                <Label for="register-password">Mot de passe</Label>
+                <Label for="admin-register-password">Mot de passe</Label>
                 <div class="relative">
                     <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                        id="register-password"
+                        id="admin-register-password"
                         v-model="form.password"
                         :type="showPassword ? 'text' : 'password'"
                         placeholder="Min. 8 caractères"
@@ -120,7 +116,6 @@ const storeUser = () => {
                 </div>
                 <p v-if="form.errors.password" class="text-sm text-destructive">{{ form.errors.password }}</p>
 
-                <!-- Jauge de force du mot de passe -->
                 <div v-if="form.password" class="space-y-1">
                     <div class="flex gap-1">
                         <div
@@ -135,11 +130,11 @@ const storeUser = () => {
             </div>
 
             <div class="space-y-2">
-                <Label for="register-confirm">Confirmer</Label>
+                <Label for="admin-register-confirm">Confirmer</Label>
                 <div class="relative">
                     <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                        id="register-confirm"
+                        id="admin-register-confirm"
                         v-model="form.password_confirmation"
                         :type="showConfirmation ? 'text' : 'password'"
                         placeholder="Retapez le mot de passe"
@@ -156,25 +151,12 @@ const storeUser = () => {
                 </div>
                 <p v-if="form.errors.password_confirmation" class="text-sm text-destructive">{{ form.errors.password_confirmation }}</p>
             </div>
-
-            <div class="flex items-start gap-2">
-                <Checkbox
-                    id="terms"
-                    v-model="acceptTerms"
-                    class="mt-0.5"
-                />
-                <Label for="terms" class="text-xs font-normal leading-snug">
-                    J'accepte les <Link :href="route('player.terms')" class="inline font-medium text-primary hover:underline">CGU</Link> et la <Link :href="route('player.privacy.policy')" class="inline font-medium text-primary hover:underline">politique de confidentialité</Link>
-                </Label>
-            </div>
         </div>
 
-        <Button type="submit" class="w-full" size="lg" :disabled="!acceptTerms || form.processing">
+        <Button type="submit" class="w-full" size="lg" :disabled="form.processing">
+            <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
             Créer mon compte
-            <ArrowRight class="ml-2 h-4 w-4" />
+            <ArrowRight v-if="!form.processing" class="ml-2 h-4 w-4" />
         </Button>
-
-        <SocialDivider />
-        <GoogleButton />
     </form>
 </template>

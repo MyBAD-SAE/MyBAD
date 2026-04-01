@@ -1,7 +1,7 @@
 <script setup>
 import {ref, computed} from 'vue'
-import {Button} from '@/Components/ui/button'
-import {Input} from '@/Components/ui/input'
+import {Button} from '@/Components/ui/button/index.ts'
+import {Input} from '@/Components/ui/input/index.ts'
 import {Swords, ArrowRight} from 'lucide-vue-next'
 
 const props = defineProps({

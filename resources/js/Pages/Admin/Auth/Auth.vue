@@ -4,19 +4,20 @@ import { ref } from 'vue';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/Components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/ui/card';
-import LoginForm from '@/Components/LoginForm.vue';
-import RegisterForm from '@/Components/RegisterForm.vue';
+import LoginForm from '@/Components/player/auth/LoginForm.vue';
+import RegisterForm from '@/Components/admin/auth/RegisterForm.vue';
 
 const activeTab = ref('login');
 </script>
 
 <template>
 
-    <Head title="Connexion Admin" />
+    <Head title="Connexion" />
 
     <AuthLayout title="Espace administrateur" subtitle="Gérez vos classes et vos joueurs."
         desktopTitle="Espace administrateur"
-        desktopSubtitle="Gérez vos classes, vos sessions et suivez la progression de vos joueurs.">
+        desktopSubtitle="Gérez vos classes, vos sessions et suivez la progression de vos joueurs."
+        image="/images/muktasim-azlan-tkVwhG6yqKo-unsplash.jpg">
         <Tabs v-model="activeTab" class="w-full">
             <div class="flex justify-center">
                 <TabsList class="grid w-full grid-cols-2 lg:w-64">
@@ -28,17 +29,17 @@ const activeTab = ref('login');
             <TabsContent value="login" class="mt-6 lg:mt-8">
                 <!-- Mobile: direct form -->
                 <div class="lg:hidden">
-                    <LoginForm submitRoute="admin.login.submit" />
+                    <LoginForm submitRoute="admin.login.submit" forgotPasswordRoute="admin.password.request" />
                 </div>
                 <!-- Desktop: wrapped in Card -->
                 <div class="hidden lg:block">
                     <Card class="py-6">
                         <CardHeader>
-                            <CardTitle class="text-xl">Connexion Admin</CardTitle>
+                            <CardTitle class="text-xl">Connexion</CardTitle>
                             <CardDescription>Connectez-vous pour accéder à votre espace de gestion</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <LoginForm submitRoute="admin.login.submit" />
+                            <LoginForm submitRoute="admin.login.submit" forgotPasswordRoute="admin.password.request" />
                         </CardContent>
                     </Card>
                 </div>

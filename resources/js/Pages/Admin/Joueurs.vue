@@ -63,6 +63,7 @@ const confirmDelete = () => {
 // Edit modal
 const showEditModal = ref(false);
 const playerToEdit = ref(null);
+const editIsActive = ref(false);
 const editForm = useForm({
     elo: 0,
     is_active: true,
@@ -73,7 +74,8 @@ const editForm = useForm({
 const openEditModal = (player) => {
     playerToEdit.value = player;
     editForm.elo = player.elo;
-    editForm.is_active = player.isActive;
+    editIsActive.value = Boolean(player.isActive);
+    editForm.is_active = Boolean(player.isActive);
     editForm.make_admin = player.isAdmin;
     editForm.user_id = player.userId;
     showEditModal.value = true;
@@ -86,6 +88,7 @@ const closeEditModal = () => {
 
 const confirmEdit = () => {
     if (!playerToEdit.value) return;
+    editForm.is_active = editIsActive.value;
     editForm.put(route('admin.joueurs.update', playerToEdit.value.participantId), {
         onSuccess: () => closeEditModal(),
     });
@@ -259,6 +262,10 @@ const getWinRateDot = (winRate) => {
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-semibold text-foreground">{{ player.name }}</span>
+                            <span v-if="player.isAdmin" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-600">
+                                <Crown class="h-3 w-3" />
+                                Admin
+                            </span>
                             <template v-if="player.trend > 0">
                                 <TrendingUp class="h-3.5 w-3.5 text-primary" />
                                 <span class="text-xs font-medium text-primary">+{{ player.trend }}</span>
@@ -400,7 +407,13 @@ const getWinRateDot = (winRate) => {
                                 <AvatarFallback class="text-sm">{{ getInitials(playerToEdit.name) }}</AvatarFallback>
                             </Avatar>
                             <div>
-                                <h3 class="text-lg font-bold text-foreground">{{ playerToEdit.name }}</h3>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-lg font-bold text-foreground">{{ playerToEdit.name }}</h3>
+                                    <span v-if="editForm.make_admin" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
+                                        <Crown class="h-3 w-3" />
+                                        Admin
+                                    </span>
+                                </div>
                                 <p class="text-sm text-muted-foreground">Modifier le classement ELO</p>
                             </div>
                         </div>
@@ -431,10 +444,8 @@ const getWinRateDot = (winRate) => {
                             <div class="flex items-center justify-between gap-5 rounded-2xl border border-border bg-gray-50/50 px-5 py-4">
                                 <span class="whitespace-nowrap text-sm text-muted-foreground">Joueur actif</span>
                                 <Switch
-                                    id="edit-active"
-                                    :checked="editForm.is_active"
+                                    v-model="editIsActive"
                                     class="h-7 w-12 shrink-0"
-                                    @update:checked="editForm.is_active = $event"
                                 />
                             </div>
                             <button
@@ -502,7 +513,7 @@ const getWinRateDot = (winRate) => {
                         </div>
 
                         <p class="mb-6 text-center text-sm text-muted-foreground">
-                            Le joueur sera retiré de la séance et son historique ELO sera supprimé.
+                            Le joueur sera retiré du cours et son historique ELO sera supprimé.
                         </p>
 
                         <div class="grid grid-cols-2 gap-3">

@@ -1,5 +1,5 @@
 <script setup>
-import { Card, CardContent } from '@/Components/ui/card';
+import { Card, CardContent } from '@/Components/ui/card/index.ts';
 import { Flame, Target } from 'lucide-vue-next';
 
 defineProps({

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { ArrowLeft, TrendingUp, Trophy } from 'lucide-vue-next';

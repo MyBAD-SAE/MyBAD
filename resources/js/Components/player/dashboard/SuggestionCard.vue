@@ -1,5 +1,5 @@
 <script setup>
-import { Badge } from '@/Components/ui/badge';
+import { Badge } from '@/Components/ui/badge/index.ts';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

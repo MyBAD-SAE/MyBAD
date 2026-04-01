@@ -1,15 +1,15 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import DashboardHeader from '@/Components/dashboard/DashboardHeader.vue';
-import SuggestionCard from '@/Components/dashboard/SuggestionCard.vue';
-import EloCard from '@/Components/dashboard/EloCard.vue';
-import MatchStatsCard from '@/Components/dashboard/MatchStatsCard.vue';
-import EvolutionCard from '@/Components/dashboard/EvolutionCard.vue';
-import GlobalActivityCard from '@/Components/dashboard/GlobalActivityCard.vue';
-import RankingWidget from '@/Components/dashboard/RankingWidget.vue';
-import RecentMatchesWidget from '@/Components/dashboard/RecentMatchesWidget.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
+import DashboardHeader from '@/Components/player/dashboard/DashboardHeader.vue';
+import SuggestionCard from '@/Components/player/dashboard/SuggestionCard.vue';
+import EloCard from '@/Components/player/dashboard/EloCard.vue';
+import MatchStatsCard from '@/Components/player/dashboard/MatchStatsCard.vue';
+import EvolutionCard from '@/Components/player/dashboard/EvolutionCard.vue';
+import GlobalActivityCard from '@/Components/player/dashboard/GlobalActivityCard.vue';
+import RankingWidget from '@/Components/player/dashboard/RankingWidget.vue';
+import RecentMatchesWidget from '@/Components/player/dashboard/RecentMatchesWidget.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Clock, Copy, Check, UserPlus, PartyPopper } from 'lucide-vue-next';

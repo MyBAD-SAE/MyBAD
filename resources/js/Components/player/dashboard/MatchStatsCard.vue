@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Card, CardContent } from '@/Components/ui/card';
+import { Card, CardContent } from '@/Components/ui/card/index.ts';
 
 const props = defineProps({
     total: { type: Number, default: 0 },

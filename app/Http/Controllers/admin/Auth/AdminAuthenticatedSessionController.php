@@ -36,7 +36,7 @@ class AdminAuthenticatedSessionController extends Controller
             Auth::guard('admin')->logout();
 
             throw ValidationException::withMessages([
-                'email' => 'Ce compte n\'est pas associé à un administrateur.',
+                'email' => 'Identifiants incorrects.',
             ]);
         }
 
