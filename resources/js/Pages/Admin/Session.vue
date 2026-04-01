@@ -118,25 +118,8 @@ const getPodiumBg = (rank) => {
                         </div>
                     </div>
 
-                    <a
-                        v-if="publicUrl"
-                        :href="publicUrl"
-                        target="_blank"
-                        class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
-                    >
-                        <ExternalLink class="h-4 w-4" />
-                        Ouvrir le live
-                    </a>
                 </div>
 
-                <!-- Public URL -->
-                <div v-if="publicUrl" class="mt-5 flex items-center gap-3 rounded-full border border-gray-200 bg-gray-50 px-5 py-3">
-                    <Link2 class="h-4 w-4 shrink-0 text-muted-foreground" />
-                    <span class="flex-1 truncate text-sm text-muted-foreground">{{ publicUrl }}</span>
-                    <button @click="copyLink" class="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
-                        <Copy class="h-4 w-4" />
-                    </button>
-                </div>
             </div>
 
             <!-- Content grid -->
@@ -149,8 +132,7 @@ const getPodiumBg = (rank) => {
                             <p class="mt-1 text-sm text-muted-foreground">{{ playerCount }} joueurs · temps réel</p>
                         </div>
                         <a
-                            :href="publicUrl || '#'"
-                            :target="publicUrl ? '_blank' : undefined"
+                            href="/admin/classement"
                             class="text-sm font-medium text-primary"
                         >
                             Voir en plein écran &gt;

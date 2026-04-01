@@ -113,7 +113,12 @@ class AdminSessionController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        // Clôturer les séances actives existantes
+        // Si une séance est déjà active, rediriger vers elle
+        if (ClassSession::forClass($selectedClassId)->active()->exists()) {
+            return redirect()->route('admin.session');
+        }
+
+        // Clôturer les séances actives existantes (sécurité)
         ClassSession::forClass($selectedClassId)->active()->update(['is_active' => false]);
 
         // Créer la nouvelle séance
@@ -140,10 +145,12 @@ class AdminSessionController extends Controller
         $classIds = $adminUser->classParticipants()->pluck('school_class_id');
 
         if (!$selectedClassId || !$classIds->contains($selectedClassId)) {
-            return redirect()->route('admin.dashboard');
+            $selectedClassId = $classIds->first();
         }
 
-        ClassSession::forClass($selectedClassId)->active()->update(['is_active' => false]);
+        if ($selectedClassId) {
+            ClassSession::forClass($selectedClassId)->active()->update(['is_active' => false]);
+        }
 
         return redirect()->route('admin.dashboard')->with('success', 'Séance clôturée avec succès.');
     }
