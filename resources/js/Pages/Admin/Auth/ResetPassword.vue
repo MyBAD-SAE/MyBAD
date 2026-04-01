@@ -5,7 +5,6 @@ import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
-import ConditionsFooter from '@/Components/_common/ConditionsFooter.vue';
 import { Lock, Eye, EyeOff, ArrowRight, LoaderCircle } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -46,7 +45,7 @@ const strengthColor = computed(() => {
 });
 
 function handleSubmit() {
-    form.post(route('player.password.update'), {
+    form.post(route('admin.password.update'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 }
@@ -58,6 +57,7 @@ function handleSubmit() {
     <AuthLayout
         title="Nouveau mot de passe"
         subtitle="Choisissez un nouveau mot de passe."
+        image="/images/muktasim-azlan-tkVwhG6yqKo-unsplash.jpg"
     >
         <div class="mt-6 space-y-6">
             <div>
@@ -103,6 +103,7 @@ function handleSubmit() {
                         </div>
                         <p class="text-xs font-medium" :style="{ color: strengthColor }">{{ strengthLabel }}</p>
                     </div>
+                    <p v-if="form.errors.password" class="text-sm text-destructive">{{ form.errors.password }}</p>
                 </div>
 
                 <div class="space-y-2">
@@ -125,6 +126,7 @@ function handleSubmit() {
                             <Eye v-else class="h-4 w-4" />
                         </button>
                     </div>
+                    <p v-if="form.errors.password_confirmation" class="text-sm text-destructive">{{ form.errors.password_confirmation }}</p>
                 </div>
             </div>
 
@@ -133,8 +135,6 @@ function handleSubmit() {
                 Réinitialiser le mot de passe
                 <ArrowRight v-if="!form.processing" class="ml-2 h-4 w-4" />
             </Button>
-
-            <ConditionsFooter />
         </div>
     </AuthLayout>
 </template>

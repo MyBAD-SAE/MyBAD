@@ -8,7 +8,7 @@ import {
     SheetTitle,
     SheetDescription,
     SheetTrigger,
-} from '@/Components/ui/sheet';
+} from '@/Components/ui/sheet/index.ts';
 import { GraduationCap, ChevronDown, Check } from 'lucide-vue-next';
 
 const props = defineProps({

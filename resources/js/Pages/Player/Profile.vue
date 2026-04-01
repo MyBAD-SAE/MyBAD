@@ -2,8 +2,8 @@
 import { ref, computed } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
-import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
+import ClassPicker from '@/Components/player/dashboard/ClassPicker.vue';
 import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';

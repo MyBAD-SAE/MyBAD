@@ -6,6 +6,7 @@ use App\Http\Controllers\admin\AdminMatchsController;
 use App\Http\Controllers\admin\AdminPlayersController;
 use App\Http\Controllers\admin\AdminReglesController;
 use App\Http\Controllers\admin\Auth\AdminAuthenticatedSessionController;
+use App\Http\Controllers\admin\Auth\AdminPasswordResetController;
 use App\Http\Controllers\admin\Auth\RegisteredAdminController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,8 +19,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('login', [AdminAuthenticatedSessionController::class, 'store'])
             ->name('login.submit');
 
-        // Route::post('register', [RegisteredAdminController::class, 'store'])
-        //     ->name('register');
+         Route::post('register', [RegisteredAdminController::class, 'store'])
+             ->name('register');
+
+        Route::get('forgot-password', [AdminPasswordResetController::class, 'showForgotForm'])
+            ->name('password.request');
+        Route::post('forgot-password', [AdminPasswordResetController::class, 'sendResetLink'])
+            ->name('password.email');
+        Route::get('reset-password/{token}', [AdminPasswordResetController::class, 'showResetForm'])
+            ->name('password.reset');
+        Route::post('reset-password', [AdminPasswordResetController::class, 'reset'])
+            ->name('password.update');
     });
 
     Route::middleware('auth:admin')->group(function () {

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { Monitor } from 'lucide-vue-next';
-import CreatePinModal from '@/Components/CreatePinModal.vue';
+import CreatePinModal from '@/Components/player/CreatePinModal.vue';
 
 const showPinModal = computed(() => usePage().props.auth.hasPin === false);
 </script>

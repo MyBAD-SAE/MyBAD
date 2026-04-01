@@ -1,7 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar/index.ts';
+import ClassPicker from '@/Components/player/dashboard/ClassPicker.vue';
 import { PartyPopper } from 'lucide-vue-next';
 
 defineProps({

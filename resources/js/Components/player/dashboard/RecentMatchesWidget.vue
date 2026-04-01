@@ -1,7 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Card, CardContent } from '@/Components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
+import { Card, CardContent } from '@/Components/ui/card/index.ts';
+import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar/index.ts';
 import { Trophy, Clock, Frown, ChevronRight } from 'lucide-vue-next';
 
 defineProps({

@@ -4,6 +4,7 @@ defineProps({
     subtitle: { type: String, default: 'ELO, stats, classement. Tout pour progresser.' },
     desktopTitle: { type: String, default: "Suivez vos performances\nau badminton" },
     desktopSubtitle: { type: String, default: "Classement ELO, statistiques de matchs, suivi de progression. Tout ce qu'il faut pour devenir le meilleur joueur de votre club." },
+    image: { type: String, default: '/images/hero-badminton.png' },
 });
 </script>
 
@@ -12,7 +13,7 @@ defineProps({
     <div class="min-h-screen bg-background lg:hidden">
         <div class="relative h-56 overflow-hidden bg-gray-900">
             <img
-                src="/images/hero-badminton.png"
+                :src="image"
                 alt="Terrain de badminton"
                 class="absolute inset-0 h-full w-full object-cover"
             />
@@ -38,7 +39,7 @@ defineProps({
     <div class="hidden min-h-screen lg:flex">
         <div class="relative w-2/5 bg-gray-900">
             <img
-                src="/images/hero-badminton.png"
+                :src="image"
                 alt="Terrain de badminton"
                 class="absolute inset-0 h-full w-full object-cover"
             />

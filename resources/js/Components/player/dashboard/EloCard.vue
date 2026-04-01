@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { Card, CardContent } from '@/Components/ui/card';
+import { Card, CardContent } from '@/Components/ui/card/index.ts';
 import { TrendingUp, TrendingDown } from 'lucide-vue-next';
 
 const props = defineProps({

@@ -2,10 +2,10 @@
 import { ref } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import PlayerLayout from '@/Layouts/PlayerLayout.vue'
-import DeclarationMatchStep1 from '@/Components/Match/MatchDeclarationStep1.vue'
-import DeclarationMatchStep2 from '@/Components/Match/MatchDeclarationStep2.vue'
-import DeclarationMatchStep3 from '@/Components/Match/MatchDeclarationStep3.vue'
-import DeclarationMatchStep4 from '@/Components/Match/MatchDeclarationStep4.vue'
+import DeclarationMatchStep1 from '@/Components/player/Match/MatchDeclarationStep1.vue'
+import DeclarationMatchStep2 from '@/Components/player/Match/MatchDeclarationStep2.vue'
+import DeclarationMatchStep3 from '@/Components/player/Match/MatchDeclarationStep3.vue'
+import DeclarationMatchStep4 from '@/Components/player/Match/MatchDeclarationStep4.vue'
 
 const page = usePage()
 
