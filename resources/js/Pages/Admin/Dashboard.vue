@@ -1,19 +1,28 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import AdminClassPicker from '@/Components/admin/AdminClassPicker.vue';
 import AdminActionCard from '@/Components/admin/AdminActionCard.vue';
 import AdminRankingCard from '@/Components/admin/AdminRankingCard.vue';
 import { Play, Users, Swords, Trophy } from 'lucide-vue-next';
 
-defineProps({
+const props = defineProps({
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
     playerCount: { type: Number, default: 0 },
     matchCount: { type: Number, default: 0 },
     rankingPlayers: { type: Array, default: () => [] },
     period: { type: String, default: '30j' },
+    hasActiveSession: { type: Boolean, default: false },
 });
+
+function startSession() {
+    if (props.hasActiveSession) {
+        router.get(route('admin.session'));
+    } else {
+        router.post(route('admin.session.store'));
+    }
+}
 </script>
 
 <template>
@@ -33,13 +42,23 @@ defineProps({
 
                 <!-- Action cards -->
                 <div class="grid grid-cols-4 gap-4">
-                    <AdminActionCard
-                        title="Nouvelle seance"
-                        description="Lancer une session de jeu pour le groupe"
-                        :icon="Play"
-                        icon-bg-class="bg-primary/10"
-                        icon-color-class="text-primary"
-                    />
+                    <button
+                        @click="startSession"
+                        class="group relative flex cursor-pointer flex-col rounded-2xl border p-5 text-left transition-all"
+                        :class="hasActiveSession ? 'border-primary bg-primary/5' : 'bg-white'"
+                    >
+                        <div class="flex items-start justify-between">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl" :class="hasActiveSession ? 'bg-primary/20' : 'bg-primary/10'">
+                                <Play class="h-5 w-5 text-primary" />
+                            </div>
+                            <span v-if="hasActiveSession" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-600">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                Active
+                            </span>
+                        </div>
+                        <h3 class="mt-4 text-sm font-semibold" :class="hasActiveSession ? 'text-primary' : 'text-foreground'">{{ hasActiveSession ? 'Séance en cours' : 'Nouvelle séance' }}</h3>
+                        <p class="mt-1 text-xs text-muted-foreground">{{ hasActiveSession ? 'Reprendre la session en cours' : 'Lancer une session de jeu pour le groupe' }}</p>
+                    </button>
                     <AdminActionCard
                         title="Joueurs"
                         description="Gerer les joueurs et leurs profils"

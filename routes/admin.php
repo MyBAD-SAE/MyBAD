@@ -5,6 +5,7 @@ use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminMatchsController;
 use App\Http\Controllers\admin\AdminPlayersController;
 use App\Http\Controllers\admin\AdminReglesController;
+use App\Http\Controllers\admin\AdminSessionController;
 use App\Http\Controllers\admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\admin\Auth\AdminPasswordResetController;
 use App\Http\Controllers\admin\Auth\RegisteredAdminController;
@@ -53,5 +54,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('matchs/{gameMatch}', [AdminMatchsController::class, 'destroy'])->name('matchs.destroy');
         Route::get('regles', [AdminReglesController::class, 'index'])->name('regles');
         Route::put('regles', [AdminReglesController::class, 'update'])->name('regles.update');
+
+        Route::get('session', [AdminSessionController::class, 'show'])->name('session');
+        Route::post('session', [AdminSessionController::class, 'store'])->name('session.store');
+        Route::post('session/close', [AdminSessionController::class, 'close'])->name('session.close');
     });
 });
