@@ -44,12 +44,14 @@ class AdminPlayersController extends Controller
 
         $players = [];
         $playerCount = 0;
+        $activePlayerCount = 0;
         $matchCount = 0;
         $averageElo = 0;
 
         if ($selectedClassId) {
             $players = $this->rankingService->getRankingForClassId($selectedClassId);
             $playerCount = count($players);
+            $activePlayerCount = count(array_filter($players, fn ($p) => $p['isActive']));
             $matchCount = GameMatch::forClass($selectedClassId)->count();
 
             if ($playerCount > 0) {
@@ -63,12 +65,13 @@ class AdminPlayersController extends Controller
         }
 
         return Inertia::render('Admin/Joueurs', [
-            'players'         => $players,
-            'playerCount'     => $playerCount,
-            'matchCount'      => $matchCount,
-            'averageElo'      => $averageElo,
-            'classes'         => $classes,
-            'selectedClassId' => $selectedClassId,
+            'players'            => $players,
+            'playerCount'        => $playerCount,
+            'activePlayerCount'  => $activePlayerCount,
+            'matchCount'         => $matchCount,
+            'averageElo'         => $averageElo,
+            'classes'            => $classes,
+            'selectedClassId'    => $selectedClassId,
         ]);
     }
 

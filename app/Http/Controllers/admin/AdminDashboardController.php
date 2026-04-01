@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminUser;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
 use App\Services\Ranking\RankingService;

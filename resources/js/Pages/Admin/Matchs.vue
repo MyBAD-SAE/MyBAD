@@ -94,12 +94,16 @@ const matchToEdit = ref(null);
 const editForm = useForm({
     score1: 0,
     score2: 0,
+    player1_id: null,
+    player2_id: null,
 });
 
 const openEditModal = (match) => {
     matchToEdit.value = match;
     editForm.score1 = match.player1.score;
     editForm.score2 = match.player2.score;
+    editForm.player1_id = match.player1.id;
+    editForm.player2_id = match.player2.id;
     showEditModal.value = true;
 };
 

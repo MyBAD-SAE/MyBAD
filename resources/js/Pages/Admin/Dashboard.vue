@@ -1,10 +1,11 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import AdminClassPicker from '@/Components/admin/AdminClassPicker.vue';
 import AdminActionCard from '@/Components/admin/AdminActionCard.vue';
 import AdminRankingCard from '@/Components/admin/AdminRankingCard.vue';
-import { Play, Users, Swords, Trophy } from 'lucide-vue-next';
+import { Button } from '@/Components/ui/button';
+import { Play, Users, Swords, Trophy, GraduationCap, Plus, ArrowRight } from 'lucide-vue-next';
 
 defineProps({
     classes: { type: Array, default: () => [] },
@@ -20,7 +21,8 @@ defineProps({
     <Head title="Dashboard Admin" />
 
     <AdminLayout>
-        <div class="p-8 space-y-8">
+        <!-- État normal : au moins un cours -->
+        <div v-if="classes.length > 0" class="p-8 space-y-8">
             <!-- Gestion section -->
             <div>
                 <div class="flex items-center justify-between mb-5">
@@ -28,7 +30,15 @@ defineProps({
                         <h2 class="text-2xl font-bold text-foreground">Gestion</h2>
                         <p class="mt-1 text-sm text-muted-foreground">Actions rapides administrateur</p>
                     </div>
-                    <AdminClassPicker :classes="classes" :selected-class-id="selectedClassId" />
+                    <div class="flex items-center gap-3">
+                        <Button variant="outline" size="sm" class="rounded-xl gap-1.5" as-child>
+                            <Link :href="route('admin.class.create')">
+                                <Plus class="h-4 w-4" />
+                                Nouveau cours
+                            </Link>
+                        </Button>
+                        <AdminClassPicker :classes="classes" :selected-class-id="selectedClassId" />
+                    </div>
                 </div>
 
                 <!-- Action cards -->
@@ -71,6 +81,27 @@ defineProps({
 
             <!-- Classement section -->
             <AdminRankingCard :players="rankingPlayers" :player-count="playerCount" :period="period" />
+        </div>
+
+        <!-- État vide : aucun cours -->
+        <div v-else class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-8">
+            <div class="w-full max-w-sm text-center">
+                <div class="mb-6 flex justify-center">
+                    <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
+                        <GraduationCap class="h-10 w-10 text-primary" />
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold text-foreground">Aucun cours pour l'instant</h1>
+                <p class="mt-2 mb-8 text-sm text-muted-foreground">
+                    Créez votre premier cours pour commencer à gérer vos joueurs et séances.
+                </p>
+                <Button size="lg" class="rounded-xl w-full" as-child>
+                    <Link :href="route('admin.class.create')">
+                        Créer mon premier cours
+                        <ArrowRight class="h-4 w-4" />
+                    </Link>
+                </Button>
+            </div>
         </div>
     </AdminLayout>
 </template>

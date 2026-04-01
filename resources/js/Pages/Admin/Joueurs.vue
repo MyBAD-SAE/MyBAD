@@ -28,6 +28,7 @@ import {
 const props = defineProps({
     players: { type: Array, default: () => [] },
     playerCount: { type: Number, default: 0 },
+    activePlayerCount: { type: Number, default: 0 },
     matchCount: { type: Number, default: 0 },
     averageElo: { type: Number, default: 0 },
     classes: { type: Array, default: () => [] },
@@ -203,7 +204,7 @@ const getWinRateDot = (winRate) => {
                         <p class="text-xs text-muted-foreground">Matchs joués</p>
                     </div>
                     <div class="rounded-xl border border-border py-4 text-center">
-                        <p class="text-xl font-bold text-foreground">{{ playerCount }}</p>
+                        <p class="text-xl font-bold text-foreground">{{ activePlayerCount }}</p>
                         <p class="text-xs text-muted-foreground">Joueurs actifs</p>
                     </div>
                 </div>

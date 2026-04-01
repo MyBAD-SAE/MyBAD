@@ -13,6 +13,7 @@ class ClassSessionResource extends JsonResource
             'id' => $this->id,
             'school_class_id' => $this->school_class_id,
             'date' => $this->date,
+            'session_name' => $this->session_name,
             'is_active' => $this->is_active,
             'school_class' => SchoolClassResource::make($this->whenLoaded('schoolClass')),
             'game_matches' => GameMatchResource::collection($this->whenLoaded('gameMatches')),
