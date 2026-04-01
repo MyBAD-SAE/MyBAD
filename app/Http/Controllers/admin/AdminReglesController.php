@@ -75,6 +75,6 @@ class AdminReglesController extends Controller
                 ->update(['winner_points' => $param['winner_points']]);
         }
 
-        return redirect()->route('admin.regles');
+        return redirect()->route('admin.regles')->with('success', 'Règles enregistrées avec succès.');
     }
 }

@@ -1,8 +1,19 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Button } from '@/Components/ui/button';
-import { LayoutDashboard, Users, Swords, Trophy, Plus, ChevronDown, Smartphone } from 'lucide-vue-next';
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/Components/ui/alert-dialog';
+import { LayoutDashboard, Users, Swords, Trophy, Plus, LogOut, Smartphone } from 'lucide-vue-next';
+
+const showLogoutDialog = ref(false);
+
+const logout = () => {
+    router.post(route('admin.logout'));
+};
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -46,13 +57,14 @@ const getInitials = (name) => {
         <!-- Sidebar -->
         <aside class="flex w-[280px] shrink-0 flex-col bg-gray-50">
             <!-- Logo -->
-            <div class="px-6 pt-6 pb-4">
-                <span class="text-xl font-bold text-foreground">MyBAD</span>
+            <div class="flex items-center gap-2.5 px-6 pt-6 pb-4">
+                <img src="/images/logo_mybad.png" alt="MyBAD" class="h-8 w-8 rounded-md" />
+                <span class="text-lg font-bold text-foreground">MyBAD</span>
             </div>
 
             <!-- Nouvelle seance button -->
-            <div class="px-4 pb-8">
-                <button class="flex w-full items-center gap-3 rounded-2xl bg-primary px-5 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90">
+            <div class="px-4 pt-4 pb-4">
+                <button class="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-primary px-5 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90">
                     <Plus class="h-5 w-5" />
                     Nouvelle séance
                 </button>
@@ -64,7 +76,7 @@ const getInitials = (name) => {
                     v-for="item in navItems"
                     :key="item.routeName"
                     :href="route(item.routeName)"
-                    class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-normal transition-colors"
+                    class="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-normal transition-colors"
                     :class="isActive(item.routeName) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
                 >
                     <component :is="item.icon" class="h-5 w-5" />
@@ -73,8 +85,8 @@ const getInitials = (name) => {
             </nav>
 
             <!-- Admin profile -->
-            <div class="p-4">
-                <Link :href="route('admin.account')" class="flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-gray-100">
+            <div class="flex items-center gap-2 p-4">
+                <Link :href="route('admin.account')" class="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-gray-100">
                     <Avatar class="h-10 w-10">
                         <AvatarImage v-if="adminUser.avatar" :src="adminUser.avatar" />
                         <AvatarFallback class="text-xs">{{ getInitials(adminUser.fullName) }}</AvatarFallback>
@@ -83,9 +95,27 @@ const getInitials = (name) => {
                         <p class="truncate text-sm font-semibold text-foreground">{{ adminUser.fullName }}</p>
                         <p class="text-xs text-muted-foreground">Administrateur</p>
                     </div>
-                    <ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
                 </Link>
+                <button @click="showLogoutDialog = true" class="shrink-0 cursor-pointer rounded-lg p-2 text-muted-foreground transition-colors hover:bg-gray-100 hover:text-red-500">
+                    <LogOut class="h-4 w-4" />
+                </button>
             </div>
+
+            <!-- Logout confirmation dialog -->
+            <AlertDialog :open="showLogoutDialog" @update:open="showLogoutDialog = $event">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Se déconnecter ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Vous allez être déconnecté de votre espace administrateur.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction @click="logout">Se déconnecter</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </aside>
 
         <!-- Main content -->

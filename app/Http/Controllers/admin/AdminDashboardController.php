@@ -18,7 +18,7 @@ class AdminDashboardController extends Controller
         private readonly RankingService $rankingService,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $user = auth('admin')->user();
         $adminUser = $user->adminUser;
@@ -39,6 +39,8 @@ class AdminDashboardController extends Controller
             $selectedClassId = $classes[0]['id'] ?? null;
         }
 
+        $period = $request->input('period', '30j');
+
         $playerCount = 0;
         $matchCount = 0;
         $rankingPlayers = [];
@@ -50,7 +52,8 @@ class AdminDashboardController extends Controller
 
             $matchCount = GameMatch::forClass($selectedClassId)->count();
 
-            $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId);
+            $since = $period === '30j' ? now()->subDays(30) : null;
+            $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId, $since);
         }
 
         return Inertia::render('Admin/Dashboard', [
@@ -59,6 +62,7 @@ class AdminDashboardController extends Controller
             'playerCount'     => $playerCount,
             'matchCount'      => $matchCount,
             'rankingPlayers'  => $rankingPlayers,
+            'period'          => $period,
         ]);
     }
 

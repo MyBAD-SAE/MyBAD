@@ -12,6 +12,7 @@ defineProps({
     playerCount: { type: Number, default: 0 },
     matchCount: { type: Number, default: 0 },
     rankingPlayers: { type: Array, default: () => [] },
+    period: { type: String, default: '30j' },
 });
 </script>
 
@@ -69,7 +70,7 @@ defineProps({
             </div>
 
             <!-- Classement section -->
-            <AdminRankingCard :players="rankingPlayers" :player-count="playerCount" />
+            <AdminRankingCard :players="rankingPlayers" :player-count="playerCount" :period="period" />
         </div>
     </AdminLayout>
 </template>

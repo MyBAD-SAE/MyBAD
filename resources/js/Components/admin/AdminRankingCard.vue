@@ -1,15 +1,25 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { router } from '@inertiajs/vue3';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { TrendingUp, TrendingDown, Minus, Trophy } from 'lucide-vue-next';
 
-defineProps({
+const props = defineProps({
     players: { type: Array, default: () => [] },
     playerCount: { type: Number, default: 0 },
+    period: { type: String, default: '30j' },
 });
 
-const period = ref('30j');
+const period = ref(props.period);
+
+watch(period, (val) => {
+    router.get(route('admin.dashboard'), { period: val }, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['rankingPlayers', 'period'],
+    });
+});
 
 const getInitials = (name) => {
     if (!name) return '?';

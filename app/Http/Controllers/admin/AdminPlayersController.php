@@ -115,7 +115,7 @@ class AdminPlayersController extends Controller
             'school_class_id'      => $selectedClassId,
         ]);
 
-        return redirect()->route('admin.joueurs');
+        return redirect()->route('admin.joueurs')->with('success', 'Joueur ajouté avec succès.');
     }
 
     public function update(Request $request, ClassParticipant $participant): RedirectResponse
@@ -154,7 +154,7 @@ class AdminPlayersController extends Controller
             }
         }
 
-        return redirect()->route('admin.joueurs');
+        return redirect()->route('admin.joueurs')->with('success', 'Joueur mis à jour avec succès.');
     }
 
     public function destroy(ClassParticipant $participant): RedirectResponse
@@ -162,6 +162,6 @@ class AdminPlayersController extends Controller
         $participant->eloHistories()->delete();
         $participant->delete();
 
-        return redirect()->route('admin.joueurs');
+        return redirect()->route('admin.joueurs')->with('success', 'Joueur supprimé avec succès.');
     }
 }

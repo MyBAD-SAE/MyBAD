@@ -142,7 +142,7 @@ class AdminMatchsController extends Controller
             $gameMatch->players()->updateExistingPivot($players->last()->id, ['score' => $validated['score2']]);
         }
 
-        return redirect()->route('admin.matchs');
+        return redirect()->route('admin.matchs')->with('success', 'Match mis à jour avec succès.');
     }
 
     public function destroy(GameMatch $gameMatch): RedirectResponse
@@ -150,6 +150,6 @@ class AdminMatchsController extends Controller
         $gameMatch->players()->detach();
         $gameMatch->delete();
 
-        return redirect()->route('admin.matchs');
+        return redirect()->route('admin.matchs')->with('success', 'Match supprimé avec succès.');
     }
 }

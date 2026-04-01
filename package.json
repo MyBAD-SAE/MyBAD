@@ -32,6 +32,7 @@
         "reka-ui": "^2.9.2",
         "tailwind-merge": "^3.5.0",
         "vue-chartjs": "^5.3.3",
+        "vue-sonner": "^2.0.9",
         "ziggy-js": "^2.6.2"
     }
 }

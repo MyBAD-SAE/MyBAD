@@ -8,6 +8,10 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/Components/ui/alert-dialog';
+import {
     Camera,
     Pencil,
     Crown,
@@ -182,47 +186,20 @@ function logout() {
         </div>
 
         <!-- Modal déconnexion -->
-        <Teleport to="body">
-            <Transition
-                enter-active-class="transition duration-200 ease-out"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-active-class="transition duration-150 ease-in"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-            >
-                <div v-if="showLogoutModal" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-                    <div class="absolute inset-0 bg-black/20" @click="showLogoutModal = false" />
-
-                    <div class="relative mx-4 mb-4 w-full max-w-md rounded-3xl bg-white px-6 py-7 shadow-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-50">
-                                <LogOut class="h-5 w-5 text-red-500" />
-                            </div>
-                            <div>
-                                <h2 class="text-base font-bold text-foreground">Se déconnecter</h2>
-                                <p class="text-sm text-muted-foreground">Êtes-vous sûr de vouloir vous déconnecter ?</p>
-                            </div>
-                        </div>
-
-                        <div class="mt-5 flex gap-3">
-                            <button
-                                class="flex-1 rounded-2xl border border-border/50 py-2.5 text-sm font-medium text-foreground"
-                                @click="showLogoutModal = false"
-                            >
-                                Annuler
-                            </button>
-                            <button
-                                class="flex-1 rounded-2xl bg-red-500 py-2.5 text-sm font-semibold text-white"
-                                @click="logout"
-                            >
-                                Déconnexion
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
+        <AlertDialog :open="showLogoutModal" @update:open="showLogoutModal = $event">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Se déconnecter ?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir vous déconnecter ?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction @click="logout">Se déconnecter</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
 
         <BottomNavBar active="profil" />
     </PlayerLayout>
