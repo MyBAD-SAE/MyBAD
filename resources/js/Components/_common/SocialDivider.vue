@@ -1,5 +1,5 @@
 <script setup>
-import { Separator } from '@/Components/ui/separator';
+import { Separator } from '@/Components/ui/separator/index.ts';
 </script>
 
 <template>

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\player\Auth;
+namespace App\Http\Controllers\admin\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\StorePlayerRequest;
-use App\Models\Player;
+use App\Http\Requests\Auth\StoreAdminRequest;
+use App\Models\AdminUser;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +12,7 @@ use Illuminate\Support\Str;
 
 class RegisteredAdminController extends Controller
 {
-
-    public function store(StorePlayerRequest $request): RedirectResponse
+    public function store(StoreAdminRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
 
@@ -25,15 +24,15 @@ class RegisteredAdminController extends Controller
             'password' => bcrypt($validatedData['password']),
         ]);
 
-        Player::create([
+        AdminUser::create([
             'id' => Str::uuid(),
             'user_id' => $user->id,
-            'pin' => null,
-            'code' => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
         ]);
-        Auth::guard('player')->login($user);
 
-        return redirect()->intended('/');
+        Auth::guard('admin')->login($user);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/admin/dashboard');
     }
-
 }

@@ -1,8 +1,8 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
-import BottomNavBar from '@/Components/BottomNavBar.vue';
-import ClassPicker from '@/Components/dashboard/ClassPicker.vue';
+import BottomNavBar from '@/Components/player/BottomNavBar.vue';
+import ClassPicker from '@/Components/player/dashboard/ClassPicker.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, TrendingUp, TrendingDown, ArrowLeft, Medal } from 'lucide-vue-next';
 

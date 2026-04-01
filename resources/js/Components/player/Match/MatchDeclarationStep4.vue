@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/Components/ui/button/index.ts'
 import { router } from '@inertiajs/vue3'
 import { TrendingUp, TrendingDown } from 'lucide-vue-next'
 

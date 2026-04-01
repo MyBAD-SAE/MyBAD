@@ -1,16 +1,17 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { Link, useForm } from '@inertiajs/vue3';
-import { Button } from '@/Components/ui/button';
-import { Input } from '@/Components/ui/input';
-import { Label } from '@/Components/ui/label';
-import GoogleButton from '@/Components/GoogleButton.vue';
-import SocialDivider from '@/Components/SocialDivider.vue';
-import ConditionsFooter from '@/Components/ConditionsFooter.vue';
+import { Button } from '@/Components/ui/button/index.ts';
+import { Input } from '@/Components/ui/input/index.ts';
+import { Label } from '@/Components/ui/label/index.ts';
+import GoogleButton from '@/Components/_common/GoogleButton.vue';
+import SocialDivider from '@/Components/_common/SocialDivider.vue';
+import ConditionsFooter from '@/Components/_common/ConditionsFooter.vue';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, LoaderCircle } from 'lucide-vue-next';
 
 const props = defineProps({
     submitRoute: { type: String, default: null },
+    forgotPasswordRoute: { type: String, default: 'player.password.request' },
 });
 
 const form = useForm({
@@ -72,7 +73,7 @@ const submit = () => {
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
                     <Label for="login-password">Mot de passe</Label>
-                    <Link :href="route('player.password.request')" class="text-sm font-medium text-primary hover:underline">
+                    <Link :href="route(props.forgotPasswordRoute)" class="text-sm font-medium text-primary hover:underline">
                         Oublié ?
                     </Link>
                 </div>

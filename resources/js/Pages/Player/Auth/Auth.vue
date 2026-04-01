@@ -4,8 +4,8 @@ import { ref } from 'vue';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import { Shield } from 'lucide-vue-next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/Components/ui/tabs';
-import LoginForm from '@/Components/LoginForm.vue';
-import RegisterForm from '@/Components/RegisterForm.vue';
+import LoginForm from '@/Components/player/auth/LoginForm.vue';
+import RegisterForm from '@/Components/player/auth/RegisterForm.vue';
 
 const activeTab = ref('login');
 </script>

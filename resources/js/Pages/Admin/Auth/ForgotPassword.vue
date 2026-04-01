@@ -6,7 +6,6 @@ import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { Card, CardContent } from '@/Components/ui/card';
-import ConditionsFooter from '@/Components/_common/ConditionsFooter.vue';
 import { Mail, ArrowLeft, ArrowRight, CheckCircle, RefreshCw, LoaderCircle } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -27,7 +26,7 @@ const emailInvalid = () => emailTouched.value && form.email && !isValidEmail(for
 function handleSubmit() {
     emailTouched.value = true;
     if (form.email && isValidEmail(form.email)) {
-        form.post(route('player.password.email'), {
+        form.post(route('admin.password.email'), {
             preserveScroll: true,
         });
     }
@@ -48,13 +47,13 @@ function maskedEmail(addr) {
     <AuthLayout
         title="Réinitialisez votre mot de passe"
         subtitle="On vous envoie un lien par email."
+        image="/images/muktasim-azlan-tkVwhG6yqKo-unsplash.jpg"
     >
-        <Link :href="route('player.login')" class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+        <Link :href="route('admin.login')" class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft class="h-4 w-4" />
             Retour à la connexion
         </Link>
 
-        <!-- Form state -->
         <template v-if="!emailSent">
             <!-- Mobile -->
             <div class="mt-6 space-y-6 lg:hidden">
@@ -97,8 +96,6 @@ function maskedEmail(addr) {
                 <div class="rounded-2xl bg-muted px-5 py-4 text-xs text-muted-foreground">
                     Le lien de réinitialisation expirera après <strong class="font-semibold text-foreground">15 minutes</strong>. Pensez aussi à vérifier vos spams.
                 </div>
-
-                <ConditionsFooter />
             </div>
 
             <!-- Desktop -->
@@ -131,11 +128,13 @@ function maskedEmail(addr) {
                         </div>
                         <p v-if="emailEmpty()" class="text-sm text-destructive">L'email est requis.</p>
                         <p v-else-if="emailInvalid()" class="text-sm text-destructive">Format d'email invalide.</p>
+                        <p v-else-if="form.errors.email" class="text-sm text-destructive">{{ form.errors.email }}</p>
                     </div>
 
-                    <Button class="w-full" size="lg" @click="handleSubmit">
+                    <Button class="w-full" size="lg" :disabled="form.processing" @click="handleSubmit">
+                        <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
                         Envoyer le lien
-                        <ArrowRight class="ml-2 h-4 w-4" />
+                        <ArrowRight v-if="!form.processing" class="ml-2 h-4 w-4" />
                     </Button>
 
                     <div class="rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground">
@@ -143,16 +142,11 @@ function maskedEmail(addr) {
                     </div>
                 </CardContent>
             </Card>
-
-            <div class="mt-4 hidden lg:block">
-                <ConditionsFooter />
-            </div>
         </template>
 
-        <!-- Email sent state -->
+        <!-- Email envoyé -->
         <template v-else>
             <div class="mt-8 flex flex-col items-center text-center">
-                <!-- Icône succès -->
                 <div class="relative">
                     <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary">
                         <Mail class="h-7 w-7 text-white" />
@@ -167,20 +161,17 @@ function maskedEmail(addr) {
                     Un lien de réinitialisation a été envoyé à
                 </p>
 
-                <!-- Email badge -->
                 <div class="mt-3 inline-flex items-center gap-2.5 rounded-2xl bg-primary/10 px-5 py-2.5">
                     <Mail class="h-4 w-4 text-primary" />
                     <span class="text-sm font-semibold text-primary">{{ maskedEmail(form.email) }}</span>
                 </div>
 
-                <!-- Info expiration -->
                 <p class="mt-4 text-xs text-muted-foreground/70">
                     Le lien expire dans <strong class="font-semibold text-muted-foreground">15 minutes</strong>. Pensez à vérifier vos spams.
                 </p>
 
-                <!-- Boutons -->
                 <div class="mt-6 w-full space-y-3">
-                    <Link :href="route('player.login')" class="block w-full">
+                    <Link :href="route('admin.login')" class="block w-full">
                         <Button class="w-full" size="lg">
                             Retour à la connexion
                             <ArrowRight class="ml-2 h-4 w-4" />
@@ -196,10 +187,6 @@ function maskedEmail(addr) {
                         <RefreshCw v-else class="h-3.5 w-3.5" />
                         Renvoyer l'email
                     </button>
-                </div>
-
-                <div class="mt-6">
-                    <ConditionsFooter />
                 </div>
             </div>
         </template>
