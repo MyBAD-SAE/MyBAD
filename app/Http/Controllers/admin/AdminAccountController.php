@@ -42,7 +42,7 @@ class AdminAccountController extends Controller
             'email'      => $request->email,
         ]);
 
-        return back();
+        return back()->with('success', 'Profil mis à jour avec succès.');
     }
 
     public function updatePassword(Request $request): RedirectResponse
@@ -66,6 +66,6 @@ class AdminAccountController extends Controller
 
         $user->update(['password' => Hash::make($request->new_password)]);
 
-        return back();
+        return back()->with('success', 'Mot de passe modifié avec succès.');
     }
 }

@@ -17,6 +17,7 @@ const props = defineProps({
 });
 
 const period = ref('30j');
+const selectedIndex = ref(null);
 
 const filteredHistory = computed(() => {
     if (period.value === 'tout' || props.eloHistory.length === 0) return props.eloHistory;
@@ -109,7 +110,7 @@ const chartData = computed(() => {
                             class="border-0 bg-white/20 text-white hover:bg-white/30"
                         >
                             <TrendingUp v-if="eloWeekDiff > 0" class="mr-1 h-3 w-3" />
-                            {{ eloWeekDiff > 0 ? '+' : '' }}{{ eloWeekDiff }} cette semaine
+                            {{ eloWeekDiff > 0 ? '+' : '' }}{{ eloWeekDiff }} depuis le début
                         </Badge>
                     </div>
                     <p class="mt-3 text-5xl font-bold">{{ currentElo }}</p>
@@ -180,9 +181,9 @@ const chartData = computed(() => {
                             </div>
 
                             <!-- SVG Chart -->
-                            <div class="ml-10 h-[150px] w-[calc(100%-40px)]">
+                            <div class="relative ml-10 h-[150px] w-[calc(100%-40px)]">
                                 <svg
-                                    class="h-full w-full"
+                                    class="absolute inset-0 h-full w-full"
                                     :viewBox="`0 0 ${svgWidth} ${svgHeight}`"
                                     preserveAspectRatio="none"
                                 >
@@ -210,6 +211,29 @@ const chartData = computed(() => {
                                     <path :d="chartData.area" fill="url(#eloDetailGradient)" />
                                     <path :d="chartData.line" fill="none" stroke="#27BDAE" stroke-width="2.5" />
                                 </svg>
+
+                                <!-- Points cliquables -->
+                                <button
+                                    v-for="(point, i) in chartData.points"
+                                    :key="i"
+                                    class="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full flex items-center justify-center"
+                                    :style="{
+                                        left: (point.x / svgWidth * 100) + '%',
+                                        top: (point.y / svgHeight * 100) + '%',
+                                    }"
+                                    @click="selectedIndex = selectedIndex === i ? null : i"
+                                >
+                                    <span
+                                        class="block h-2.5 w-2.5 rounded-full border-2 border-white bg-[#27BDAE] transition-transform"
+                                        :class="selectedIndex === i ? 'scale-125' : ''"
+                                    />
+                                    <span
+                                        v-if="selectedIndex === i"
+                                        class="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-[10px] font-semibold text-background shadow-md"
+                                    >
+                                        {{ point.value }}
+                                    </span>
+                                </button>
                             </div>
 
                             <!-- X-axis labels -->

@@ -4,6 +4,10 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/Components/ui/alert-dialog';
+import {
     ArrowLeft,
     UserRound,
     Mail,
@@ -62,6 +66,13 @@ const getInitials = (name) => {
     if (!name) return 'A';
     return name.split(' ').map(p => p.charAt(0)).join('').toUpperCase();
 };
+
+const showLogoutModal = ref(false);
+const logoutForm = useForm({});
+
+function logout() {
+    logoutForm.post(route('admin.logout'));
+}
 </script>
 
 <template>
@@ -227,16 +238,31 @@ const getInitials = (name) => {
                 </div>
 
                 <!-- Se déconnecter -->
-                <Link
-                    :href="route('admin.logout')"
-                    method="post"
-                    as="button"
+                <button
                     class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-border py-3 text-sm font-medium text-destructive transition-colors hover:bg-red-50"
+                    @click="showLogoutModal = true"
                 >
                     <LogOut class="h-4 w-4" />
                     Se déconnecter
-                </Link>
+                </button>
             </div>
         </div>
+
+        <!-- Modal déconnexion -->
+        <AlertDialog :open="showLogoutModal" @update:open="showLogoutModal = $event">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Se déconnecter ?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Vous allez être déconnecté de votre espace administrateur.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction @click="logout">Se déconnecter</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
     </AdminLayout>
 </template>

@@ -56,7 +56,7 @@ defineProps({
             </div>
         </div>
 
-        <div class="flex w-3/5 flex-col items-center justify-start overflow-y-auto px-8 py-10">
+        <div class="flex w-3/5 flex-col items-center justify-start overflow-y-auto bg-background px-8 py-10">
             <div class="w-full max-w-md">
                 <slot />
             </div>

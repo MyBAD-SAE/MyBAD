@@ -113,7 +113,7 @@ const chartData = computed(() => {
                     left: (point.x / svgWidth * 100) + '%',
                     top: (point.y / svgHeight * 100) + '%',
                 }"
-                @click="selectedIndex = selectedIndex === i ? null : i"
+                @click.stop.prevent="selectedIndex = selectedIndex === i ? null : i"
             >
                 <span
                     class="block h-2.5 w-2.5 rounded-full border-2 border-white bg-primary transition-transform"

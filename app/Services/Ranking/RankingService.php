@@ -29,7 +29,7 @@ class RankingService
     /**
      * Retourne le classement complet d'une classe par son ID.
      */
-    public function getRankingForClassId(int $classId): array
+    public function getRankingForClassId(int $classId, ?\Carbon\Carbon $since = null): array
     {
         $participants = ClassParticipant::forClass($classId)
             ->forPlayerType()
@@ -38,8 +38,8 @@ class RankingService
             ->get();
 
         $playerIds = $participants->pluck('participantable_id');
-        $matchStats = $this->getBulkMatchStats($playerIds, $classId);
-        $eloTrends = $this->getBulkEloTrends($participants);
+        $matchStats = $this->getBulkMatchStats($playerIds, $classId, $since);
+        $eloTrends = $this->getBulkEloTrends($participants, $since);
 
         return $participants->values()->map(function (ClassParticipant $participant, int $index) use ($matchStats, $eloTrends) {
             $playerId = $participant->participantable_id;
@@ -69,11 +69,12 @@ class RankingService
     /**
      * Récupère les stats win/loss de tous les joueurs d'une classe en une seule requête.
      */
-    private function getBulkMatchStats(Collection $playerIds, int $schoolClassId): array
+    private function getBulkMatchStats(Collection $playerIds, int $schoolClassId, ?\Carbon\Carbon $since = null): array
     {
         $stats = $playerIds->mapWithKeys(fn ($id) => [$id => ['wins' => 0, 'losses' => 0]])->toArray();
 
         GameMatch::forClass($schoolClassId)
+            ->when($since, fn ($q) => $q->where('game_matches.created_at', '>=', $since))
             ->with('players')
             ->get()
             ->each(function (GameMatch $match) use (&$stats) {
@@ -103,11 +104,12 @@ class RankingService
     /**
      * Récupère la tendance ELO globale de chaque joueur.
      */
-    private function getBulkEloTrends(Collection $participants): array
+    private function getBulkEloTrends(Collection $participants, ?\Carbon\Carbon $since = null): array
     {
         $participantToPlayer = $participants->pluck('participantable_id', 'id');
 
         return EloHistory::whereIn('participant_id', $participantToPlayer->keys())
+            ->when($since, fn ($q) => $q->where('created_at', '>=', $since))
             ->get()
             ->groupBy('participant_id')
             ->mapWithKeys(fn (Collection $histories, int $participantId) => [
