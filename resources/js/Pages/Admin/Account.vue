@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import {
@@ -49,6 +50,7 @@ const passwordMismatch = computed(() => {
 function saveProfile() {
     profileForm.put(route('admin.account.profile'), {
         preserveScroll: true,
+        onError: () => toast.error('Erreur lors de la mise à jour du profil.'),
     });
 }
 
@@ -59,6 +61,7 @@ function changePassword() {
         onSuccess: () => {
             passwordForm.reset();
         },
+        onError: () => toast.error('Erreur lors du changement de mot de passe.'),
     });
 }
 

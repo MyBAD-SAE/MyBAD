@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Input } from '@/Components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
@@ -92,6 +93,7 @@ const confirmDelete = () => {
     if (!matchToDelete.value) return;
     deleteForm.delete(route('admin.matches.destroy', matchToDelete.value.id), {
         onSuccess: () => closeDeleteModal(),
+        onError: () => toast.error('Erreur lors de la suppression du match.'),
     });
 };
 
@@ -119,6 +121,7 @@ const confirmEdit = () => {
     if (!matchToEdit.value) return;
     editForm.put(route('admin.matches.update', matchToEdit.value.id), {
         onSuccess: () => closeEditModal(),
+        onError: () => toast.error('Erreur lors de la modification du match.'),
     });
 };
 

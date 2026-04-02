@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { toast } from "vue-sonner";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import AdminClassPicker from "@/Components/admin/AdminClassPicker.vue";
 import { Switch } from "@/Components/ui/switch";
@@ -99,7 +100,9 @@ const resetDefaults = () => {
 };
 
 const save = () => {
-    form.put(route("admin.rules.update"));
+    form.put(route("admin.rules.update"), {
+        onError: () => toast.error("Erreur lors de l'enregistrement des règles."),
+    });
 };
 </script>
 
