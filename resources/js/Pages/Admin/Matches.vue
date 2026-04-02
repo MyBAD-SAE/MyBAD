@@ -43,8 +43,24 @@ const allMatches = computed(() => {
     return props.sessions.flatMap(s => s.matches);
 });
 
+const searchFilteredSessions = computed(() => {
+    if (!search.value.trim()) return props.sessions;
+    const q = search.value.toLowerCase();
+    return props.sessions.map(s => ({
+        ...s,
+        matches: s.matches.filter(m =>
+            m.player1.name.toLowerCase().includes(q) ||
+            m.player2.name.toLowerCase().includes(q)
+        ),
+    })).filter(s => s.matches.length > 0);
+});
+
+const filteredTotalMatchCount = computed(() => {
+    return searchFilteredSessions.value.reduce((sum, s) => sum + s.matches.length, 0);
+});
+
 const filteredSessions = computed(() => {
-    let sessions = props.sessions;
+    let sessions = searchFilteredSessions.value;
 
     if (activeSession.value !== 'all') {
         sessions = sessions.filter(s => s.id === activeSession.value);
@@ -52,17 +68,6 @@ const filteredSessions = computed(() => {
 
     if (sortBy.value === 'oldest') {
         sessions = [...sessions].reverse();
-    }
-
-    if (search.value.trim()) {
-        const q = search.value.toLowerCase();
-        sessions = sessions.map(s => ({
-            ...s,
-            matches: s.matches.filter(m =>
-                m.player1.name.toLowerCase().includes(q) ||
-                m.player2.name.toLowerCase().includes(q)
-            ),
-        })).filter(s => s.matches.length > 0);
     }
 
     return sessions;
@@ -211,17 +216,17 @@ const getInitials = (name) => {
                             @click="activeSession = 'all'"
                         >
                             Tout
-                            <span class="text-sm" :class="activeSession === 'all' ? 'text-white/60' : 'text-muted-foreground/60'">{{ totalMatchCount }}</span>
+                            <span class="text-sm" :class="activeSession === 'all' ? 'text-white/60' : 'text-muted-foreground/60'">{{ filteredTotalMatchCount }}</span>
                         </button>
                         <button
-                            v-for="session in sessions"
+                            v-for="session in searchFilteredSessions"
                             :key="session.id"
                             class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                             :class="activeSession === session.id ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
                             @click="activeSession = session.id"
                         >
                             {{ session.label }}
-                            <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.matchCount }}</span>
+                            <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.matches.length }}</span>
                         </button>
                     </div>
                 </div>
@@ -281,7 +286,7 @@ const getInitials = (name) => {
                                 <p class="text-xs text-muted-foreground">{{ session.date }}</p>
                             </div>
                         </div>
-                        <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.matchCount }} matchs</span>
+                        <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.matches.length }} matchs</span>
                     </div>
 
                     <!-- Matches -->
