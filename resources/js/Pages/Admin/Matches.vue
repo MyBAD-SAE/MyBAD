@@ -83,7 +83,7 @@ const closeDeleteModal = () => {
 
 const confirmDelete = () => {
     if (!matchToDelete.value) return;
-    deleteForm.delete(route('admin.matchs.destroy', matchToDelete.value.id), {
+    deleteForm.delete(route('admin.matches.destroy', matchToDelete.value.id), {
         onSuccess: () => closeDeleteModal(),
     });
 };
@@ -110,7 +110,7 @@ const closeEditModal = () => {
 
 const confirmEdit = () => {
     if (!matchToEdit.value) return;
-    editForm.put(route('admin.matchs.update', matchToEdit.value.id), {
+    editForm.put(route('admin.matches.update', matchToEdit.value.id), {
         onSuccess: () => closeEditModal(),
     });
 };
