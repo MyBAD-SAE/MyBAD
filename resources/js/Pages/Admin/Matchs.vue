@@ -23,8 +23,7 @@ const props = defineProps({
     totalMatchCount: { type: Number, default: 0 },
     topMatchesPlayer: { type: String, default: null },
     topWinsPlayer: { type: String, default: null },
-    classes: { type: Array, default: () => [] },
-    selectedClassId: { type: Number, default: null },
+    selectedClass: { type: Object, default: null },
 });
 
 const search = ref('');
@@ -36,10 +35,6 @@ const sortOptions = [
     { value: 'recent', label: 'Plus récent' },
     { value: 'oldest', label: 'Plus ancien' },
 ];
-
-const allMatches = computed(() => {
-    return props.sessions.flatMap(s => s.matches);
-});
 
 const filteredSessions = computed(() => {
     let sessions = props.sessions;
@@ -147,7 +142,7 @@ const getInitials = (name) => {
                             <h1 class="text-xl font-bold text-foreground">Matchs</h1>
                             <span class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-semibold text-foreground">{{ totalMatchCount }}</span>
                         </div>
-                        <p class="text-sm text-muted-foreground">Historique complet des matchs du groupe</p>
+                        <p class="text-sm text-muted-foreground">{{ selectedClass ? `${selectedClass.name} | ${selectedClass.school_year}` : 'Historique complet des matchs' }}</p>
                     </div>
                 </div>
 
@@ -169,7 +164,7 @@ const getInitials = (name) => {
             </div>
 
             <!-- Session tabs (carousel) -->
-            <div class="mb-4 -mr-8 overflow-x-auto" style="-ms-overflow-style: none; scrollbar-width: none;" ref="tabsScroll">
+            <div class="mb-4 -mr-8 overflow-x-auto" style="-ms-overflow-style: none; scrollbar-width: none;">
                 <div class="flex items-center gap-3 pr-8">
                     <button
                         class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer"
@@ -186,8 +181,8 @@ const getInitials = (name) => {
                         :class="activeSession === session.id ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
                         @click="activeSession = session.id"
                     >
-                        {{ session.label }}
-                        <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.matchCount }}</span>
+                        {{ session.session_name }}
+                        <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.match_count }}</span>
                     </button>
                 </div>
             </div>
@@ -235,11 +230,11 @@ const getInitials = (name) => {
                                 <Calendar class="h-5 w-5 text-orange-500" />
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-foreground">{{ session.label }}</p>
-                                <p class="text-xs text-muted-foreground">{{ session.date }}</p>
+                                <p class="text-sm font-semibold text-foreground">{{ session.session_name }}</p>
+                                <p class="text-xs text-muted-foreground">{{ session.formatted_date }}</p>
                             </div>
                         </div>
-                        <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.matchCount }} matchs</span>
+                        <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.match_count }} matchs</span>
                     </div>
 
                     <!-- Matches -->

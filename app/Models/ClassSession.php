@@ -19,6 +19,8 @@ class ClassSession extends Model
         'is_active',
     ];
 
+    protected $appends = ['session_name', 'formatted_date'];
+
     protected function casts(): array
     {
         return [
@@ -29,7 +31,12 @@ class ClassSession extends Model
 
     protected function sessionName(): Attribute
     {
-        return Attribute::get(fn () => 'Session du ' . $this->date->format('d/m'));
+        return Attribute::get(fn () => 'Séance du ' . $this->date->format('d/m'));
+    }
+
+    protected function formattedDate(): Attribute
+    {
+        return Attribute::get(fn () => ucfirst($this->date->translatedFormat('l d F Y')));
     }
 
     public function schoolClass(): BelongsTo

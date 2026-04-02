@@ -267,6 +267,9 @@ const getWinRateDot = (winRate) => {
                                 <Crown class="h-3 w-3" />
                                 Admin
                             </span>
+                            <span v-if="!player.isActive" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-semibold text-gray-500">
+                                Désactivé
+                            </span>
                             <template v-if="player.trend > 0">
                                 <TrendingUp class="h-3.5 w-3.5 text-primary" />
                                 <span class="text-xs font-medium text-primary">+{{ player.trend }}</span>

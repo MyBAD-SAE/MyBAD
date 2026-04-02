@@ -10,38 +10,22 @@ import {
 import {
     ArrowLeft,
     Medal,
-    Link2,
-    ExternalLink,
-    Copy,
     Calendar,
     Trophy,
     TrendingUp,
     TrendingDown,
-    Minus,
+    Crown,
     X,
 } from 'lucide-vue-next';
 
 const props = defineProps({
     session: Object,
-    publicLink: { type: String, default: null },
     rankingPlayers: { type: Array, default: () => [] },
     playerCount: { type: Number, default: 0 },
     recentMatches: { type: Array, default: () => [] },
 });
 
 const showCloseDialog = ref(false);
-const linkCopied = ref(false);
-
-const publicUrl = props.publicLink
-    ? `${window.location.origin}/live/${props.publicLink}`
-    : null;
-
-function copyLink() {
-    if (!publicUrl) return;
-    navigator.clipboard.writeText(publicUrl);
-    linkCopied.value = true;
-    setTimeout(() => { linkCopied.value = false; }, 2000);
-}
 
 function closeSession() {
     router.post(route('admin.session.close'));
@@ -52,12 +36,7 @@ const getInitials = (name) => {
     return name.split(' ').map(p => p.charAt(0)).join('').toUpperCase();
 };
 
-const podiumPlayers = props.rankingPlayers.slice(0, 3);
-const podiumOrder = [
-    podiumPlayers[1] ?? null, // 2e — gauche
-    podiumPlayers[0] ?? null, // 1er — centre
-    podiumPlayers[2] ?? null, // 3e — droite
-];
+const podiumOrder = [1, 0, 2]; // 2e gauche, 1er centre, 3e droite
 
 const getRankBadgeClass = (rank) => {
     if (rank === 1) return 'bg-yellow-100 text-yellow-700';
@@ -70,18 +49,6 @@ const getWinRateColor = (winRate) => {
     if (winRate >= 70) return 'bg-primary';
     if (winRate >= 50) return 'bg-orange-400';
     return 'bg-red-400';
-};
-
-const getPodiumHeight = (rank) => {
-    if (rank === 1) return 'h-20';
-    if (rank === 2) return 'h-14';
-    return 'h-10';
-};
-
-const getPodiumBg = (rank) => {
-    if (rank === 1) return 'bg-yellow-100';
-    if (rank === 2) return 'bg-gray-100';
-    return 'bg-orange-100';
 };
 </script>
 
@@ -98,28 +65,24 @@ const getPodiumBg = (rank) => {
 
             <!-- Session header -->
             <div class="rounded-2xl border border-gray-200 bg-white p-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                            <Medal class="h-6 w-6 text-yellow-600" />
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-3">
-                                <h1 class="text-xl font-bold text-foreground">{{ session.dayName }}</h1>
-                                <span v-if="session.isActive" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                    En cours
-                                </span>
-                            </div>
-                            <p class="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                                <Calendar class="h-3.5 w-3.5" />
-                                {{ session.fullDate }}
-                            </p>
-                        </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+                        <Medal class="h-6 w-6 text-yellow-600" />
                     </div>
-
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-xl font-bold text-foreground">{{ session.session_name }}</h1>
+                            <span v-if="session.is_active" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                En cours
+                            </span>
+                        </div>
+                        <p class="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Calendar class="h-3.5 w-3.5" />
+                            {{ session.formatted_date }}
+                        </p>
+                    </div>
                 </div>
-
             </div>
 
             <!-- Content grid -->
@@ -140,33 +103,34 @@ const getPodiumBg = (rank) => {
                     </div>
 
                     <!-- Podium -->
-                    <div v-if="podiumPlayers.length >= 3" class="mt-8 mb-8 flex items-end justify-center gap-4">
-                        <div v-for="player in podiumOrder" :key="player?.rank" class="flex flex-col items-center gap-2">
+                    <div v-if="rankingPlayers.length >= 3" class="mt-8 mb-8 flex items-end justify-center gap-4">
+                        <div v-for="idx in podiumOrder" :key="idx" class="flex flex-col items-center gap-2"
+                            :class="idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'">
                             <div class="relative">
-                                <Avatar class="h-16 w-16 border-2" :class="player?.rank === 1 ? 'border-yellow-400' : 'border-gray-200'">
-                                    <AvatarImage v-if="player?.avatar" :src="player.avatar" />
-                                    <AvatarFallback class="text-sm">{{ getInitials(player?.name) }}</AvatarFallback>
+                                <Crown v-if="idx === 0" class="absolute -top-5 left-1/2 z-10 h-5 w-5 -translate-x-1/2 text-yellow-400" />
+                                <Avatar :class="[idx === 0 ? 'h-16 w-16 ring-3 ring-yellow-400' : 'h-12 w-12 ring-3', idx === 1 ? 'ring-gray-300' : '', idx === 2 ? 'ring-orange-300' : '']">
+                                    <AvatarImage v-if="rankingPlayers[idx]?.avatar" :src="rankingPlayers[idx].avatar" />
+                                    <AvatarFallback class="text-xs">{{ getInitials(rankingPlayers[idx]?.name || '') }}</AvatarFallback>
                                 </Avatar>
-                                <span v-if="player?.rank === 1" class="absolute -top-3 left-1/2 -translate-x-1/2 text-lg">👑</span>
                             </div>
                             <div class="text-center">
-                                <p class="text-sm font-semibold text-foreground">{{ player?.name?.split(' ')[0] }}</p>
-                                <p class="text-xs text-muted-foreground">{{ player?.elo }}</p>
+                                <p class="text-sm font-semibold text-foreground">{{ rankingPlayers[idx]?.name.split(' ')[0] }}</p>
+                                <p class="text-xs text-muted-foreground">{{ rankingPlayers[idx]?.elo }} pts</p>
                             </div>
                             <div
-                                class="w-20 rounded-t-lg flex items-end justify-center pb-2"
-                                :class="[getPodiumHeight(player?.rank), getPodiumBg(player?.rank)]"
+                                class="w-30 rounded-t-lg flex items-end justify-center pb-2"
+                                :class="idx === 0 ? 'h-20 bg-yellow-100' : idx === 1 ? 'h-14 bg-gray-100' : 'h-10 bg-orange-100'"
                             >
-                                <span class="text-sm font-bold" :class="player?.rank === 1 ? 'text-yellow-700' : player?.rank === 2 ? 'text-gray-600' : 'text-orange-700'">
-                                    {{ player?.rank === 1 ? '1er' : player?.rank + 'e' }}
+                                <span class="text-sm font-bold" :class="idx === 0 ? 'text-yellow-700' : idx === 1 ? 'text-gray-600' : 'text-orange-700'">
+                                    {{ idx === 0 ? '1er' : `${idx + 1}e` }}
                                 </span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Player list -->
-                    <div class="space-y-0 divide-y">
-                        <div v-for="player in rankingPlayers" :key="player.rank" class="flex items-center gap-4 py-3.5">
+                    <div class="divide-y">
+                        <div v-for="player in rankingPlayers.slice(3)" :key="player.rank" class="flex items-center gap-4 py-3.5">
                             <!-- Rank badge -->
                             <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold" :class="getRankBadgeClass(player.rank)">
                                 <Trophy v-if="player.rank === 1" class="h-4 w-4" />

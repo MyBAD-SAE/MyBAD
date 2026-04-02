@@ -18,11 +18,7 @@ const props = defineProps({
 });
 
 function startSession() {
-    if (props.hasActiveSession) {
-        router.get(route('admin.session'));
-    } else {
-        router.post(route('admin.session.store'));
-    }
+    router.visit(route('admin.session'));
 }
 </script>
 

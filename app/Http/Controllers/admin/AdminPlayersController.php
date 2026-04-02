@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
+use App\Models\EloHistory;
 use App\Models\Player;
 use App\Models\User;
 use App\Services\Ranking\RankingService;
@@ -129,7 +130,19 @@ class AdminPlayersController extends Controller
             'make_admin' => 'sometimes|boolean',
         ]);
 
-        $participant->update(['elo_rating' => $validated['elo']]);
+        $eloBefore = (float) $participant->elo_rating;
+        $eloAfter  = (float) $validated['elo'];
+
+        $participant->update(['elo_rating' => $eloAfter]);
+
+        if ($eloBefore !== $eloAfter) {
+            EloHistory::create([
+                'participant_id' => $participant->id,
+                'game_match_id'  => null,
+                'elo_before'     => $eloBefore,
+                'elo_after'      => $eloAfter,
+            ]);
+        }
 
         $user = User::find($request->input('user_id'));
 

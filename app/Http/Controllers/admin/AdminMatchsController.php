@@ -23,21 +23,17 @@ class AdminMatchsController extends Controller
         $user = Auth::guard('admin')->user();
         $adminUser = $user->adminUser;
 
-        $classes = $adminUser->classParticipants()
-            ->with('schoolClass')
-            ->get()
-            ->map(fn ($cp) => [
-                'id'   => $cp->schoolClass->id,
-                'name' => $cp->schoolClass->name,
-            ])
-            ->values()
-            ->all();
+        $classIds = $adminUser->classParticipants()->pluck('school_class_id');
 
         $selectedClassId = session('admin_selected_class_id');
 
-        if (!$selectedClassId || !collect($classes)->contains('id', $selectedClassId)) {
-            $selectedClassId = $classes[0]['id'] ?? null;
+        if (!$selectedClassId || !$classIds->contains($selectedClassId)) {
+            $selectedClassId = $classIds->first();
         }
+
+        $selectedClass = $selectedClassId
+            ? \App\Models\SchoolClass::find($selectedClassId)
+            : null;
 
         $sessions = [];
         $totalMatchCount = 0;
@@ -105,13 +101,9 @@ class AdminMatchsController extends Controller
                 }
 
                 if (count($sessionMatches) > 0) {
-                    $sessions[] = [
-                        'id'         => $session->id,
-                        'label'      => $session->session_name,
-                        'date'       => $session->date->translatedFormat('j M. Y'),
-                        'matchCount' => count($sessionMatches),
-                        'matches'    => $sessionMatches,
-                    ];
+                    $session->setAttribute('match_count', count($sessionMatches));
+                    $session->setAttribute('matches', $sessionMatches);
+                    $sessions[] = $session;
                 }
 
                 $totalMatchCount += count($sessionMatches);
@@ -130,8 +122,7 @@ class AdminMatchsController extends Controller
             'totalMatchCount'  => $totalMatchCount,
             'topMatchesPlayer' => $topMatchesPlayer,
             'topWinsPlayer'    => $topWinsPlayer,
-            'classes'          => $classes,
-            'selectedClassId'  => $selectedClassId,
+            'selectedClass'    => $selectedClass,
         ]);
     }
 
