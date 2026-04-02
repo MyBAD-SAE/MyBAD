@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import {
@@ -47,17 +47,28 @@ function closeSession() {
     router.post(route('admin.session.close'));
 }
 
+// Auto-refresh every 10 seconds
+let refreshInterval = null;
+onMounted(() => {
+    refreshInterval = setInterval(() => {
+        router.reload({ only: ['rankingPlayers', 'recentMatches', 'playerCount'] });
+    }, 10000);
+});
+onUnmounted(() => {
+    clearInterval(refreshInterval);
+});
+
 const getInitials = (name) => {
     if (!name) return '?';
     return name.split(' ').map(p => p.charAt(0)).join('').toUpperCase();
 };
 
-const podiumPlayers = props.rankingPlayers.slice(0, 3);
-const podiumOrder = [
-    podiumPlayers[1] ?? null, // 2e — gauche
-    podiumPlayers[0] ?? null, // 1er — centre
-    podiumPlayers[2] ?? null, // 3e — droite
-];
+const podiumPlayers = computed(() => props.rankingPlayers.slice(0, 3));
+const podiumOrder = computed(() => [
+    podiumPlayers.value[1] ?? null, // 2e — gauche
+    podiumPlayers.value[0] ?? null, // 1er — centre
+    podiumPlayers.value[2] ?? null, // 3e — droite
+]);
 
 const getRankBadgeClass = (rank) => {
     if (rank === 1) return 'bg-yellow-100 text-yellow-700';
@@ -118,6 +129,24 @@ const getPodiumBg = (rank) => {
                         </div>
                     </div>
 
+                    <div v-if="publicUrl" class="flex items-center gap-2">
+                        <a
+                            :href="publicUrl"
+                            target="_blank"
+                            class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+                        >
+                            <ExternalLink class="h-4 w-4" />
+                            Ouvrir live
+                        </a>
+                        <button
+                            @click="copyLink"
+                            class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                            :class="linkCopied ? 'text-primary' : 'text-foreground'"
+                        >
+                            <Copy class="h-4 w-4" />
+                            {{ linkCopied ? 'Copié !' : 'Copier lien' }}
+                        </button>
+                    </div>
                 </div>
 
             </div>
