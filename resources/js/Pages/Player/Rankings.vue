@@ -1,10 +1,12 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 import ClassPicker from '@/Components/player/dashboard/ClassPicker.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, TrendingUp, TrendingDown, ArrowLeft, Medal } from 'lucide-vue-next';
+
+const currentUserId = usePage().props.auth.user?.id;
 
 defineProps({
     players: { type: Array, default: () => [] },
@@ -79,7 +81,10 @@ const getRankBg = (rank) => {
 
                                 <!-- Info -->
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-semibold text-foreground truncate">{{ player.name }}</p>
+                                    <p class="text-sm font-semibold text-foreground truncate">
+                                        {{ player.name }}
+                                        <span v-if="player.userId === currentUserId" class="ml-1 inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">Vous</span>
+                                    </p>
                                     <div class="flex items-center gap-1 text-xs text-muted-foreground">
                                         <span class="text-primary">{{ player.wins }}V · {{ player.losses }}D</span>
                                         <template v-if="player.trend !== 0">

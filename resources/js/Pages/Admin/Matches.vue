@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Input } from '@/Components/ui/input';
@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Button } from '@/Components/ui/button';
 import {
     ArrowLeft,
+    ChevronLeft,
+    ChevronRight,
     Swords,
     Search,
     ChevronDown,
@@ -41,8 +43,24 @@ const allMatches = computed(() => {
     return props.sessions.flatMap(s => s.matches);
 });
 
+const searchFilteredSessions = computed(() => {
+    if (!search.value.trim()) return props.sessions;
+    const q = search.value.toLowerCase();
+    return props.sessions.map(s => ({
+        ...s,
+        matches: s.matches.filter(m =>
+            m.player1.name.toLowerCase().includes(q) ||
+            m.player2.name.toLowerCase().includes(q)
+        ),
+    })).filter(s => s.matches.length > 0);
+});
+
+const filteredTotalMatchCount = computed(() => {
+    return searchFilteredSessions.value.reduce((sum, s) => sum + s.matches.length, 0);
+});
+
 const filteredSessions = computed(() => {
-    let sessions = props.sessions;
+    let sessions = searchFilteredSessions.value;
 
     if (activeSession.value !== 'all') {
         sessions = sessions.filter(s => s.id === activeSession.value);
@@ -50,17 +68,6 @@ const filteredSessions = computed(() => {
 
     if (sortBy.value === 'oldest') {
         sessions = [...sessions].reverse();
-    }
-
-    if (search.value.trim()) {
-        const q = search.value.toLowerCase();
-        sessions = sessions.map(s => ({
-            ...s,
-            matches: s.matches.filter(m =>
-                m.player1.name.toLowerCase().includes(q) ||
-                m.player2.name.toLowerCase().includes(q)
-            ),
-        })).filter(s => s.matches.length > 0);
     }
 
     return sessions;
@@ -115,6 +122,29 @@ const confirmEdit = () => {
     });
 };
 
+const tabsScroll = ref(null);
+const canScrollRight = ref(false);
+const canScrollLeft = ref(false);
+
+const checkScroll = () => {
+    const el = tabsScroll.value;
+    if (!el) return;
+    canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 4;
+    canScrollLeft.value = el.scrollLeft > 4;
+};
+
+const scrollRight = () => {
+    tabsScroll.value?.scrollBy({ left: 200, behavior: 'smooth' });
+};
+
+const scrollLeft = () => {
+    tabsScroll.value?.scrollBy({ left: -200, behavior: 'smooth' });
+};
+
+onMounted(() => {
+    nextTick(() => checkScroll());
+});
+
 const getInitials = (name) => {
     if (!name) return '?';
     return name.split(' ').map(p => p.charAt(0)).join('').toUpperCase();
@@ -165,27 +195,48 @@ const getInitials = (name) => {
             </div>
 
             <!-- Session tabs (carousel) -->
-            <div class="mb-4 -mr-8 overflow-x-auto" style="-ms-overflow-style: none; scrollbar-width: none;" ref="tabsScroll">
-                <div class="flex items-center gap-3 pr-8">
-                    <button
-                        class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                        :class="activeSession === 'all' ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
-                        @click="activeSession = 'all'"
-                    >
-                        Tout
-                        <span class="text-sm" :class="activeSession === 'all' ? 'text-white/60' : 'text-muted-foreground/60'">{{ totalMatchCount }}</span>
-                    </button>
-                    <button
-                        v-for="session in sessions"
-                        :key="session.id"
-                        class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                        :class="activeSession === session.id ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
-                        @click="activeSession = session.id"
-                    >
-                        {{ session.label }}
-                        <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.matchCount }}</span>
-                    </button>
+            <div class="flex items-center gap-3 mb-4">
+                <button
+                    v-if="canScrollLeft"
+                    class="flex shrink-0 h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-white transition-colors hover:bg-gray-50 cursor-pointer"
+                    @click="scrollLeft"
+                >
+                    <ChevronLeft class="h-4 w-4 text-foreground" />
+                </button>
+                <div
+                    ref="tabsScroll"
+                    class="flex-1 overflow-x-auto"
+                    style="-ms-overflow-style: none; scrollbar-width: none;"
+                    @scroll="checkScroll"
+                >
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer"
+                            :class="activeSession === 'all' ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
+                            @click="activeSession = 'all'"
+                        >
+                            Tout
+                            <span class="text-sm" :class="activeSession === 'all' ? 'text-white/60' : 'text-muted-foreground/60'">{{ filteredTotalMatchCount }}</span>
+                        </button>
+                        <button
+                            v-for="session in searchFilteredSessions"
+                            :key="session.id"
+                            class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer"
+                            :class="activeSession === session.id ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
+                            @click="activeSession = session.id"
+                        >
+                            {{ session.label }}
+                            <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.matches.length }}</span>
+                        </button>
+                    </div>
                 </div>
+                <button
+                    v-if="canScrollRight"
+                    class="flex shrink-0 h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-white transition-colors hover:bg-gray-50 cursor-pointer"
+                    @click="scrollRight"
+                >
+                    <ChevronRight class="h-4 w-4 text-foreground" />
+                </button>
             </div>
 
             <!-- Search + Sort -->
@@ -235,7 +286,7 @@ const getInitials = (name) => {
                                 <p class="text-xs text-muted-foreground">{{ session.date }}</p>
                             </div>
                         </div>
-                        <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.matchCount }} matchs</span>
+                        <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.matches.length }} matchs</span>
                     </div>
 
                     <!-- Matches -->
