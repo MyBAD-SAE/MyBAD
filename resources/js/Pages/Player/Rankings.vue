@@ -1,12 +1,10 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import PlayerLayout from '@/Layouts/PlayerLayout.vue';
 import BottomNavBar from '@/Components/player/BottomNavBar.vue';
 import ClassPicker from '@/Components/player/dashboard/ClassPicker.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Trophy, TrendingUp, TrendingDown, ArrowLeft, Medal } from 'lucide-vue-next';
-
-const currentUserId = usePage().props.auth.user?.id;
 
 defineProps({
     players: { type: Array, default: () => [] },
@@ -65,7 +63,6 @@ const getRankBg = (rank) => {
                                 v-for="player in players"
                                 :key="player.rank"
                                 class="flex items-center gap-3 rounded-xl border p-3"
-                                :class="{ 'bg-primary/5 ring-2 ring-primary/30': player.userId === currentUserId }"
                                 :style="getRankBg(player.rank)"
                             >
                                 <!-- Rank -->
