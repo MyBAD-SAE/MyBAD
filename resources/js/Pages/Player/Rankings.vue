@@ -32,20 +32,11 @@ const getMedalColor = (rank) => {
     return null;
 };
 
-const isCurrentUser = (player) => player.userId === currentUserId;
-
-const getRowStyle = (player) => {
-    const styles = [];
-    if (player.rank === 1) styles.push('border-color: #EAB308');
-    else if (player.rank === 2) styles.push('border-color: #9CA3AF');
-    else if (player.rank === 3) styles.push('border-color: #CD7F32');
-
-    if (isCurrentUser(player)) {
-        styles.push('border-left: 3px solid hsl(var(--primary))');
-        styles.push('background-color: hsl(var(--primary) / 0.04)');
-    }
-
-    return styles.join('; ');
+const getRankBg = (rank) => {
+    if (rank === 1) return 'border-color: #EAB308;'; // or
+    if (rank === 2) return 'border-color: #9CA3AF;'; // argent
+    if (rank === 3) return 'border-color: #CD7F32;'; // bronze
+    return '';
 };
 </script>
 
@@ -74,7 +65,8 @@ const getRowStyle = (player) => {
                                 v-for="player in players"
                                 :key="player.rank"
                                 class="flex items-center gap-3 rounded-xl border p-3"
-                                :style="getRowStyle(player)"
+                                :class="{ 'bg-primary/5 ring-2 ring-primary/30': player.userId === currentUserId }"
+                                :style="getRankBg(player.rank)"
                             >
                                 <!-- Rank -->
                                 <div class="flex h-8 w-8 shrink-0 items-center justify-center">
@@ -90,10 +82,7 @@ const getRowStyle = (player) => {
 
                                 <!-- Info -->
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-semibold text-foreground truncate">
-                                        {{ player.name }}
-                                        <span v-if="isCurrentUser(player)" class="text-xs font-medium text-primary">(vous)</span>
-                                    </p>
+                                    <p class="text-sm font-semibold text-foreground truncate">{{ player.name }}</p>
                                     <div class="flex items-center gap-1 text-xs text-muted-foreground">
                                         <span class="text-primary">{{ player.wins }}V · {{ player.losses }}D</span>
                                         <template v-if="player.trend !== 0">
