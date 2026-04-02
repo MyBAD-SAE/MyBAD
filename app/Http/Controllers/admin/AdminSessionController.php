@@ -134,7 +134,7 @@ class AdminSessionController extends Controller
             ['access_token' => Str::random(32)],
         );
 
-        return redirect()->route('admin.session');
+        return redirect()->route('admin.session')->with('success', 'Séance lancée avec succès.');
     }
 
     public function close(): RedirectResponse
