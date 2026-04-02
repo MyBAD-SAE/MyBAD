@@ -11,6 +11,10 @@ import { LayoutDashboard, Users, Swords, Trophy, Plus, LogOut, Smartphone } from
 
 const showLogoutDialog = ref(false);
 
+const startSession = () => {
+    router.post(route('admin.session.store'));
+};
+
 const logout = () => {
     router.post(route('admin.logout'));
 };
@@ -64,7 +68,7 @@ const getInitials = (name) => {
 
             <!-- Nouvelle seance button -->
             <div class="px-4 pt-4 pb-4">
-                <button class="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-primary px-5 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90">
+                <button @click="startSession" class="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-primary px-5 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90">
                     <Plus class="h-5 w-5" />
                     Nouvelle séance
                 </button>

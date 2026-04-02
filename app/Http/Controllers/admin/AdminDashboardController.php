@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassParticipant;
+use App\Models\ClassSession;
 use App\Models\GameMatch;
 use App\Services\Ranking\RankingService;
 use Illuminate\Http\RedirectResponse;
@@ -55,13 +56,18 @@ class AdminDashboardController extends Controller
             $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId, $since);
         }
 
+        $hasActiveSession = $selectedClassId
+            ? ClassSession::forClass($selectedClassId)->active()->exists()
+            : false;
+
         return Inertia::render('Admin/Dashboard', [
-            'classes'         => $classes,
-            'selectedClassId' => $selectedClassId,
-            'playerCount'     => $playerCount,
-            'matchCount'      => $matchCount,
-            'rankingPlayers'  => $rankingPlayers,
-            'period'          => $period,
+            'classes'          => $classes,
+            'selectedClassId'  => $selectedClassId,
+            'playerCount'      => $playerCount,
+            'matchCount'       => $matchCount,
+            'rankingPlayers'   => $rankingPlayers,
+            'period'           => $period,
+            'hasActiveSession' => $hasActiveSession,
         ]);
     }
 
