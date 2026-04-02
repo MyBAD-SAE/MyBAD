@@ -45,19 +45,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('account/profile', [AdminAccountController::class, 'updateProfile'])->name('account.profile');
         Route::put('account/password', [AdminAccountController::class, 'updatePassword'])->name('account.password');
 
-        Route::get('players', [AdminPlayersController::class, 'index'])->name('players');
-        Route::post('players', [AdminPlayersController::class, 'store'])->name('players.store');
-        Route::put('players/{participant}', [AdminPlayersController::class, 'update'])->name('players.update');
-        Route::delete('players/{participant}', [AdminPlayersController::class, 'destroy'])->name('players.destroy');
+        Route::get('joueurs', [AdminPlayersController::class, 'index'])->name('players');
+        Route::post('joueurs', [AdminPlayersController::class, 'store'])->name('players.store');
+        Route::put('joueurs/{participant}', [AdminPlayersController::class, 'update'])->name('players.update');
+        Route::delete('joueurs/{participant}', [AdminPlayersController::class, 'destroy'])->name('players.destroy');
 
-        Route::get('matches', [AdminMatchesController::class, 'index'])->name('matches');
-        Route::put('matches/{gameMatch}', [AdminMatchesController::class, 'update'])->name('matches.update');
-        Route::delete('matches/{gameMatch}', [AdminMatchesController::class, 'destroy'])->name('matches.destroy');
-        Route::get('ranking', [AdminRankingController::class, 'index'])->name('ranking');
-        Route::get('ranking/data', [AdminRankingController::class, 'data'])->name('ranking.data');
+        Route::get('matchs', [AdminMatchesController::class, 'index'])->name('matches');
+        Route::put('matchs/{gameMatch}', [AdminMatchesController::class, 'update'])->name('matches.update');
+        Route::delete('matchs/{gameMatch}', [AdminMatchesController::class, 'destroy'])->name('matches.destroy');
+        Route::get('classement', [AdminRankingController::class, 'index'])->name('ranking');
+        Route::get('classement/data', [AdminRankingController::class, 'data'])->name('ranking.data');
 
-        Route::get('rules', [AdminRulesController::class, 'index'])->name('rules');
-        Route::put('rules', [AdminRulesController::class, 'update'])->name('rules.update');
+        Route::get('regles', [AdminRulesController::class, 'index'])->name('rules');
+        Route::put('regles', [AdminRulesController::class, 'update'])->name('rules.update');
 
         Route::get('session', [AdminSessionController::class, 'show'])->name('session');
         Route::post('session', [AdminSessionController::class, 'store'])->name('session.store');
