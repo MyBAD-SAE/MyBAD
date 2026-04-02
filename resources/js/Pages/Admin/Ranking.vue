@@ -31,7 +31,7 @@ const fetchRanking = async () => {
 };
 
 onMounted(() => {
-    pollInterval = setInterval(fetchRanking, 5000);
+    pollInterval = setInterval(fetchRanking, 10000);
 });
 
 onUnmounted(() => {
