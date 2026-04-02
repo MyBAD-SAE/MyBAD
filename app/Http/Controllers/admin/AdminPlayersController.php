@@ -62,7 +62,7 @@ class AdminPlayersController extends Controller
             }
         }
 
-        return Inertia::render('Admin/Joueurs', [
+        return Inertia::render('Admin/Players', [
             'players'         => $players,
             'playerCount'     => $playerCount,
             'matchCount'      => $matchCount,
@@ -82,7 +82,7 @@ class AdminPlayersController extends Controller
         $player = Player::where('code', $validated['code'])->first();
 
         if (!$player) {
-            return redirect()->route('admin.joueurs')->withErrors(['code' => 'Aucun joueur trouvé avec ce code.']);
+            return redirect()->route('admin.players')->withErrors(['code' => 'Aucun joueur trouvé avec ce code.']);
         }
 
         $user = auth('admin')->user();
@@ -96,7 +96,7 @@ class AdminPlayersController extends Controller
         }
 
         if (!$selectedClassId) {
-            return redirect()->route('admin.joueurs');
+            return redirect()->route('admin.players');
         }
 
         $exists = ClassParticipant::forClass($selectedClassId)
@@ -105,7 +105,7 @@ class AdminPlayersController extends Controller
             ->exists();
 
         if ($exists) {
-            return redirect()->route('admin.joueurs')->withErrors(['code' => 'Ce joueur est déjà dans la classe.']);
+            return redirect()->route('admin.players')->withErrors(['code' => 'Ce joueur est déjà dans la classe.']);
         }
 
         ClassParticipant::create([
@@ -115,7 +115,7 @@ class AdminPlayersController extends Controller
             'school_class_id'      => $selectedClassId,
         ]);
 
-        return redirect()->route('admin.joueurs')->with('success', 'Joueur ajouté avec succès.');
+        return redirect()->route('admin.players')->with('success', 'Joueur ajouté avec succès.');
     }
 
     public function update(Request $request, ClassParticipant $participant): RedirectResponse
@@ -154,7 +154,7 @@ class AdminPlayersController extends Controller
             }
         }
 
-        return redirect()->route('admin.joueurs')->with('success', 'Joueur mis à jour avec succès.');
+        return redirect()->route('admin.players')->with('success', 'Joueur mis à jour avec succès.');
     }
 
     public function destroy(ClassParticipant $participant): RedirectResponse
@@ -162,6 +162,6 @@ class AdminPlayersController extends Controller
         $participant->eloHistories()->delete();
         $participant->delete();
 
-        return redirect()->route('admin.joueurs')->with('success', 'Joueur supprimé avec succès.');
+        return redirect()->route('admin.players')->with('success', 'Joueur supprimé avec succès.');
     }
 }

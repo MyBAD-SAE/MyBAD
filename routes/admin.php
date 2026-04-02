@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\admin\AdminAccountController;
 use App\Http\Controllers\admin\AdminDashboardController;
-use App\Http\Controllers\admin\AdminMatchsController;
+use App\Http\Controllers\admin\AdminMatchesController;
 use App\Http\Controllers\admin\AdminPlayersController;
-use App\Http\Controllers\admin\AdminReglesController;
+use App\Http\Controllers\admin\AdminRankingController;
+use App\Http\Controllers\admin\AdminRulesController;
 use App\Http\Controllers\admin\AdminSessionController;
 use App\Http\Controllers\admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\admin\Auth\AdminPasswordResetController;
@@ -44,16 +45,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('account/profile', [AdminAccountController::class, 'updateProfile'])->name('account.profile');
         Route::put('account/password', [AdminAccountController::class, 'updatePassword'])->name('account.password');
 
-        Route::get('joueurs', [AdminPlayersController::class, 'index'])->name('joueurs');
-        Route::post('joueurs', [AdminPlayersController::class, 'store'])->name('joueurs.store');
-        Route::put('joueurs/{participant}', [AdminPlayersController::class, 'update'])->name('joueurs.update');
-        Route::delete('joueurs/{participant}', [AdminPlayersController::class, 'destroy'])->name('joueurs.destroy');
+        Route::get('players', [AdminPlayersController::class, 'index'])->name('players');
+        Route::post('players', [AdminPlayersController::class, 'store'])->name('players.store');
+        Route::put('players/{participant}', [AdminPlayersController::class, 'update'])->name('players.update');
+        Route::delete('players/{participant}', [AdminPlayersController::class, 'destroy'])->name('players.destroy');
 
-        Route::get('matchs', [AdminMatchsController::class, 'index'])->name('matchs');
-        Route::put('matchs/{gameMatch}', [AdminMatchsController::class, 'update'])->name('matchs.update');
-        Route::delete('matchs/{gameMatch}', [AdminMatchsController::class, 'destroy'])->name('matchs.destroy');
-        Route::get('regles', [AdminReglesController::class, 'index'])->name('regles');
-        Route::put('regles', [AdminReglesController::class, 'update'])->name('regles.update');
+        Route::get('matches', [AdminMatchesController::class, 'index'])->name('matches');
+        Route::put('matches/{gameMatch}', [AdminMatchesController::class, 'update'])->name('matches.update');
+        Route::delete('matches/{gameMatch}', [AdminMatchesController::class, 'destroy'])->name('matches.destroy');
+        Route::get('ranking', [AdminRankingController::class, 'index'])->name('ranking');
+        Route::get('ranking/data', [AdminRankingController::class, 'data'])->name('ranking.data');
+
+        Route::get('rules', [AdminRulesController::class, 'index'])->name('rules');
+        Route::put('rules', [AdminRulesController::class, 'update'])->name('rules.update');
 
         Route::get('session', [AdminSessionController::class, 'show'])->name('session');
         Route::post('session', [AdminSessionController::class, 'store'])->name('session.store');

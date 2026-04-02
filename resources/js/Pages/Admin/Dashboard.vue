@@ -64,7 +64,7 @@ function startSession() {
                         description="Gerer les joueurs et leurs profils"
                         :icon="Users"
                         :badge="playerCount"
-                        :href="route('admin.joueurs')"
+                        :href="route('admin.players')"
                         icon-bg-class="bg-violet-100"
                         icon-color-class="text-violet-500"
                     />
@@ -73,7 +73,7 @@ function startSession() {
                         description="Historique et validation des matchs"
                         :icon="Swords"
                         :badge="matchCount"
-                        :href="route('admin.matchs')"
+                        :href="route('admin.matches')"
                         icon-bg-class="bg-orange-100"
                         icon-color-class="text-orange-500"
                     />
@@ -81,7 +81,7 @@ function startSession() {
                         title="Regles et defis"
                         description="Configurer les regles et creer des defis"
                         :icon="Trophy"
-                        :href="route('admin.regles')"
+                        :href="route('admin.rules')"
                         icon-bg-class="bg-red-100"
                         icon-color-class="text-red-500"
                     />

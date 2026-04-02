@@ -55,7 +55,7 @@ const closeDeleteModal = () => {
 
 const confirmDelete = () => {
     if (!playerToDelete.value) return;
-    deleteForm.delete(route('admin.joueurs.destroy', playerToDelete.value.participantId), {
+    deleteForm.delete(route('admin.players.destroy', playerToDelete.value.participantId), {
         onSuccess: () => closeDeleteModal(),
     });
 };
@@ -89,7 +89,7 @@ const closeEditModal = () => {
 const confirmEdit = () => {
     if (!playerToEdit.value) return;
     editForm.is_active = editIsActive.value;
-    editForm.put(route('admin.joueurs.update', playerToEdit.value.participantId), {
+    editForm.put(route('admin.players.update', playerToEdit.value.participantId), {
         onSuccess: () => closeEditModal(),
     });
 };
@@ -112,7 +112,7 @@ const closeAddModal = () => {
 };
 
 const confirmAdd = () => {
-    addForm.post(route('admin.joueurs.store'), {
+    addForm.post(route('admin.players.store'), {
         onSuccess: () => closeAddModal(),
     });
 };

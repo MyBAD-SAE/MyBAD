@@ -29,9 +29,9 @@ const adminUser = page.props.adminUser ?? {
 
 const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, routeName: 'admin.dashboard' },
-    { label: 'Joueurs', icon: Users, routeName: 'admin.joueurs' },
-    { label: 'Matchs', icon: Swords, routeName: 'admin.matchs' },
-    { label: 'Regles et defis', icon: Trophy, routeName: 'admin.regles' },
+    { label: 'Joueurs', icon: Users, routeName: 'admin.players' },
+    { label: 'Matchs', icon: Swords, routeName: 'admin.matches' },
+    { label: 'Regles et defis', icon: Trophy, routeName: 'admin.rules' },
 ];
 
 const isActive = (routeName) => route().current(routeName);

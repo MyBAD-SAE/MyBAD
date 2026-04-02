@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AdminReglesController extends Controller
+class AdminRulesController extends Controller
 {
     public function index(): Response
     {
@@ -48,7 +48,7 @@ class AdminReglesController extends Controller
                 ->all();
         }
 
-        return Inertia::render('Admin/Regles', [
+        return Inertia::render('Admin/Rules', [
             'classes' => $classes,
             'selectedClassId' => $selectedClassId,
             'parameters' => $parameters,
@@ -66,7 +66,7 @@ class AdminReglesController extends Controller
         $selectedClassId = session('admin_selected_class_id');
 
         if (! $selectedClassId) {
-            return redirect()->route('admin.regles');
+            return redirect()->route('admin.rules');
         }
 
         foreach ($request->input('parameters') as $param) {
@@ -75,6 +75,6 @@ class AdminReglesController extends Controller
                 ->update(['winner_points' => $param['winner_points']]);
         }
 
-        return redirect()->route('admin.regles')->with('success', 'Règles enregistrées avec succès.');
+        return redirect()->route('admin.rules')->with('success', 'Règles enregistrées avec succès.');
     }
 }

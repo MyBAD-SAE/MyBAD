@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AdminMatchsController extends Controller
+class AdminMatchesController extends Controller
 {
     public function index(): Response
     {
@@ -118,7 +118,7 @@ class AdminMatchsController extends Controller
             }
         }
 
-        return Inertia::render('Admin/Matchs', [
+        return Inertia::render('Admin/Matches', [
             'sessions'         => $sessions,
             'totalMatchCount'  => $totalMatchCount,
             'topMatchesPlayer' => $topMatchesPlayer,
@@ -142,7 +142,7 @@ class AdminMatchsController extends Controller
             $gameMatch->players()->updateExistingPivot($players->last()->id, ['score' => $validated['score2']]);
         }
 
-        return redirect()->route('admin.matchs')->with('success', 'Match mis à jour avec succès.');
+        return redirect()->route('admin.matches')->with('success', 'Match mis à jour avec succès.');
     }
 
     public function destroy(GameMatch $gameMatch): RedirectResponse
@@ -150,6 +150,6 @@ class AdminMatchsController extends Controller
         $gameMatch->players()->detach();
         $gameMatch->delete();
 
-        return redirect()->route('admin.matchs')->with('success', 'Match supprimé avec succès.');
+        return redirect()->route('admin.matches')->with('success', 'Match supprimé avec succès.');
     }
 }

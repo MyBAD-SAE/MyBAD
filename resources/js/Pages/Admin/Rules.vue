@@ -99,7 +99,7 @@ const resetDefaults = () => {
 };
 
 const save = () => {
-    form.put(route("admin.regles.update"));
+    form.put(route("admin.rules.update"));
 };
 </script>
 
