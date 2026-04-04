@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import { toast } from "vue-sonner";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
@@ -10,7 +10,6 @@ import {
     ArrowLeft,
     RotateCcw,
     Save,
-    Globe,
     Lightbulb,
     Trophy,
     Minus,
@@ -23,14 +22,32 @@ const props = defineProps({
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
     parameters: { type: Array, default: () => [] },
+    rule: { type: Object, default: null },
 });
 
 const defaultPoints = [-0.7, -0.2, 0.0, 0.5, 1.0, 1.6];
 
-const enableRankingGroups = ref(false);
-const enableEloHandicap = ref(false);
-const groupSize = ref(8);
-const totalPlayers = 24; // exemple
+const defaultHandicapRanges = [
+    { from: 1, to: 3, points: 0 },
+    { from: 3, to: 6, points: -3 },
+    { from: 6, to: 9, points: -5 },
+    { from: 10, to: null, points: -8 },
+];
+
+const enableRankingGroups = ref(props.rule?.enableRankingGroups ?? false);
+const enableEloHandicap = ref(props.rule?.enableEloHandicap ?? false);
+const groupSize = ref(props.rule?.groupSize ?? 8);
+const totalPlayers = 24;
+
+const handicapRanges = ref(
+    props.rule?.handicapParameters?.length
+        ? props.rule.handicapParameters.map((p) => ({
+              from: p.from,
+              to: p.to,
+              points: p.points,
+          }))
+        : defaultHandicapRanges.map((r) => ({ ...r }))
+);
 
 const groupColors = [
     { border: 'border-emerald-200', bg: 'bg-emerald-50/60', text: 'text-emerald-500' },
@@ -51,19 +68,18 @@ const groups = computed(() => {
     }));
 });
 
-const handicapRanges = ref([
-    { from: 1, to: 3, points: 0 },
-    { from: 3, to: 6, points: -3 },
-    { from: 6, to: 9, points: -5 },
-    { from: 10, to: 13, points: -8 },
-    { from: 13, to: null, points: -12 },
-]);
-
 const form = useForm({
     parameters: props.parameters.map((p) => ({
         id: p.id,
         winner_points: p.winnerPoints,
     })),
+});
+
+const ruleForm = useForm({
+    enable_ranking_groups: false,
+    enable_elo_handicap: false,
+    group_size: 8,
+    handicap_parameters: [],
 });
 
 const getDotColor = (value) => {
@@ -97,11 +113,31 @@ const resetDefaults = () => {
     });
     enableRankingGroups.value = false;
     enableEloHandicap.value = false;
+    groupSize.value = 8;
+    handicapRanges.value = defaultHandicapRanges.map((r) => ({ ...r }));
 };
 
 const save = () => {
     form.put(route("admin.rules.update"), {
         onError: () => toast.error("Erreur lors de l'enregistrement des règles."),
+    });
+};
+
+const saveRule = () => {
+    ruleForm.enable_ranking_groups = enableRankingGroups.value;
+    ruleForm.enable_elo_handicap = enableEloHandicap.value;
+    ruleForm.group_size = groupSize.value;
+    ruleForm.handicap_parameters = handicapRanges.value.map((r) => ({
+        min_gap: r.from,
+        max_gap: r.to ?? 0,
+        handicap: r.points,
+    }));
+
+    ruleForm.put(route("admin.rules.updateRule"), {
+        onError: (errors) => {
+            console.error('Validation errors:', errors);
+            toast.error("Erreur lors de l'enregistrement des défis.");
+        },
     });
 };
 </script>
@@ -232,7 +268,7 @@ const save = () => {
                         @click="save"
                     >
                         <Save class="h-4 w-4" />
-                        Sauvegarder les défis
+                        Sauvegarder les points
                     </button>
                 </div>
             </div>
@@ -432,8 +468,8 @@ const save = () => {
                     <button
                         type="button"
                         class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                        :disabled="form.processing"
-                        @click="save"
+                        :disabled="ruleForm.processing"
+                        @click="saveRule"
                     >
                         <Save class="h-4 w-4" />
                         Sauvegarder les défis

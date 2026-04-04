@@ -3,15 +3,21 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateRuleRequest;
 use App\Models\AlgorithmParameter;
-use App\Models\SchoolClass;
+use App\Services\Rule\RuleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
+
 class AdminRulesController extends Controller
 {
+    public function __construct(
+        private readonly RuleService $ruleService,
+    ) {}
+
     public function index(): Response
     {
         $user = auth('admin')->user();
@@ -34,6 +40,7 @@ class AdminRulesController extends Controller
         }
 
         $parameters = [];
+        $rule = null;
 
         if ($selectedClassId) {
             $parameters = AlgorithmParameter::where('school_class_id', $selectedClassId)
@@ -46,12 +53,30 @@ class AdminRulesController extends Controller
                     'winnerPoints' => $p->winner_points,
                 ])
                 ->all();
+
+            $ruleModel = $this->ruleService->getRuleForClass($selectedClassId);
+
+            if ($ruleModel) {
+                $rule = [
+                    'enableRankingGroups' => $ruleModel->enable_ranking_groups,
+                    'enableEloHandicap' => $ruleModel->enable_elo_handicap,
+                    'groupSize' => $ruleModel->group_size ?? 8,
+                    'handicapParameters' => $ruleModel->handicapParameters
+                        ->map(fn ($hp) => [
+                            'from' => $hp->min_gap,
+                            'to' => $hp->max_gap,
+                            'points' => $hp->handicap,
+                        ])
+                        ->all(),
+                ];
+            }
         }
 
         return Inertia::render('Admin/Rules', [
             'classes' => $classes,
             'selectedClassId' => $selectedClassId,
             'parameters' => $parameters,
+            'rule' => $rule,
         ]);
     }
 
@@ -66,6 +91,14 @@ class AdminRulesController extends Controller
         $selectedClassId = session('admin_selected_class_id');
 
         if (! $selectedClassId) {
+            $user = auth('admin')->user();
+            $firstClass = $user->adminUser->classParticipants()
+                ->with('schoolClass')
+                ->first();
+            $selectedClassId = $firstClass?->schoolClass?->id;
+        }
+
+        if (! $selectedClassId) {
             return redirect()->route('admin.rules');
         }
 
@@ -76,5 +109,26 @@ class AdminRulesController extends Controller
         }
 
         return redirect()->route('admin.rules')->with('success', 'Règles enregistrées avec succès.');
+    }
+
+    public function updateRule(UpdateRuleRequest $request): RedirectResponse
+    {
+        $selectedClassId = session('admin_selected_class_id');
+
+        if (! $selectedClassId) {
+            $user = auth('admin')->user();
+            $firstClass = $user->adminUser->classParticipants()
+                ->with('schoolClass')
+                ->first();
+            $selectedClassId = $firstClass?->schoolClass?->id;
+        }
+
+        if (! $selectedClassId) {
+            return redirect()->route('admin.rules');
+        }
+
+        $this->ruleService->updateRule($selectedClassId, $request->validated());
+
+        return redirect()->route('admin.rules')->with('success', 'Défis enregistrés avec succès.');
     }
 }

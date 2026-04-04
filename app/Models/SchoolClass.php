@@ -37,4 +37,9 @@ class SchoolClass extends Model
     {
         return $this->hasOne(PublicView::class, 'school_class_id');
     }
+
+    public function rule(): HasOne
+    {
+        return $this->hasOne(Rule::class, 'school_class_id');
+    }
 }

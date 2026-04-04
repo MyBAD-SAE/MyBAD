@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassParticipant;
+use App\Models\Rule;
 use App\Services\Ranking\RankingService;
 use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
@@ -39,6 +40,7 @@ class AdminRankingController extends Controller
         $playerCount = 0;
         $rankingPlayers = [];
         $enableRankingGroups = false;
+        $enableEloHandicap = false;
         $groupSize = 8;
 
         if ($selectedClassId) {
@@ -47,6 +49,14 @@ class AdminRankingController extends Controller
                 ->count();
 
             $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId);
+
+            $rule = Rule::where('school_class_id', $selectedClassId)->first();
+
+            if ($rule) {
+                $enableRankingGroups = $rule->enable_ranking_groups;
+                $enableEloHandicap = $rule->enable_elo_handicap;
+                $groupSize = $rule->group_size ?? 8;
+            }
         }
 
         return Inertia::render('Admin/Ranking', [
@@ -55,6 +65,7 @@ class AdminRankingController extends Controller
             'playerCount'          => $playerCount,
             'rankingPlayers'       => $rankingPlayers,
             'enableRankingGroups'  => $enableRankingGroups,
+            'enableEloHandicap'    => $enableEloHandicap,
             'groupSize'            => $groupSize,
         ]);
     }
@@ -75,6 +86,9 @@ class AdminRankingController extends Controller
 
         $playerCount = 0;
         $rankingPlayers = [];
+        $enableRankingGroups = false;
+        $enableEloHandicap = false;
+        $groupSize = 8;
 
         if ($selectedClassId) {
             $playerCount = ClassParticipant::forClass($selectedClassId)
@@ -82,11 +96,22 @@ class AdminRankingController extends Controller
                 ->count();
 
             $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId);
+
+            $rule = Rule::where('school_class_id', $selectedClassId)->first();
+
+            if ($rule) {
+                $enableRankingGroups = $rule->enable_ranking_groups;
+                $enableEloHandicap = $rule->enable_elo_handicap;
+                $groupSize = $rule->group_size ?? 8;
+            }
         }
 
         return response()->json([
-            'playerCount'    => $playerCount,
-            'rankingPlayers' => $rankingPlayers,
+            'playerCount'         => $playerCount,
+            'rankingPlayers'      => $rankingPlayers,
+            'enableRankingGroups' => $enableRankingGroups,
+            'enableEloHandicap'   => $enableEloHandicap,
+            'groupSize'           => $groupSize,
         ]);
     }
 }
