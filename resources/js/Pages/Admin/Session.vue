@@ -16,6 +16,7 @@ import {
     TrendingDown,
     Crown,
     X,
+    ExternalLink,
 } from 'lucide-vue-next';
 
 const props = defineProps({
