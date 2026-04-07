@@ -20,8 +20,8 @@ class EloHistory extends Model
     protected function casts(): array
     {
         return [
-            'elo_before' => 'decimal:2',
-            'elo_after' => 'decimal:2',
+            'elo_before' => 'decimal:1',
+            'elo_after' => 'decimal:1',
         ];
     }
 

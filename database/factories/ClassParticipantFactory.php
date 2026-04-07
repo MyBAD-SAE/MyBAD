@@ -11,7 +11,7 @@ class ClassParticipantFactory extends Factory
         return [
             'participantable_type' => $this->faker->randomElement(['App\Models\Player', 'App\Models\AdminUser']),
             'participantable_id' => $this->faker->uuid(),
-            'elo_rating' => $this->faker->randomFloat(2, 800, 2400),
+            'elo_rating' => $this->faker->randomFloat(1, 8000, 24000),
             'class_id' => ClassFactory::new(),
         ];
     }

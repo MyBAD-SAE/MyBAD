@@ -14,49 +14,49 @@ class ExcelSeeder extends Seeder
     {
         // Données des joueurs : prénom (tel que dans l'excel), nom inventé, elo
         $playersData = [
-            ['Sean',             'Lefèvre',    109.0],
-            ['Maxime V',         'Verdier',    108.7],
-            ['Alexis',           'Morin',      106.7],
-            ['Alexandre Le Boss','Dupont',     106.4],
-            ['Guénolé',          'Kervadec',   106.4],
-            ['Marceau',          'Blanchard',  105.6],
-            ['Antoine',          'Girard',     105.5],
-            ['Dimitri',          'Pavlov',     105.4],
-            ['Stevan',           'Renaud',     105.0],
-            ['Emma',             'Leclerc',    104.6],
-            ['Sara',             'Benmoussa',  104.6],
-            ['Arthur Le + Boss', 'Martin',     104.2],
-            ['Timéo',            'Gauthier',   104.1],
-            ['Ethan',            'Collet',     103.7],
-            ['Elisa',            'Fournier',   103.5],
-            ['Tanguy T',         'Tanguy',     103.5],
-            ['Luc',              'Hervet',     102.9],
-            ['Tom',              'Prigent',    102.7],
-            ['Célian',           'Rousseau',   102.6],
-            ['Théo',             'Lemaire',    102.3],
-            ['Adrian',           'Costa',      102.0],
-            ['Camille',          'Perrin',     101.4],
-            ['Jane',             'Morvan',     101.1],
-            ['Yaël',             'Abgrall',    101.1],
-            ['Malo',             'Le Gall',    100.9],
-            ['Pierre',           'Jacq',       100.8],
-            ['Vianney',          'Cariou',     100.5],
-            ['Enora',            'Le Bihan',   100.4],
-            ['Corentin',         'Maze',       100.3],
-            ['Lisa',             'Dubois',      99.8],
-            ['Robin',            'Carpentier',  99.8],
-            ['Romain W',         'Wagner',      99.7],
-            ['Léo',              'Bertrand',    99.6],
-            ['Mathieu',          'Cozic',       99.2],
-            ['Hugo',             'Petit',       99.1],
-            ['Ioane',            'Tehei',       98.7],
-            ['Maximilien',       'Faure',       98.3],
-            ['Lohan',            'Joly',        98.2],
-            ['Alexie',           'Riou',        98.1],
-            ['Tanguy C',         'Conan',       97.5],
-            ['Ewenn',            'Guéguen',     97.1],
-            ['Alexandre T',      'Trolez',      97.0],
-            ['Clem',             'Nédélec',     96.9],
+            ['Sean',             'Lefèvre',    1090],
+            ['Maxime V',         'Verdier',    1087],
+            ['Alexis',           'Morin',      1067],
+            ['Alexandre Le Boss','Dupont',     1064],
+            ['Guénolé',          'Kervadec',   1064],
+            ['Marceau',          'Blanchard',  1056],
+            ['Antoine',          'Girard',     1055],
+            ['Dimitri',          'Pavlov',     1054],
+            ['Stevan',           'Renaud',     1050],
+            ['Emma',             'Leclerc',    1046],
+            ['Sara',             'Benmoussa',  1046],
+            ['Arthur Le + Boss', 'Martin',     1042],
+            ['Timéo',            'Gauthier',   1041],
+            ['Ethan',            'Collet',     1037],
+            ['Elisa',            'Fournier',   1035],
+            ['Tanguy T',         'Tanguy',     1035],
+            ['Luc',              'Hervet',     1029],
+            ['Tom',              'Prigent',    1027],
+            ['Célian',           'Rousseau',   1026],
+            ['Théo',             'Lemaire',    1023],
+            ['Adrian',           'Costa',      1020],
+            ['Camille',          'Perrin',     1014],
+            ['Jane',             'Morvan',     1011],
+            ['Yaël',             'Abgrall',    1011],
+            ['Malo',             'Le Gall',    1009],
+            ['Pierre',           'Jacq',       1008],
+            ['Vianney',          'Cariou',     1005],
+            ['Enora',            'Le Bihan',   1004],
+            ['Corentin',         'Maze',       1003],
+            ['Lisa',             'Dubois',      998],
+            ['Robin',            'Carpentier',  998],
+            ['Romain W',         'Wagner',      997],
+            ['Léo',              'Bertrand',    996],
+            ['Mathieu',          'Cozic',       992],
+            ['Hugo',             'Petit',       991],
+            ['Ioane',            'Tehei',       987],
+            ['Maximilien',       'Faure',       983],
+            ['Lohan',            'Joly',        982],
+            ['Alexie',           'Riou',        981],
+            ['Tanguy C',         'Conan',       975],
+            ['Ewenn',            'Guéguen',     971],
+            ['Alexandre T',      'Trolez',      970],
+            ['Clem',             'Nédélec',     969],
         ];
 
         // --- Admin ---
@@ -159,12 +159,12 @@ class ExcelSeeder extends Seeder
 
         // --- Paramètres algorithme ELO (pour les 3 classes) ---
         $algoParams = [
-            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -0.7],
-            ['min_diff' => -11, 'max_diff' => -7,  'winner_points' => -0.2],
-            ['min_diff' => -6,  'max_diff' => -1,  'winner_points' => 0.0],
-            ['min_diff' => 0,   'max_diff' => 6,   'winner_points' => 0.5],
-            ['min_diff' => 7,   'max_diff' => 11,  'winner_points' => 1.0],
-            ['min_diff' => 12,  'max_diff' => 20,  'winner_points' => 1.6],
+            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -7],
+            ['min_diff' => -11, 'max_diff' => -7,  'winner_points' => -2],
+            ['min_diff' => -6,  'max_diff' => -1,  'winner_points' => 0],
+            ['min_diff' => 0,   'max_diff' => 6,   'winner_points' => 5],
+            ['min_diff' => 7,   'max_diff' => 11,  'winner_points' => 10],
+            ['min_diff' => 12,  'max_diff' => 20,  'winner_points' => 16],
         ];
         foreach ([$classId, $classId2, $classId3] as $cid) {
             DB::table('algorithm_parameters')->insert(
@@ -222,7 +222,7 @@ class ExcelSeeder extends Seeder
             $class2Participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id'   => $pid,
-                'elo_rating'           => 100.0,
+                'elo_rating'           => 1000,
                 'school_class_id'      => $classId2,
                 'created_at'           => now(),
                 'updated_at'           => now(),
@@ -244,7 +244,7 @@ class ExcelSeeder extends Seeder
             $class3Participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id'   => $pid,
-                'elo_rating'           => 100.0,
+                'elo_rating'           => 1000,
                 'school_class_id'      => $classId3,
                 'created_at'           => now(),
                 'updated_at'           => now(),
@@ -262,12 +262,12 @@ class ExcelSeeder extends Seeder
 
         // --- Barème elo (même que algorithm_parameters) ---
         $bareme = [
-            ['min' => -20, 'max' => -12, 'base' => -0.7],
-            ['min' => -11, 'max' => -7,  'base' => -0.2],
-            ['min' => -6,  'max' => -1,  'base' => 0.0],
-            ['min' => 0,   'max' => 6,   'base' => 0.5],
-            ['min' => 7,   'max' => 11,  'base' => 1.0],
-            ['min' => 12,  'max' => 20,  'base' => 1.6],
+            ['min' => -20, 'max' => -12, 'base' => -7],
+            ['min' => -11, 'max' => -7,  'base' => -2],
+            ['min' => -6,  'max' => -1,  'base' => 0],
+            ['min' => 0,   'max' => 6,   'base' => 5],
+            ['min' => 7,   'max' => 11,  'base' => 10],
+            ['min' => 12,  'max' => 20,  'base' => 16],
         ];
 
         $vlookup = function (int $ecart) use ($bareme): float {
@@ -288,8 +288,8 @@ class ExcelSeeder extends Seeder
         // --- Génération séances + matchs pour chaque cours ---
         $classConfigs = [
             ['classId' => $classId,  'classPlayerIds' => $playerIds,       'startElos' => array_combine($playerIds, array_column($playersData, 2))],
-            ['classId' => $classId2, 'classPlayerIds' => $class2PlayerIds, 'startElos' => array_fill_keys($class2PlayerIds, 100.0)],
-            ['classId' => $classId3, 'classPlayerIds' => $class3PlayerIds, 'startElos' => array_fill_keys($class3PlayerIds, 100.0)],
+            ['classId' => $classId2, 'classPlayerIds' => $class2PlayerIds, 'startElos' => array_fill_keys($class2PlayerIds, 1000)],
+            ['classId' => $classId3, 'classPlayerIds' => $class3PlayerIds, 'startElos' => array_fill_keys($class3PlayerIds, 1000)],
         ];
 
         foreach ($classConfigs as $config) {
@@ -378,15 +378,15 @@ class ExcelSeeder extends Seeder
                     $ecart = abs($score1 - $score2);
 
                     if ($score1 > $score2) {
-                        $bonusP1 = $vlookup($ecart) + $ecart / 10;
-                        $malusP2 = $vlookup(-$ecart) - $ecart / 10;
-                        $elos[$p1] = round($eloBefore1 + $bonusP1, 2);
-                        $elos[$p2] = round($eloBefore2 + $malusP2, 2);
+                        $bonusP1 = $vlookup($ecart) + $ecart;
+                        $malusP2 = $vlookup(-$ecart) - $ecart;
+                        $elos[$p1] = round($eloBefore1 + $bonusP1, 1);
+                        $elos[$p2] = round($eloBefore2 + $malusP2, 1);
                     } else {
-                        $bonusP2 = $vlookup($ecart) + $ecart / 10;
-                        $malusP1 = $vlookup(-$ecart) - $ecart / 10;
-                        $elos[$p1] = round($eloBefore1 + $malusP1, 2);
-                        $elos[$p2] = round($eloBefore2 + $bonusP2, 2);
+                        $bonusP2 = $vlookup($ecart) + $ecart;
+                        $malusP1 = $vlookup(-$ecart) - $ecart;
+                        $elos[$p1] = round($eloBefore1 + $malusP1, 1);
+                        $elos[$p2] = round($eloBefore2 + $bonusP2, 1);
                     }
 
                     $eloHistories[] = [

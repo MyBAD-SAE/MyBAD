@@ -25,7 +25,7 @@ const props = defineProps({
     rule: { type: Object, default: null },
 });
 
-const defaultPoints = [-0.7, -0.2, 0.0, 0.5, 1.0, 1.6];
+const defaultPoints = [-7, -2, 0, 5, 10, 16];
 
 const defaultHandicapRanges = [
     { from: 1, to: 3, points: 0 },

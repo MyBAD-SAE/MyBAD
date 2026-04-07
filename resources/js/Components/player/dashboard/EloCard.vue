@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/Components/ui/card/index.ts';
 import { TrendingUp, TrendingDown } from 'lucide-vue-next';
 
 const props = defineProps({
-    elo: { type: Number, default: 100.0 },
+    elo: { type: Number, default: 1000 },
     eloDiff: { type: Number, default: 0 },
     history: { type: Array, default: () => [] },
     hasMatches: { type: Boolean, default: true },

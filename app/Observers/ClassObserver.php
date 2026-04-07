@@ -14,12 +14,12 @@ class ClassObserver
     public function created(SchoolClass $class): void
     {
         $defaultParams = [
-            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -0.7],
-            ['min_diff' => -11, 'max_diff' => -7, 'winner_points' => -0.2],
-            ['min_diff' => -6, 'max_diff' => -1, 'winner_points' => 0.0],
-            ['min_diff' => 0, 'max_diff' => 6, 'winner_points' => 0.5],
-            ['min_diff' => 7, 'max_diff' => 11, 'winner_points' => 1.0],
-            ['min_diff' => 12, 'max_diff' => 20, 'winner_points' => 1.6],
+            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -7],
+            ['min_diff' => -11, 'max_diff' => -7, 'winner_points' => -2],
+            ['min_diff' => -6, 'max_diff' => -1, 'winner_points' => 0],
+            ['min_diff' => 0, 'max_diff' => 6, 'winner_points' => 5],
+            ['min_diff' => 7, 'max_diff' => 11, 'winner_points' => 10],
+            ['min_diff' => 12, 'max_diff' => 20, 'winner_points' => 16],
         ];
 
         foreach ($defaultParams as $param) {

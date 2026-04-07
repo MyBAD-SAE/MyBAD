@@ -11,7 +11,7 @@ class AlgorithmParametersFactory extends Factory
         return [
             'min_diff' => $this->faker->numberBetween(1, 50),
             'max_diff' => $this->faker->numberBetween(100, 500),
-            'winner_points' => $this->faker->randomFloat(2, 10, 50),
+            'winner_points' => $this->faker->randomFloat(1, -10, 20),
             'class_id' => ClassFactory::new(),
         ];
     }

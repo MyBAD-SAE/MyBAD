@@ -31,11 +31,11 @@ class EloService
 
         if ($isWinner) {
             $basePoints = $this->getBasePoints($schoolClassId, $scoreDiff);
-            return round($basePoints + ($scoreDiff / 10), 1);
+            return round($basePoints + $scoreDiff, 1);
         }
 
         $basePoints = $this->getBasePoints($schoolClassId, -$scoreDiff);
-        return round($basePoints - ($scoreDiff / 10), 1);
+        return round($basePoints - $scoreDiff, 1);
     }
 
     /**
@@ -52,7 +52,7 @@ class EloService
         }
 
         $eloBefore = (float) $participation->elo_rating;
-        $eloAfter = max(0, round($eloBefore + $eloChange, 2));
+        $eloAfter = max(0, round($eloBefore + $eloChange, 1));
 
         $participation->update(['elo_rating' => $eloAfter]);
 
@@ -79,6 +79,6 @@ class EloService
                 ->first();
         }
 
-        return $param?->winner_points ?? 0.5;
+        return $param?->winner_points ?? 5;
     }
 }

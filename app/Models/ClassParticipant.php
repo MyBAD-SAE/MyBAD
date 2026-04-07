@@ -23,7 +23,7 @@ class ClassParticipant extends Model
     protected function casts(): array
     {
         return [
-            'elo_rating' => 'decimal:2',
+            'elo_rating' => 'decimal:1',
         ];
     }
 

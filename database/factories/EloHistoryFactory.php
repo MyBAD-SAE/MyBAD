@@ -8,11 +8,11 @@ class EloHistoryFactory extends Factory
 {
     public function definition(): array
     {
-        $eloBefore = $this->faker->randomFloat(2, 800, 2400);
-        
+        $eloBefore = $this->faker->randomFloat(1, 8000, 24000);
+
         return [
             'elo_before' => $eloBefore,
-            'elo_after' => $eloBefore + $this->faker->randomFloat(2, -100, 100),
+            'elo_after' => $eloBefore + $this->faker->randomFloat(1, -1000, 1000),
             'player_id' => $this->faker->uuid(),
         ];
     }

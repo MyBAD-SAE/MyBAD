@@ -102,7 +102,7 @@ const confirmEdit = () => {
 const showAddModal = ref(false);
 const addForm = useForm({
     code: '',
-    elo: 100,
+    elo: 1000,
 });
 
 const openAddModal = () => {
@@ -365,7 +365,7 @@ const getWinRateDot = (winRate) => {
                         <!-- ELO input -->
                         <div class="mb-6">
                             <Label for="add-elo" class="mb-2 block text-sm text-muted-foreground">
-                                ELO de départ <span class="text-muted-foreground/60">(par défaut 100.0)</span>
+                                ELO de départ <span class="text-muted-foreground/60">(par défaut 1000)</span>
                             </Label>
                             <Input
                                 id="add-elo"
