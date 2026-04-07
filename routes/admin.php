@@ -58,6 +58,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('regles', [AdminRulesController::class, 'index'])->name('rules');
         Route::put('regles', [AdminRulesController::class, 'update'])->name('rules.update');
+        Route::put('regles/defis', [AdminRulesController::class, 'updateRule'])->name('rules.updateRule');
 
         Route::get('session', [AdminSessionController::class, 'show'])->name('session');
         Route::post('session', [AdminSessionController::class, 'store'])->name('session.store');

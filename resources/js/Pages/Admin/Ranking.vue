@@ -3,7 +3,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import AdminClassPicker from '@/Components/admin/AdminClassPicker.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Crown } from 'lucide-vue-next';
+import { Crown, Layers, Lightbulb } from 'lucide-vue-next';
 import axios from 'axios';
 
 const props = defineProps({
@@ -12,11 +12,15 @@ const props = defineProps({
     playerCount: { type: Number, default: 0 },
     rankingPlayers: { type: Array, default: () => [] },
     enableRankingGroups: { type: Boolean, default: false },
+    enableEloHandicap: { type: Boolean, default: false },
     groupSize: { type: Number, default: 8 },
 });
 
 const livePlayerCount = ref(props.playerCount);
 const liveRankingPlayers = ref(props.rankingPlayers);
+const liveEnableRankingGroups = ref(props.enableRankingGroups);
+const liveEnableEloHandicap = ref(props.enableEloHandicap);
+const liveGroupSize = ref(props.groupSize);
 
 let pollInterval = null;
 
@@ -25,6 +29,9 @@ const fetchRanking = async () => {
         const { data } = await axios.get(route('admin.ranking.data'));
         livePlayerCount.value = data.playerCount;
         liveRankingPlayers.value = data.rankingPlayers;
+        liveEnableRankingGroups.value = data.enableRankingGroups;
+        liveEnableEloHandicap.value = data.enableEloHandicap;
+        liveGroupSize.value = data.groupSize;
     } catch (e) {
         // silently ignore polling errors
     }
@@ -87,9 +94,13 @@ const getInitials = (name) => {
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div v-if="enableRankingGroups" class="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-foreground">
-                        <span class="h-2 w-2 rounded-full bg-red-400" />
-                        Groupe de classement
+                    <div v-if="liveEnableRankingGroups" class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
+                        <Layers class="h-4 w-4" />
+                        Groupes de {{ liveGroupSize }}
+                    </div>
+                    <div v-if="liveEnableEloHandicap" class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
+                        <Lightbulb class="h-4 w-4" />
+                        Handicap actif
                     </div>
                 </div>
             </div>
