@@ -29,6 +29,7 @@ import {
 const props = defineProps({
     players: { type: Array, default: () => [] },
     playerCount: { type: Number, default: 0 },
+    activePlayerCount: { type: Number, default: 0 },
     matchCount: { type: Number, default: 0 },
     averageElo: { type: Number, default: 0 },
     classes: { type: Array, default: () => [] },
@@ -207,7 +208,7 @@ const getWinRateDot = (winRate) => {
                         <p class="text-xs text-muted-foreground">Matchs joués</p>
                     </div>
                     <div class="rounded-xl border border-border py-4 text-center">
-                        <p class="text-xl font-bold text-foreground">{{ playerCount }}</p>
+                        <p class="text-xl font-bold text-foreground">{{ activePlayerCount }}</p>
                         <p class="text-xs text-muted-foreground">Joueurs actifs</p>
                     </div>
                 </div>
@@ -269,6 +270,9 @@ const getWinRateDot = (winRate) => {
                             <span v-if="player.isAdmin" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-600">
                                 <Crown class="h-3 w-3" />
                                 Admin
+                            </span>
+                            <span v-if="!player.isActive" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-semibold text-gray-500">
+                                Désactivé
                             </span>
                             <template v-if="player.trend > 0">
                                 <TrendingUp class="h-3.5 w-3.5 text-primary" />

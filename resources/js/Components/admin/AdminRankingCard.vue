@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs';
-import { TrendingUp, TrendingDown, Minus, Trophy } from 'lucide-vue-next';
+import { TrendingUp, TrendingDown, Minus, Medal } from 'lucide-vue-next';
 
 const props = defineProps({
     players: { type: Array, default: () => [] },
@@ -26,11 +26,11 @@ const getInitials = (name) => {
     return name.split(' ').map(p => p.charAt(0)).join('').toUpperCase();
 };
 
-const getRankBadgeClass = (rank) => {
-    if (rank === 1) return 'bg-yellow-100 text-yellow-700';
-    if (rank === 2) return 'bg-gray-100 text-gray-600';
-    if (rank === 3) return 'bg-orange-100 text-orange-700';
-    return 'bg-gray-100 text-muted-foreground';
+const getMedalColor = (rank) => {
+    if (rank === 1) return '#EAB308';
+    if (rank === 2) return '#9CA3AF';
+    if (rank === 3) return '#CD7F32';
+    return null;
 };
 
 const getWinRateColor = (winRate) => {
@@ -73,9 +73,9 @@ const getWinRateColor = (winRate) => {
                     <tr v-for="player in players" :key="player.rank" class="group">
                         <!-- Rank -->
                         <td class="py-4">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold" :class="getRankBadgeClass(player.rank)">
-                                <Trophy v-if="player.rank === 1" class="h-4 w-4" />
-                                <span v-else>{{ player.rank }}</span>
+                            <div class="flex h-8 w-8 items-center justify-center">
+                                <Medal v-if="player.rank <= 3" class="h-5 w-5" :style="{ color: getMedalColor(player.rank) }" />
+                                <span v-else class="text-sm font-semibold text-muted-foreground">{{ player.rank }}</span>
                             </div>
                         </td>
 

@@ -26,8 +26,7 @@ const props = defineProps({
     totalMatchCount: { type: Number, default: 0 },
     topMatchesPlayer: { type: String, default: null },
     topWinsPlayer: { type: String, default: null },
-    classes: { type: Array, default: () => [] },
-    selectedClassId: { type: Number, default: null },
+    selectedClass: { type: Object, default: null },
 });
 
 const search = ref('');
@@ -59,6 +58,7 @@ const searchFilteredSessions = computed(() => {
 const filteredTotalMatchCount = computed(() => {
     return searchFilteredSessions.value.reduce((sum, s) => sum + s.matches.length, 0);
 });
+
 
 const filteredSessions = computed(() => {
     let sessions = searchFilteredSessions.value;
@@ -103,12 +103,16 @@ const matchToEdit = ref(null);
 const editForm = useForm({
     score1: 0,
     score2: 0,
+    player1_id: null,
+    player2_id: null,
 });
 
 const openEditModal = (match) => {
     matchToEdit.value = match;
     editForm.score1 = match.player1.score;
     editForm.score2 = match.player2.score;
+    editForm.player1_id = match.player1.id;
+    editForm.player2_id = match.player2.id;
     showEditModal.value = true;
 };
 
@@ -176,7 +180,7 @@ const getInitials = (name) => {
                             <h1 class="text-xl font-bold text-foreground">Matchs</h1>
                             <span class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-semibold text-foreground">{{ totalMatchCount }}</span>
                         </div>
-                        <p class="text-sm text-muted-foreground">Historique complet des matchs du groupe</p>
+                        <p class="text-sm text-muted-foreground">{{ selectedClass ? `${selectedClass.name} | ${selectedClass.school_year}` : 'Historique complet des matchs' }}</p>
                     </div>
                 </div>
 
@@ -285,8 +289,8 @@ const getInitials = (name) => {
                                 <Calendar class="h-5 w-5 text-orange-500" />
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-foreground">{{ session.label }}</p>
-                                <p class="text-xs text-muted-foreground">{{ session.date }}</p>
+                                <p class="text-sm font-semibold text-foreground">{{ session.session_name }}</p>
+                                <p class="text-xs text-muted-foreground">{{ session.formatted_date }}</p>
                             </div>
                         </div>
                         <span class="text-xs text-muted-foreground border border-border rounded-full bg-white px-3 py-1">{{ session.matches.length }} matchs</span>

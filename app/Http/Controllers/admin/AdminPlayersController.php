@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Models\ClassParticipant;
 use App\Models\GameMatch;
+use App\Models\EloHistory;
 use App\Models\Player;
 use App\Models\User;
 use App\Services\Ranking\RankingService;
@@ -44,12 +45,14 @@ class AdminPlayersController extends Controller
 
         $players = [];
         $playerCount = 0;
+        $activePlayerCount = 0;
         $matchCount = 0;
         $averageElo = 0;
 
         if ($selectedClassId) {
             $players = $this->rankingService->getRankingForClassId($selectedClassId);
             $playerCount = count($players);
+            $activePlayerCount = count(array_filter($players, fn ($p) => $p['isActive']));
             $matchCount = GameMatch::forClass($selectedClassId)->count();
 
             if ($playerCount > 0) {
@@ -63,12 +66,13 @@ class AdminPlayersController extends Controller
         }
 
         return Inertia::render('Admin/Players', [
-            'players'         => $players,
-            'playerCount'     => $playerCount,
-            'matchCount'      => $matchCount,
-            'averageElo'      => $averageElo,
-            'classes'         => $classes,
-            'selectedClassId' => $selectedClassId,
+            'players'           => $players,
+            'playerCount'       => $playerCount,
+            'activePlayerCount' => $activePlayerCount,
+            'matchCount'        => $matchCount,
+            'averageElo'        => $averageElo,
+            'classes'           => $classes,
+            'selectedClassId'   => $selectedClassId,
         ]);
     }
 
@@ -126,7 +130,19 @@ class AdminPlayersController extends Controller
             'make_admin' => 'sometimes|boolean',
         ]);
 
-        $participant->update(['elo_rating' => $validated['elo']]);
+        $eloBefore = (float) $participant->elo_rating;
+        $eloAfter  = (float) $validated['elo'];
+
+        $participant->update(['elo_rating' => $eloAfter]);
+
+        if ($eloBefore !== $eloAfter) {
+            EloHistory::create([
+                'participant_id' => $participant->id,
+                'game_match_id'  => null,
+                'elo_before'     => $eloBefore,
+                'elo_after'      => $eloAfter,
+            ]);
+        }
 
         $user = User::find($request->input('user_id'));
 

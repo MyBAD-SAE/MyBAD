@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,12 +19,24 @@ class ClassSession extends Model
         'is_active',
     ];
 
+    protected $appends = ['session_name', 'formatted_date'];
+
     protected function casts(): array
     {
         return [
             'date' => 'date',
             'is_active' => 'boolean',
         ];
+    }
+
+    protected function sessionName(): Attribute
+    {
+        return Attribute::get(fn () => 'Séance du ' . $this->date->format('d/m'));
+    }
+
+    protected function formattedDate(): Attribute
+    {
+        return Attribute::get(fn () => ucfirst($this->date->translatedFormat('l d F Y')));
     }
 
     public function schoolClass(): BelongsTo
