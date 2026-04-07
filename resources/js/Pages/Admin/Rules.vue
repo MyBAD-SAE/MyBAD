@@ -328,7 +328,7 @@ const saveRule = () => {
                                 <div class="flex items-center gap-2">
                                     <button
                                         type="button"
-                                        class="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+                                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-white hover:bg-gray-50 transition-colors cursor-pointer"
                                         @click="groupSize = Math.max(2, groupSize - 1)"
                                     >
                                         <Minus class="h-4 w-4 text-foreground" />
@@ -342,7 +342,7 @@ const saveRule = () => {
                                     />
                                     <button
                                         type="button"
-                                        class="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+                                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-input bg-white hover:bg-gray-50 transition-colors cursor-pointer"
                                         @click="groupSize++"
                                     >
                                         <Plus class="h-4 w-4 text-foreground" />
