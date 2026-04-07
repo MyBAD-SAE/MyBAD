@@ -242,7 +242,7 @@ const getInitials = (name) => {
                             :class="activeSession === session.id ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-muted-foreground hover:bg-gray-50'"
                             @click="activeSession = session.id"
                         >
-                            {{ session.label }}
+                            {{ session.session_name ?? session.formatted_date }}
                             <span class="text-sm" :class="activeSession === session.id ? 'text-white/60' : 'text-muted-foreground/60'">{{ session.matches.length }}</span>
                         </button>
                     </div>
