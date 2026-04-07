@@ -172,6 +172,27 @@ class ExcelSeeder extends Seeder
             );
         }
 
+        // 6. Règles et défis par défaut
+        $ruleId = DB::table('rules')->insertGetId([
+            'name' => 'Défis',
+            'enable_ranking_groups' => false,
+            'enable_elo_handicap' => false,
+            'group_size' => null,
+            'school_class_id' => $classId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $defaultHandicaps = [
+            ['min_gap' => 1,  'max_gap' => 3,  'handicap' => 0],
+            ['min_gap' => 3,  'max_gap' => 6,  'handicap' => -3],
+            ['min_gap' => 6,  'max_gap' => 9,  'handicap' => -5],
+            ['min_gap' => 10, 'max_gap' => 0, 'handicap' => -7]
+        ];
+        DB::table('handicap_parameters')->insert(
+            array_map(fn($h) => [...$h, 'rule_id' => $ruleId, 'created_at' => now(), 'updated_at' => now()], $defaultHandicaps)
+        );
+
         // --- Répartition des joueurs ---
         // Tous dans le cours 1, première moitié dans le cours 2, seconde moitié dans le cours 3
         $half = intdiv(count($playerIds), 2);
