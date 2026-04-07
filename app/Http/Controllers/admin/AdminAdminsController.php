@@ -5,10 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Models\ClassParticipant;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -64,45 +61,6 @@ class AdminAdminsController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
-    {
-        if (auth('admin')->user()->player) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'email' => 'required|email',
-        ]);
-
-        $targetUser = User::where('email', $validated['email'])->first();
-
-        if (!$targetUser) {
-            return back()->withErrors(['email' => 'Aucun utilisateur trouvé avec cet email.']);
-        }
-
-        if ($targetUser->adminUser) {
-            return back()->withErrors(['email' => 'Cet utilisateur est déjà administrateur.']);
-        }
-
-        $currentAdmin = auth('admin')->user()->adminUser;
-        $classIds = $currentAdmin->classParticipants()->pluck('school_class_id');
-
-        $newAdmin = AdminUser::create([
-            'id'      => Str::uuid()->toString(),
-            'user_id' => $targetUser->id,
-        ]);
-
-        foreach ($classIds as $classId) {
-            ClassParticipant::create([
-                'participantable_type' => AdminUser::class,
-                'participantable_id'   => $newAdmin->id,
-                'elo_rating'           => null,
-                'school_class_id'      => $classId,
-            ]);
-        }
-
-        return back()->with('success', 'Administrateur ajouté avec succès.');
-    }
 
     public function destroy(AdminUser $admin): RedirectResponse
     {

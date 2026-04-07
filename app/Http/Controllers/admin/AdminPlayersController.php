@@ -149,24 +149,42 @@ class AdminPlayersController extends Controller
         if ($user) {
             $user->update(['is_active' => $validated['is_active']]);
 
-            if ($request->boolean('make_admin') && !$user->adminUser) {
-                $newAdmin = AdminUser::create([
-                    'id' => Str::uuid()->toString(),
-                    'user_id' => $user->id,
-                ]);
+            if ($request->boolean('make_admin')) {
+                $admin = $user->adminUser;
 
-                ClassParticipant::create([
-                    'participantable_type' => AdminUser::class,
-                    'participantable_id'   => $newAdmin->id,
-                    'elo_rating'           => null,
-                    'school_class_id'      => $participant->school_class_id,
-                ]);
+                if (!$admin) {
+                    $admin = AdminUser::create([
+                        'id' => Str::uuid()->toString(),
+                        'user_id' => $user->id,
+                    ]);
+                }
+
+                $alreadyInClass = ClassParticipant::where('participantable_type', AdminUser::class)
+                    ->where('participantable_id', $admin->id)
+                    ->where('school_class_id', $participant->school_class_id)
+                    ->exists();
+
+                if (!$alreadyInClass) {
+                    ClassParticipant::create([
+                        'participantable_type' => AdminUser::class,
+                        'participantable_id'   => $admin->id,
+                        'elo_rating'           => null,
+                        'school_class_id'      => $participant->school_class_id,
+                    ]);
+                }
             } elseif (!$request->boolean('make_admin') && $user->adminUser) {
                 ClassParticipant::where('participantable_type', AdminUser::class)
                     ->where('participantable_id', $user->adminUser->id)
+                    ->where('school_class_id', $participant->school_class_id)
                     ->delete();
 
-                $user->adminUser->delete();
+                $remainingParticipations = ClassParticipant::where('participantable_type', AdminUser::class)
+                    ->where('participantable_id', $user->adminUser->id)
+                    ->exists();
+
+                if (!$remainingParticipations) {
+                    $user->adminUser->delete();
+                }
             }
         }
 

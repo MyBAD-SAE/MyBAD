@@ -6,15 +6,12 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Input } from '@/Components/ui/input';
 import { Button } from '@/Components/ui/button';
-import { Label } from '@/Components/ui/label';
 import {
     ArrowLeft,
     Shield,
     Search,
     Trash2,
-    Plus,
     AlertTriangle,
-    UserPlus,
     Gamepad2,
     Mail,
 } from 'lucide-vue-next';
@@ -39,27 +36,6 @@ const filteredAdmins = computed(() => {
 const getInitials = (name) => {
     if (!name) return '?';
     return name.split(' ').map(p => p.charAt(0)).join('').toUpperCase();
-};
-
-// Add modal
-const showAddModal = ref(false);
-const addForm = useForm({ email: '' });
-
-const openAddModal = () => {
-    addForm.reset();
-    addForm.clearErrors();
-    showAddModal.value = true;
-};
-
-const closeAddModal = () => {
-    showAddModal.value = false;
-};
-
-const confirmAdd = () => {
-    addForm.post(route('admin.admins.store'), {
-        onSuccess: () => closeAddModal(),
-        onError: () => toast.error("Erreur lors de l'ajout de l'administrateur."),
-    });
 };
 
 // Delete modal
@@ -112,13 +88,6 @@ const confirmDelete = () => {
                             <p class="text-sm text-muted-foreground">Gérer les administrateurs de vos cours</p>
                         </div>
                     </div>
-                    <button
-                        class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
-                        @click="openAddModal"
-                    >
-                        <Plus class="h-4 w-4" />
-                        Ajouter un admin
-                    </button>
                 </div>
             </div>
 
@@ -204,60 +173,6 @@ const confirmDelete = () => {
                 </div>
             </div>
         </div>
-
-        <!-- Add admin modal -->
-        <Teleport to="body">
-            <Transition name="fade">
-                <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-black/40" @click="closeAddModal" />
-
-                    <div class="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                        <div class="mb-6 flex items-center gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
-                                <UserPlus class="h-7 w-7 text-blue-500" />
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-foreground">Nouvel administrateur</h3>
-                                <p class="text-sm text-muted-foreground">Ajouter un administrateur par email</p>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <Label for="add-email" class="mb-2 block text-sm text-muted-foreground">Adresse email</Label>
-                            <Input
-                                id="add-email"
-                                v-model="addForm.email"
-                                type="email"
-                                placeholder="admin@exemple.com"
-                                class="h-12 rounded-xl bg-gray-50 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-primary"
-                                @keyup.enter="confirmAdd"
-                            />
-                            <p v-if="addForm.errors.email" class="mt-1.5 text-sm text-destructive">{{ addForm.errors.email }}</p>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <Button
-                                variant="outline"
-                                size="lg"
-                                class="rounded-xl"
-                                @click="closeAddModal"
-                            >
-                                Annuler
-                            </Button>
-                            <Button
-                                size="lg"
-                                class="rounded-xl"
-                                :disabled="addForm.processing || !addForm.email.trim()"
-                                @click="confirmAdd"
-                            >
-                                <UserPlus class="h-4 w-4" />
-                                Ajouter
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
 
         <!-- Delete confirmation modal -->
         <Teleport to="body">

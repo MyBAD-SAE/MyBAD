@@ -50,7 +50,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('account/password', [AdminAccountController::class, 'updatePassword'])->name('account.password');
 
         Route::get('administrateurs', [AdminAdminsController::class, 'index'])->name('admins');
-        Route::post('administrateurs', [AdminAdminsController::class, 'store'])->name('admins.store');
         Route::delete('administrateurs/{admin}', [AdminAdminsController::class, 'destroy'])->name('admins.destroy');
 
         Route::get('joueurs', [AdminPlayersController::class, 'index'])->name('players');

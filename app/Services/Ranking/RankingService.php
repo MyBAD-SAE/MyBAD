@@ -41,7 +41,15 @@ class RankingService
         $matchStats = $this->getBulkMatchStats($playerIds, $classId, $since, $sessionId);
         $eloTrends = $this->getBulkEloTrends($participants, $since, $sessionId);
 
-        $ranked = $participants->values()->map(function (ClassParticipant $participant) use ($matchStats, $eloTrends) {
+        $adminUserIdsInClass = ClassParticipant::forClass($classId)
+            ->where('participantable_type', \App\Models\AdminUser::class)
+            ->with('participantable')
+            ->get()
+            ->pluck('participantable.user_id')
+            ->filter()
+            ->all();
+
+        $ranked = $participants->values()->map(function (ClassParticipant $participant) use ($matchStats, $eloTrends, $adminUserIdsInClass) {
             $playerId = $participant->participantable_id;
             $user = $participant->participantable->user;
 
@@ -57,7 +65,7 @@ class RankingService
                 'avatar'  => $user->profile_picture,
                 'elo'     => (float) $participant->elo_rating,
                 'isActive' => (bool) $user->is_active,
-                'isAdmin'  => $user->adminUser !== null,
+                'isAdmin'  => in_array($user->id, $adminUserIdsInClass),
                 'wins'    => $wins,
                 'losses'  => $losses,
                 'trend'   => $eloTrends[$playerId] ?? 0,
