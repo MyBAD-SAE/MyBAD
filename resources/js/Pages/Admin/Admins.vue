@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
@@ -26,6 +26,7 @@ const props = defineProps({
 
 const currentUserId = usePage().props.auth.user?.id;
 const search = ref('');
+const expandedClasses = reactive(new Set());
 
 const filteredAdmins = computed(() => {
     if (!search.value.trim()) return props.admins;
@@ -165,12 +166,19 @@ const confirmDelete = () => {
                     <!-- Classes -->
                     <div class="flex flex-wrap gap-1.5 shrink-0">
                         <span
-                            v-for="cls in admin.classes"
+                            v-for="cls in admin.classes.slice(0, expandedClasses.has(admin.id) ? undefined : 3)"
                             :key="cls.id"
                             class="inline-flex items-center rounded-full border border-border bg-gray-50 px-2.5 py-0.5 text-xs text-muted-foreground"
                         >
                             {{ cls.name }}
                         </span>
+                        <button
+                            v-if="admin.classes.length > 3 && !expandedClasses.has(admin.id)"
+                            class="inline-flex items-center rounded-full border border-border bg-gray-50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-gray-100 cursor-pointer transition-colors"
+                            @click="expandedClasses.add(admin.id)"
+                        >
+                            +{{ admin.classes.length - 3 }}
+                        </button>
                     </div>
 
                     <!-- Date -->
