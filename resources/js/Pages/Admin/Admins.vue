@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
@@ -24,6 +24,7 @@ const props = defineProps({
     adminCount: { type: Number, default: 0 },
 });
 
+const currentUserId = usePage().props.auth.user?.id;
 const search = ref('');
 
 const filteredAdmins = computed(() => {
@@ -179,7 +180,7 @@ const confirmDelete = () => {
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex items-center gap-2 shrink-0">
+                    <div v-if="admin.userId !== currentUserId" class="flex items-center gap-2 shrink-0">
                         <button
                             class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-red-50"
                             @click="openDeleteModal(admin)"
