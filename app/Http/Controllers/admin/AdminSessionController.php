@@ -83,7 +83,41 @@ class AdminSessionController extends Controller
 
     public function store(): RedirectResponse
     {
-        return redirect()->route('admin.session');
+        $adminUser = auth('admin')->user()->adminUser;
+        $selectedClassId = session('admin_selected_class_id');
+
+        $classIds = $adminUser->classParticipants()->pluck('school_class_id');
+
+        if (!$selectedClassId || !$classIds->contains($selectedClassId)) {
+            $selectedClassId = $classIds->first();
+        }
+
+        if (!$selectedClassId) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Si une séance est déjà active, rediriger vers elle
+        if (ClassSession::forClass($selectedClassId)->active()->exists()) {
+            return redirect()->route('admin.session');
+        }
+
+        // Clôturer les séances actives existantes (sécurité)
+        ClassSession::forClass($selectedClassId)->active()->update(['is_active' => false]);
+
+        // Créer la nouvelle séance
+        ClassSession::create([
+            'school_class_id' => $selectedClassId,
+            'date' => now(),
+            'is_active' => true,
+        ]);
+
+        // S'assurer qu'un lien public existe
+        PublicView::firstOrCreate(
+            ['school_class_id' => $selectedClassId],
+            ['access_token' => Str::random(32)],
+        );
+
+        return redirect()->route('admin.session')->with('success', 'Séance lancée avec succès.');
     }
 
     public function close(): RedirectResponse

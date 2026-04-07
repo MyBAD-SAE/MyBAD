@@ -41,7 +41,7 @@ class RankingService
         $matchStats = $this->getBulkMatchStats($playerIds, $classId, $since, $sessionId);
         $eloTrends = $this->getBulkEloTrends($participants, $since, $sessionId);
 
-        return $participants->values()->map(function (ClassParticipant $participant, int $index) use ($matchStats, $eloTrends) {
+        $ranked = $participants->values()->map(function (ClassParticipant $participant) use ($matchStats, $eloTrends) {
             $playerId = $participant->participantable_id;
             $user = $participant->participantable->user;
 
@@ -52,7 +52,7 @@ class RankingService
             return [
                 'participantId' => $participant->id,
                 'userId'  => $user->id,
-                'rank'    => $index + 1,
+                'rank'    => 0,
                 'name'    => $user->full_name,
                 'avatar'  => $user->profile_picture,
                 'elo'     => (float) $participant->elo_rating,
@@ -63,6 +63,15 @@ class RankingService
                 'trend'   => $eloTrends[$playerId] ?? 0,
                 'winRate' => $total > 0 ? round(($wins / $total) * 100) : 0,
             ];
+        })->sortBy([
+            ['elo', 'desc'],
+            fn ($a, $b) => ($b['wins'] + $b['losses']) <=> ($a['wins'] + $a['losses']),
+            ['wins', 'desc'],
+        ])->values();
+
+        return $ranked->map(function ($player, $index) {
+            $player['rank'] = $index + 1;
+            return $player;
         })->all();
     }
 

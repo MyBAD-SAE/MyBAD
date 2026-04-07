@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Input } from '@/Components/ui/input';
@@ -56,8 +57,9 @@ const closeDeleteModal = () => {
 
 const confirmDelete = () => {
     if (!playerToDelete.value) return;
-    deleteForm.delete(route('admin.joueurs.destroy', playerToDelete.value.participantId), {
+    deleteForm.delete(route('admin.players.destroy', playerToDelete.value.participantId), {
         onSuccess: () => closeDeleteModal(),
+        onError: () => toast.error('Erreur lors de la suppression du joueur.'),
     });
 };
 
@@ -90,8 +92,9 @@ const closeEditModal = () => {
 const confirmEdit = () => {
     if (!playerToEdit.value) return;
     editForm.is_active = editIsActive.value;
-    editForm.put(route('admin.joueurs.update', playerToEdit.value.participantId), {
+    editForm.put(route('admin.players.update', playerToEdit.value.participantId), {
         onSuccess: () => closeEditModal(),
+        onError: () => toast.error('Erreur lors de la modification du joueur.'),
     });
 };
 
@@ -113,8 +116,9 @@ const closeAddModal = () => {
 };
 
 const confirmAdd = () => {
-    addForm.post(route('admin.joueurs.store'), {
+    addForm.post(route('admin.players.store'), {
         onSuccess: () => closeAddModal(),
+        onError: () => toast.error('Erreur lors de l\'ajout du joueur.'),
     });
 };
 

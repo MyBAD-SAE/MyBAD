@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
+import { Toaster } from '@/Components/ui/sonner';
+import { useFlashToast } from '@/Composables/useFlashToast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Button } from '@/Components/ui/button';
 import {
@@ -8,6 +10,8 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/Components/ui/alert-dialog';
 import { LayoutDashboard, Users, Swords, Trophy, Plus, LogOut, Smartphone } from 'lucide-vue-next';
+
+useFlashToast();
 
 const showLogoutDialog = ref(false);
 
@@ -29,9 +33,9 @@ const adminUser = page.props.adminUser ?? {
 
 const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, routeName: 'admin.dashboard' },
-    { label: 'Joueurs', icon: Users, routeName: 'admin.joueurs' },
-    { label: 'Matchs', icon: Swords, routeName: 'admin.matchs' },
-    { label: 'Regles et defis', icon: Trophy, routeName: 'admin.regles' },
+    { label: 'Joueurs', icon: Users, routeName: 'admin.players' },
+    { label: 'Matchs', icon: Swords, routeName: 'admin.matches' },
+    { label: 'Regles et defis', icon: Trophy, routeName: 'admin.rules' },
 ];
 
 const isActive = (routeName) => route().current(routeName);
@@ -129,5 +133,7 @@ const getInitials = (name) => {
             </div>
         </main>
     </div>
+
+    <Toaster position="bottom-right" :duration="4000" theme="light" />
 </template>
 

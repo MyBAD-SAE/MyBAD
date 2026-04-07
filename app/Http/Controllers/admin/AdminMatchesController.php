@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AdminMatchsController extends Controller
+class AdminMatchesController extends Controller
 {
     public function __construct(private readonly EloService $eloService) {}
 
@@ -117,7 +117,7 @@ class AdminMatchsController extends Controller
             }
         }
 
-        return Inertia::render('Admin/Matchs', [
+        return Inertia::render('Admin/Matches', [
             'sessions'         => $sessions,
             'totalMatchCount'  => $totalMatchCount,
             'topMatchesPlayer' => $topMatchesPlayer,
@@ -165,7 +165,7 @@ class AdminMatchsController extends Controller
             $this->eloService->updateElo($validated['player2_id'], $eloChange2, $schoolClassId, $gameMatch->id);
         });
 
-        return redirect()->route('admin.matchs')->with('success', 'Match mis à jour avec succès.');
+        return redirect()->route('admin.matches')->with('success', 'Match mis à jour avec succès.');
     }
 
     public function destroy(GameMatch $gameMatch): RedirectResponse
@@ -178,7 +178,7 @@ class AdminMatchsController extends Controller
             $gameMatch->delete();
         });
 
-        return redirect()->route('admin.matchs')->with('success', 'Match supprimé avec succès.');
+        return redirect()->route('admin.matches')->with('success', 'Match supprimé avec succès.');
     }
 
     private function revertElo(GameMatch $gameMatch, int $schoolClassId): void

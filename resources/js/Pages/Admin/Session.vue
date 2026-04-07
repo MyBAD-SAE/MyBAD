@@ -95,10 +95,12 @@ const getWinRateColor = (winRate) => {
                             <p class="mt-1 text-sm text-muted-foreground">{{ playerCount }} joueurs · temps réel</p>
                         </div>
                         <a
-                            href="/admin/classement"
-                            class="text-sm font-medium text-primary"
+                            :href="route('admin.ranking')"
+                            target="_blank"
+                            class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                         >
-                            Voir en plein écran &gt;
+                            Voir en plein écran
+                            <ExternalLink class="h-3.5 w-3.5" />
                         </a>
                     </div>
 
