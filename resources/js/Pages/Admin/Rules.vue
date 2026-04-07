@@ -333,9 +333,13 @@ const saveRule = () => {
                                     >
                                         <Minus class="h-4 w-4 text-foreground" />
                                     </button>
-                                    <div class="flex h-10 w-12 items-center justify-center rounded-lg border border-border bg-white text-sm font-bold text-foreground">
-                                        {{ groupSize }}
-                                    </div>
+                                    <input
+                                        type="number"
+                                        v-model.number="groupSize"
+                                        min="2"
+                                        class="h-10 w-14 rounded-xl border border-input bg-white text-center text-sm font-bold text-foreground outline-none focus:border-ring focus:ring-ring/50 focus:ring-[3px] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                        @blur="groupSize = Math.max(2, groupSize || 2)"
+                                    />
                                     <button
                                         type="button"
                                         class="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-white hover:bg-gray-50 transition-colors cursor-pointer"

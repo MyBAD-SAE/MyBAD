@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
@@ -33,11 +33,21 @@ const search = ref('');
 const activeSession = ref('all');
 const sortOpen = ref(false);
 const sortBy = ref('recent');
+const sortContainer = ref(null);
 
 const sortOptions = [
     { value: 'recent', label: 'Plus récent' },
     { value: 'oldest', label: 'Plus ancien' },
 ];
+
+function onSortClickOutside(e) {
+    if (sortContainer.value && !sortContainer.value.contains(e.target)) {
+        sortOpen.value = false;
+    }
+}
+
+onMounted(() => document.addEventListener('click', onSortClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', onSortClickOutside));
 
 const allMatches = computed(() => {
     return props.sessions.flatMap(s => s.matches);
@@ -257,7 +267,7 @@ const getInitials = (name) => {
                         class="pl-9 w-full text-sm placeholder:text-gray-400 shadow-none focus-visible:ring-1 focus-visible:ring-primary"
                     />
                 </div>
-                <div class="relative">
+                <div ref="sortContainer" class="relative">
                     <button
                         class="inline-flex h-9 items-center gap-2 rounded-md border border-input bg-white px-4 text-sm text-foreground transition-colors hover:bg-gray-50 cursor-pointer"
                         @click="sortOpen = !sortOpen"
