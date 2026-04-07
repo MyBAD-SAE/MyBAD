@@ -106,7 +106,7 @@ const submit = () => {
                             v-model="form.description"
                             placeholder="Informations complémentaires sur le cours..."
                             rows="3"
-                            class="flex w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm shadow-none outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-primary resize-none"
+                            class="flex w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm shadow-none outline-none placeholder:text-gray-300 focus:ring-1 focus:ring-primary resize-none"
                         />
                         <p v-if="form.errors.description" class="mt-1.5 text-sm text-destructive">
                             {{ form.errors.description }}

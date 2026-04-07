@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { ChevronDown, Check } from 'lucide-vue-next';
 
@@ -26,15 +26,20 @@ function select(cls) {
     });
 }
 
-function close(e) {
-    if (!e.target.closest('.class-picker-container')) {
+const container = ref(null);
+
+function onClickOutside(e) {
+    if (container.value && !container.value.contains(e.target)) {
         open.value = false;
     }
 }
+
+onMounted(() => document.addEventListener('click', onClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
 </script>
 
 <template>
-    <div class="class-picker-container relative" v-if="classes.length > 1" @focusout="close">
+    <div ref="container" class="class-picker-container relative" v-if="classes.length > 1">
         <button
             class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-gray-200"
             @click="open = !open"

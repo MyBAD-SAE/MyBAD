@@ -36,7 +36,7 @@ function startSession() {
                         <p class="mt-1 text-sm text-muted-foreground">Actions rapides administrateur</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <Button variant="outline" size="sm" class="rounded-xl gap-1.5" as-child>
+                        <Button variant="outline" size="sm" class="rounded-xl gap-1.5 shadow-none" as-child>
                             <Link :href="route('admin.class.create')">
                                 <Plus class="h-4 w-4" />
                                 Nouveau cours
