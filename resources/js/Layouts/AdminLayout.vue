@@ -9,7 +9,7 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/Components/ui/alert-dialog';
-import { LayoutDashboard, Users, Swords, Trophy, Plus, LogOut, Smartphone } from 'lucide-vue-next';
+import { LayoutDashboard, Users, Shield, Swords, Trophy, Plus, LogOut, Smartphone } from 'lucide-vue-next';
 
 useFlashToast();
 
@@ -34,6 +34,7 @@ const adminUser = page.props.adminUser ?? {
 const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, routeName: 'admin.dashboard' },
     { label: 'Joueurs', icon: Users, routeName: 'admin.players' },
+    { label: 'Admins', icon: Shield, routeName: 'admin.admins' },
     { label: 'Matchs', icon: Swords, routeName: 'admin.matches' },
     { label: 'Regles et defis', icon: Trophy, routeName: 'admin.rules' },
 ];

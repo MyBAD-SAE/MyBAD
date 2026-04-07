@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminAccountController;
+use App\Http\Controllers\admin\AdminAdminsController;
 use App\Http\Controllers\admin\AdminClassController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminMatchesController;
@@ -47,6 +48,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('account', [AdminAccountController::class, 'index'])->name('account');
         Route::put('account/profile', [AdminAccountController::class, 'updateProfile'])->name('account.profile');
         Route::put('account/password', [AdminAccountController::class, 'updatePassword'])->name('account.password');
+
+        Route::get('administrateurs', [AdminAdminsController::class, 'index'])->name('admins');
+        Route::post('administrateurs', [AdminAdminsController::class, 'store'])->name('admins.store');
+        Route::delete('administrateurs/{admin}', [AdminAdminsController::class, 'destroy'])->name('admins.destroy');
 
         Route::get('joueurs', [AdminPlayersController::class, 'index'])->name('players');
         Route::post('joueurs', [AdminPlayersController::class, 'store'])->name('players.store');
