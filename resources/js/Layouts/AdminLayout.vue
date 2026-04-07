@@ -31,12 +31,14 @@ const adminUser = page.props.adminUser ?? {
     avatar: user?.profile_picture,
 };
 
+const isPureAdmin = page.props.adminUser?.isPureAdmin ?? false;
+
 const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, routeName: 'admin.dashboard' },
     { label: 'Joueurs', icon: Users, routeName: 'admin.players' },
-    { label: 'Admins', icon: Shield, routeName: 'admin.admins' },
     { label: 'Matchs', icon: Swords, routeName: 'admin.matches' },
     { label: 'Regles et defis', icon: Trophy, routeName: 'admin.rules' },
+    ...(isPureAdmin ? [{ label: 'Admins', icon: Shield, routeName: 'admin.admins' }] : []),
 ];
 
 const isActive = (routeName) => route().current(routeName);

@@ -17,6 +17,11 @@ class AdminAdminsController extends Controller
     public function index(): Response
     {
         $user = auth('admin')->user();
+
+        if ($user->player) {
+            abort(403);
+        }
+
         $adminUser = $user->adminUser;
 
         $classIds = $adminUser->classParticipants()
@@ -61,6 +66,10 @@ class AdminAdminsController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if (auth('admin')->user()->player) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'email' => 'required|email',
         ]);
@@ -98,6 +107,10 @@ class AdminAdminsController extends Controller
     public function destroy(AdminUser $admin): RedirectResponse
     {
         $currentUser = auth('admin')->user();
+
+        if ($currentUser->player) {
+            abort(403);
+        }
 
         if ($admin->user_id === $currentUser->id) {
             return back()->withErrors(['error' => 'Vous ne pouvez pas vous retirer vous-même.']);

@@ -29,6 +29,7 @@ class HandleInertiaRequests extends Middleware
                 'firstName' => $adminUser->first_name,
                 'fullName'  => $adminUser->first_name . ' ' . mb_substr($adminUser->last_name, 0, 1) . '.',
                 'avatar'    => $adminUser->profile_picture,
+                'isPureAdmin' => !$adminUser->player,
             ] : null,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
