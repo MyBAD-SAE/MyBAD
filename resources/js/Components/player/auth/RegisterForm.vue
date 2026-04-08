@@ -163,7 +163,7 @@ const storeUser = () => {
                     v-model="acceptTerms"
                     class="mt-0.5"
                 />
-                <Label for="terms" class="text-xs font-normal leading-snug whitespace-nowrap">
+                <Label for="terms" class="text-xs font-normal leading-snug">
                     J'accepte les
                     <Link :href="route('player.terms')" class="inline font-medium text-primary hover:underline">CGU</Link>
                     et la

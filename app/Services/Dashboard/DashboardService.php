@@ -40,7 +40,7 @@ class DashboardService
             $winStreak     = $this->getWinStreak($player, $matchData['matches']);
 
             if ($participation) {
-                $eloData    = $this->getEloData($participation, $matchStats['total']);
+                $eloData    = $this->getEloData($participation);
                 $eloDiff    = $eloData['eloDiff'];
                 $eloHistory = $eloData['eloHistory'];
             }
@@ -116,26 +116,20 @@ class DashboardService
     }
 
     /**
-     * Calcule l'historique ELO et la différence sur les 4 dernières séances.
+     * Calcule l'historique ELO complet et la différence globale.
      */
-    public function getEloData(ClassParticipant $participant, int $recentMatchCount): array
+    public function getEloData(ClassParticipant $participant): array
     {
         $history = $participant->eloHistories()->oldest()->get();
 
-        if ($history->isEmpty() || $recentMatchCount === 0) {
-            return ['eloDiff' => 0, 'eloHistory' => []];
-        }
-
-        $recentHistory = $history->slice(max(0, $history->count() - $recentMatchCount));
-
-        if ($recentHistory->isEmpty()) {
+        if ($history->isEmpty()) {
             return ['eloDiff' => 0, 'eloHistory' => []];
         }
 
         return [
-            'eloDiff'    => round((float) $participant->elo_rating - (float) $recentHistory->first()->elo_before, 2),
-            'eloHistory' => $recentHistory->pluck('elo_after')
-                ->prepend($recentHistory->first()->elo_before)
+            'eloDiff'    => round((float) $participant->elo_rating - (float) $history->first()->elo_before, 2),
+            'eloHistory' => $history->pluck('elo_after')
+                ->prepend($history->first()->elo_before)
                 ->values()
                 ->all(),
         ];
