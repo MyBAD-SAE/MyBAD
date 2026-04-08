@@ -35,10 +35,16 @@ function catmullRomToBezier(points) {
     return d.join(' ');
 }
 
-const chartData = computed(() => {
-    if (props.history.length < 2) return { line: '', area: '', points: [] };
+const filteredHistory = computed(() => {
+    if (props.history.length === 0) return [];
+    return props.history.slice(-30);
+});
 
-    const values = props.history.map(Number);
+const chartData = computed(() => {
+    const data = filteredHistory.value;
+    if (data.length < 2) return { line: '', area: '', points: [] };
+
+    const values = data.map(d => d.elo);
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min || 1;
@@ -89,7 +95,7 @@ const chartData = computed(() => {
 
         <div v-if="hasMatches" class="relative h-[120px] w-full">
             <svg
-                v-if="history.length >= 2"
+                v-if="filteredHistory.length >= 2"
                 class="absolute inset-0 h-full w-full"
                 :viewBox="`0 0 ${svgWidth} ${svgHeight}`"
                 preserveAspectRatio="none"

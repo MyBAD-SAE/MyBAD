@@ -128,10 +128,13 @@ class DashboardService
 
         return [
             'eloDiff'    => round((float) $participant->elo_rating - (float) $history->first()->elo_before, 2),
-            'eloHistory' => $history->pluck('elo_after')
-                ->prepend($history->first()->elo_before)
-                ->values()
-                ->all(),
+            'eloHistory' => $history->map(fn ($h) => [
+                'elo'  => (float) $h->elo_after,
+                'date' => $h->created_at->format('d/m'),
+            ])->prepend([
+                'elo'  => (float) $history->first()->elo_before,
+                'date' => $history->first()->created_at->format('d/m'),
+            ])->values()->all(),
         ];
     }
 
