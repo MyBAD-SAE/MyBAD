@@ -126,8 +126,35 @@ const passwordMismatch = computed(() => {
     return form.new_password_confirmation.length > 0 && form.new_password.length > 0 && form.new_password_confirmation !== form.new_password;
 });
 
+const saveDisabled = computed(() => {
+    const currentStr = currentPin.value.join('');
+    const newStr = newPin.value.join('');
+    const confirmStr = confirmPin.value.join('');
+
+    // PIN partiellement rempli
+    if (currentStr.length > 0 && currentStr.length < 4) return true;
+    if (newStr.length > 0 && newStr.length < 4) return true;
+    if (confirmStr.length > 0 && confirmStr.length < 4) return true;
+
+    // PIN ne correspondent pas
+    if (pinMismatch.value) return true;
+
+    // Nouveau PIN sans confirmation ou sans PIN actuel
+    if (newStr.length === 4 && confirmStr.length !== 4) return true;
+    if (newStr.length === 4 && currentStr.length !== 4) return true;
+
+    // Mots de passe
+    if (passwordMismatch.value) return true;
+    if (form.new_password && !form.new_password_confirmation) return true;
+    if (form.new_password_confirmation && !form.new_password) return true;
+    if (form.new_password && !form.current_password) return true;
+
+    return false;
+});
+
 function handlePinInput(pinArray, index, event) {
     const value = event.target.value.replace(/\D/g, '');
+    event.target.value = value.slice(-1);
     pinArray[index] = value.slice(-1);
     if (value && index < 3) {
         const next = event.target.parentElement.children[index + 1];
@@ -139,6 +166,10 @@ function handlePinKeydown(pinArray, index, event) {
     if (event.key === 'Backspace' && !pinArray[index] && index > 0) {
         const prev = event.target.parentElement.children[index - 1];
         if (prev) prev.focus();
+    }
+    // Bloquer tout sauf chiffres, Backspace, Tab, flèches
+    if (!/^\d$/.test(event.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(event.key)) {
+        event.preventDefault();
     }
 }
 
@@ -242,12 +273,6 @@ function handleSave() {
                 </CardContent>
             </Card>
 
-            <div class="mx-4 mt-3">
-                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
-                    Enregistrer
-                </button>
-            </div>
-
             <!-- Contact -->
             <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-4 px-4 py-0">
@@ -262,12 +287,6 @@ function handleSave() {
                     </div>
                 </CardContent>
             </Card>
-
-            <div class="mx-4 mt-3">
-                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
-                    Enregistrer
-                </button>
-            </div>
 
             <!-- Code PIN -->
             <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
@@ -354,12 +373,6 @@ function handleSave() {
                 </CardContent>
             </Card>
 
-            <div class="mx-4 mt-3">
-                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
-                    Enregistrer
-                </button>
-            </div>
-
             <!-- Mot de passe -->
             <Card v-if="!user.has_google" class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-5 px-4 py-0">
@@ -437,9 +450,13 @@ function handleSave() {
                 </CardContent>
             </Card>
 
-            <div class="mx-4 mt-3">
-                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
-                    Enregistrer
+            <div class="mx-4 mt-5 mb-4">
+                <button
+                    class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+                    :disabled="form.processing || saveDisabled"
+                    @click="handleSave"
+                >
+                    Enregistrer les modifications
                 </button>
             </div>
         </div>
