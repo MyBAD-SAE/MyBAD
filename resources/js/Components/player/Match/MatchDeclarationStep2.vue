@@ -177,7 +177,7 @@ function getAvatarColor(name) {
                             <!-- Input score gauche -->
                             <Input
                                 ref="myScoreRef"
-                                :value="myScore"
+                                :model-value="myScore"
                                 type="text"
                                 inputmode="numeric"
                                 maxlength="2"
@@ -217,7 +217,7 @@ function getAvatarColor(name) {
                             <!-- Input score droite -->
                             <Input
                                 ref="opponentScoreRef"
-                                :value="opponentScore"
+                                :model-value="opponentScore"
                                 type="text"
                                 inputmode="numeric"
                                 maxlength="2"
