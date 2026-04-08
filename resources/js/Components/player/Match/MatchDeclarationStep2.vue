@@ -18,17 +18,18 @@ const props = defineProps({
 const emit = defineEmits(['next', 'back'])
 
 const currentStep = ref(2)
-const myScore = ref(null)
-const opponentScore = ref(null)
+const myScore = ref('')
+const opponentScore = ref('')
 const myScoreRef = ref(null)
 const opponentScoreRef = ref(null)
 
 const scoreError = ref('')
+const inputError = ref('')
 let myScoreTimer = null
 
 const isValid = computed(() =>
-    myScore.value !== null && opponentScore.value !== null &&
-    myScore.value !== '' && opponentScore.value !== ''
+    myScore.value !== '' && opponentScore.value !== '' &&
+    !inputError.value
 )
 
 const hasMinScoreError = computed(() => scoreError.value !== '')
@@ -43,19 +44,36 @@ function focusOpponent() {
     el?.focus()
 }
 
-function clampScore(field) {
+function onScoreInput(field, event) {
+    inputError.value = ''
+    scoreError.value = ''
+    const raw = event.target.value
+
+    // Strip non-digit characters
+    const digitsOnly = raw.replace(/\D/g, '')
+    if (digitsOnly !== raw) {
+        inputError.value = 'Seuls les chiffres sont autorisés.'
+    }
+
+    let num = digitsOnly === '' ? '' : Math.min(parseInt(digitsOnly, 10), 21)
+
+    if (digitsOnly !== '' && parseInt(digitsOnly, 10) > 21) {
+        inputError.value = 'Le score ne peut pas dépasser 21.'
+        num = 21
+    }
+
     if (field === 'myScore') {
-        if (myScore.value > 99) myScore.value = 99
-        if (myScore.value < 0) myScore.value = 0
+        myScore.value = num === '' ? '' : num
+        event.target.value = myScore.value
         clearTimeout(myScoreTimer)
         if (String(myScore.value).length >= 2) {
             focusOpponent()
-        } else if (myScore.value !== null && myScore.value !== '') {
+        } else if (myScore.value !== '') {
             myScoreTimer = setTimeout(focusOpponent, 800)
         }
     } else {
-        if (opponentScore.value > 99) opponentScore.value = 99
-        if (opponentScore.value < 0) opponentScore.value = 0
+        opponentScore.value = num === '' ? '' : num
+        event.target.value = opponentScore.value
     }
 }
 
@@ -159,14 +177,14 @@ function getAvatarColor(name) {
                             <!-- Input score gauche -->
                             <Input
                                 ref="myScoreRef"
-                                v-model="myScore"
-                                type="number"
-                                min="0"
-                                max="99"
+                                :value="myScore"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="2"
                                 :aria-invalid="hasMinScoreError"
                                 class="!w-14 !h-14 text-center font-bold text-[#352B2B] !bg-white text-2xl !rounded-[10px] !shadow-none !px-0 !border-[#E5E7EB]"
                                 style="font-family: 'Poppins', sans-serif;"
-                                @input="clampScore('myScore')"
+                                @input="onScoreInput('myScore', $event)"
                             />
                         </div>
 
@@ -199,18 +217,23 @@ function getAvatarColor(name) {
                             <!-- Input score droite -->
                             <Input
                                 ref="opponentScoreRef"
-                                v-model="opponentScore"
-                                type="number"
-                                min="0"
-                                max="99"
+                                :value="opponentScore"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="2"
                                 :aria-invalid="hasMinScoreError"
                                 class="!w-14 !h-14 text-center font-bold text-[#352B2B] !bg-white text-2xl !rounded-[10px] !shadow-none !px-0 !border-[#E5E7EB]"
                                 style="font-family: 'Poppins', sans-serif;"
-                                @input="clampScore('opponentScore')"
+                                @input="onScoreInput('opponentScore', $event)"
                             />
                         </div>
 
                     </div>
+                </div>
+
+                <!-- Message d'erreur saisie -->
+                <div v-if="inputError" class="rounded-2xl px-4 py-2.5 mt-4 text-center border" style="background-color: rgba(211, 47, 47, 0.07); border-color: rgba(211, 47, 47, 0.2);">
+                    <p class="text-xs font-normal" style="color: #D32F2F;">{{ inputError }}</p>
                 </div>
 
                 <!-- Message d'erreur score minimum -->
@@ -240,14 +263,4 @@ function getAvatarColor(name) {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type='number'] {
-    -moz-appearance: textfield;
-}
 </style>
