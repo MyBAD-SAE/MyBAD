@@ -380,13 +380,13 @@ class ExcelSeeder extends Seeder
                     if ($score1 > $score2) {
                         $bonusP1 = $vlookup($ecart) + $ecart;
                         $malusP2 = $vlookup(-$ecart) - $ecart;
-                        $elos[$p1] = round($eloBefore1 + $bonusP1, 1);
-                        $elos[$p2] = round($eloBefore2 + $malusP2, 1);
+                        $elos[$p1] = (int) round($eloBefore1 + $bonusP1);
+                        $elos[$p2] = (int) round($eloBefore2 + $malusP2);
                     } else {
                         $bonusP2 = $vlookup($ecart) + $ecart;
                         $malusP1 = $vlookup(-$ecart) - $ecart;
-                        $elos[$p1] = round($eloBefore1 + $malusP1, 1);
-                        $elos[$p2] = round($eloBefore2 + $bonusP2, 1);
+                        $elos[$p1] = (int) round($eloBefore1 + $malusP1);
+                        $elos[$p2] = (int) round($eloBefore2 + $bonusP2);
                     }
 
                     $eloHistories[] = [

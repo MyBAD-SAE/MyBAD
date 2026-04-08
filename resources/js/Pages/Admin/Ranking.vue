@@ -46,9 +46,11 @@ onUnmounted(() => {
 });
 
 const podium = computed(() => {
-    if (liveRankingPlayers.value.length < 3) return [];
-    const top3 = liveRankingPlayers.value.slice(0, 3);
-    return [top3[1], top3[0], top3[2]];
+    const len = liveRankingPlayers.value.length;
+    if (len < 2) return [];
+    const top = liveRankingPlayers.value.slice(0, 3);
+    if (len === 2) return [top[1], top[0], null];
+    return [top[1], top[0], top[2]];
 });
 
 const restPlayers = computed(() => liveRankingPlayers.value.slice(3));
@@ -106,7 +108,7 @@ const getInitials = (name) => {
             </div>
 
             <!-- Podium -->
-            <div v-if="podium.length === 3" class="flex items-end justify-center gap-8 mb-8">
+            <div v-if="podium.length > 0" class="flex items-end justify-center gap-8 mb-8">
                     <!-- 2nd place -->
                     <div class="flex flex-col items-center">
                         <div class="relative">
@@ -145,16 +147,16 @@ const getInitials = (name) => {
                     <div class="flex flex-col items-center">
                         <div class="relative">
                             <Avatar class="h-14 w-14 ring-[3px] ring-orange-300">
-                                <AvatarImage v-if="podium[2].avatar" :src="podium[2].avatar" />
-                                <AvatarFallback class="text-xs">{{ getInitials(podium[2].name) }}</AvatarFallback>
+                                <AvatarImage v-if="podium[2]?.avatar" :src="podium[2].avatar" />
+                                <AvatarFallback class="text-xs">{{ getInitials(podium[2]?.name) }}</AvatarFallback>
                             </Avatar>
                             <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 flex h-5 w-5 items-center justify-center rounded-full bg-orange-400 text-[10px] font-bold text-white shadow">
                                 3
                             </div>
                         </div>
-                        <p class="mt-3 text-sm font-semibold text-foreground">{{ podium[2].name }}</p>
+                        <p class="mt-3 text-sm font-semibold text-foreground">{{ podium[2]?.name }}</p>
                         <div class="mt-2 h-8 w-36 rounded-t-xl bg-orange-100 flex items-center justify-center">
-                            <span class="text-sm font-bold text-orange-500">{{ podium[2].elo }}</span>
+                            <span class="text-sm font-bold text-orange-500">{{ podium[2]?.elo }}</span>
                         </div>
                     </div>
             </div>

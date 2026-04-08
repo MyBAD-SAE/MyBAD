@@ -56,8 +56,9 @@ class AdminAdminsController extends Controller
             ->all();
 
         return Inertia::render('Admin/Admins', [
-            'admins'     => $adminsGrouped,
-            'adminCount' => count($adminsGrouped),
+            'admins'        => $adminsGrouped,
+            'adminCount'    => count($adminsGrouped),
+            'currentUserId' => $user->id,
         ]);
     }
 

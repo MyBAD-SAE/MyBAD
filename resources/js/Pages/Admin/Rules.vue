@@ -100,13 +100,6 @@ const getPointBg = (value) => {
     return "bg-gray-100";
 };
 
-const getDescription = (param) => {
-    if (param.minDiff < 0 && param.maxDiff < 0)
-        return "Vainqueur moins bien classé";
-    if (param.minDiff <= 0 && param.maxDiff >= 0) return "Classements proches";
-    return "Vainqueur mieux classé";
-};
-
 const resetDefaults = () => {
     form.parameters.forEach((p, i) => {
         p.winner_points = defaultPoints[i] ?? p.winner_points;
@@ -195,7 +188,7 @@ const saveRule = () => {
                     >
                         <span
                             class="flex-1 text-xs font-medium uppercase tracking-wider text-muted-foreground"
-                            >Écart de classement</span
+                            >Écart de points lors du match</span
                         >
                         <span
                             class="w-44 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap"
@@ -224,9 +217,6 @@ const saveRule = () => {
                                     class="text-sm font-semibold text-foreground"
                                 >
                                     {{ param.minDiff }} à {{ param.maxDiff }}
-                                </p>
-                                <p class="text-xs text-muted-foreground">
-                                    {{ getDescription(param) }}
                                 </p>
                             </div>
                         </div>

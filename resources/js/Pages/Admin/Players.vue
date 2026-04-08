@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
@@ -35,6 +35,8 @@ const props = defineProps({
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
 });
+
+const isPureAdmin = usePage().props.adminUser?.isPureAdmin ?? false;
 
 const search = ref('');
 const sortBy = ref('elo');
@@ -457,6 +459,7 @@ const getWinRateDot = (winRate) => {
                                 />
                             </div>
                             <button
+                                v-if="isPureAdmin"
                                 type="button"
                                 class="flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3.5 text-sm font-medium transition-all cursor-pointer"
                                 :class="editForm.make_admin

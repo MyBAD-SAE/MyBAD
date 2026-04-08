@@ -106,7 +106,7 @@ const getWinRateColor = (winRate) => {
                     </div>
 
                     <!-- Podium -->
-                    <div v-if="rankingPlayers.length >= 3" class="mt-8 mb-8 flex items-end justify-center gap-4">
+                    <div class="mt-8 mb-8 flex items-end justify-center gap-4">
                         <div v-for="idx in podiumOrder" :key="idx" class="flex flex-col items-center gap-2"
                             :class="idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'">
                             <div class="relative">
