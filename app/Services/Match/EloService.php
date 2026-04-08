@@ -18,7 +18,7 @@ class EloService
         int $myScore,
         int $opponentScore,
         int $schoolClassId,
-    ): float {
+    ): int {
         if ($myScore === $opponentScore) {
             return 0;
         }
@@ -31,17 +31,17 @@ class EloService
 
         if ($isWinner) {
             $basePoints = $this->getBasePoints($schoolClassId, $scoreDiff);
-            return round($basePoints + $scoreDiff, 1);
+            return round($basePoints + $scoreDiff);
         }
 
         $basePoints = $this->getBasePoints($schoolClassId, -$scoreDiff);
-        return round($basePoints - $scoreDiff, 1);
+        return round($basePoints - $scoreDiff);
     }
 
     /**
      * Met à jour l'ELO d'un joueur et enregistre l'historique.
      */
-    public function updateElo(string $playerId, float $eloChange, int $schoolClassId, int $gameMatchId): void
+    public function updateElo(string $playerId, int $eloChange, int $schoolClassId, int $gameMatchId): void
     {
         $participation = ClassParticipant::forClass($schoolClassId)
             ->forPlayer($playerId)
@@ -51,8 +51,8 @@ class EloService
             return;
         }
 
-        $eloBefore = (float) $participation->elo_rating;
-        $eloAfter = max(0, round($eloBefore + $eloChange, 1));
+        $eloBefore = (int) $participation->elo_rating;
+        $eloAfter = max(0, (int) round($eloBefore + $eloChange));
 
         $participation->update(['elo_rating' => $eloAfter]);
 

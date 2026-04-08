@@ -272,7 +272,7 @@ class DatabaseSeeder extends Seeder
         // 7. Participants de la classe (tout le monde commence à 100 Elo)
         $elos = [];
         foreach ($playerIds as $pid) {
-            $elos[$pid] = 100.0;
+            $elos[$pid] = 100;
         }
 
         $participants = [];
@@ -280,7 +280,7 @@ class DatabaseSeeder extends Seeder
             $participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id' => $pid,
-                'elo_rating' => 100.0,
+                'elo_rating' => 100,
                 'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -417,8 +417,8 @@ class DatabaseSeeder extends Seeder
                 $scoreA = $score1 > $score2 ? 1 : 0;
                 $scoreB = 1 - $scoreA;
 
-                $elos[$p1] = round($eloBefore1 + $kFactor * ($scoreA - $expectedA), 2);
-                $elos[$p2] = round($eloBefore2 + $kFactor * ($scoreB - $expectedB), 2);
+                $elos[$p1] = (int) round($eloBefore1 + $kFactor * ($scoreA - $expectedA));
+                $elos[$p2] = (int) round($eloBefore2 + $kFactor * ($scoreB - $expectedB));
 
                 $eloHistories[] = [
                     'participant_id' => $participantIdByPlayer[$p1],

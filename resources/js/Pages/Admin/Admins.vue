@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
@@ -19,9 +19,8 @@ import {
 const props = defineProps({
     admins: { type: Array, default: () => [] },
     adminCount: { type: Number, default: 0 },
+    currentUserId: { type: Number, default: null },
 });
-
-const currentUserId = usePage().props.auth.user?.id;
 const search = ref('');
 const expandedClasses = reactive(new Set());
 
@@ -121,8 +120,7 @@ const confirmDelete = () => {
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-semibold text-foreground">{{ admin.name }}</span>
-                            <span v-if="admin.isPlayer" class="inline-flex items-center gap-1 rounded-full bg-violet-100 px-1.5 py-0.5 text-xs font-semibold text-violet-600">
-                                <Gamepad2 class="h-3 w-3" />
+                        <span v-if="admin.isPlayer" class="inline-flex items-center gap-1 rounded-full bg-violet-100 px-1.5 py-0.5 text-xs font-semibold text-violet-600">
                                 Joueur
                             </span>
                         </div>
@@ -157,10 +155,12 @@ const confirmDelete = () => {
                     </div>
 
                     <!-- Actions -->
-                    <div v-if="admin.userId !== currentUserId" class="flex items-center gap-2 shrink-0">
+                    <div class="flex items-center gap-2 shrink-0">
                         <button
-                            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-red-50"
-                            @click="openDeleteModal(admin)"
+                            :disabled="admin.userId === props.currentUserId"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
+                            :class="admin.userId === props.currentUserId ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:bg-red-50'"
+                            @click="admin.userId !== props.currentUserId && openDeleteModal(admin)"
                         >
                             <Trash2 class="h-4 w-4 text-destructive" />
                         </button>
