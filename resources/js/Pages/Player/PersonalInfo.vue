@@ -92,6 +92,29 @@ const showCurrentPassword = ref(false);
 const showNewPassword = ref(false);
 const showConfirmPassword = ref(false);
 
+// Password strength
+const passwordStrength = computed(() => {
+    const p = form.new_password;
+    if (!p) return 0;
+    let score = 0;
+    if (p.length >= 8) score++;
+    if (p.length >= 12) score++;
+    if (/[A-Z]/.test(p)) score++;
+    if (/[0-9]/.test(p)) score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
+    return score;
+});
+
+const strengthLabel = computed(() => {
+    const labels = ['', 'Très faible', 'Faible', 'Moyen', 'Fort', 'Très fort'];
+    return labels[passwordStrength.value] || '';
+});
+
+const strengthColor = computed(() => {
+    const colors = ['', '#D32F2F', '#F59E0B', '#F59E0B', '#009966', '#009966'];
+    return colors[passwordStrength.value] || '';
+});
+
 // Validation
 const pinMismatch = computed(() => {
     const confirm = confirmPin.value.join('');
@@ -122,6 +145,7 @@ function handlePinKeydown(pinArray, index, event) {
 // Success modal
 const showSuccess = ref(false);
 const progressWidth = ref(0);
+let successTimer = null;
 
 function handleSave() {
     const currentPinStr = currentPin.value.join('');
@@ -138,18 +162,21 @@ function handleSave() {
             newPin.value = ['', '', '', ''];
             confirmPin.value = ['', '', '', ''];
 
-            showSuccess.value = true;
+            // Reset previous timer if still running
+            if (successTimer) clearTimeout(successTimer);
+            showSuccess.value = false;
             progressWidth.value = 0;
 
             nextTick(() => {
+                showSuccess.value = true;
                 requestAnimationFrame(() => {
                     progressWidth.value = 100;
                 });
-            });
 
-            setTimeout(() => {
-                showSuccess.value = false;
-            }, 2500);
+                successTimer = setTimeout(() => {
+                    showSuccess.value = false;
+                }, 2500);
+            });
         },
     });
 }
@@ -215,6 +242,12 @@ function handleSave() {
                 </CardContent>
             </Card>
 
+            <div class="mx-4 mt-3">
+                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
+                    Enregistrer
+                </button>
+            </div>
+
             <!-- Contact -->
             <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-4 px-4 py-0">
@@ -229,6 +262,12 @@ function handleSave() {
                     </div>
                 </CardContent>
             </Card>
+
+            <div class="mx-4 mt-3">
+                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
+                    Enregistrer
+                </button>
+            </div>
 
             <!-- Code PIN -->
             <Card class="mx-4 mt-4 gap-0 py-4 shadow-none">
@@ -315,6 +354,12 @@ function handleSave() {
                 </CardContent>
             </Card>
 
+            <div class="mx-4 mt-3">
+                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
+                    Enregistrer
+                </button>
+            </div>
+
             <!-- Mot de passe -->
             <Card v-if="!user.has_google" class="mx-4 mt-4 gap-0 py-4 shadow-none">
                 <CardContent class="space-y-5 px-4 py-0">
@@ -352,6 +397,19 @@ function handleSave() {
                             </button>
                         </div>
                         <p v-if="form.errors.new_password" class="mt-1.5 text-xs text-destructive">{{ form.errors.new_password }}</p>
+
+                        <!-- Jauge de force du mot de passe -->
+                        <div v-if="form.new_password" class="mt-2 space-y-1">
+                            <div class="flex gap-1">
+                                <div
+                                    v-for="i in 5"
+                                    :key="i"
+                                    class="h-1.5 flex-1 rounded-full transition-colors"
+                                    :style="{ backgroundColor: i <= passwordStrength ? strengthColor : '#e5e7eb' }"
+                                />
+                            </div>
+                            <p class="text-xs font-medium" :style="{ color: strengthColor }">{{ strengthLabel }}</p>
+                        </div>
                     </div>
 
                     <div>
@@ -379,13 +437,9 @@ function handleSave() {
                 </CardContent>
             </Card>
 
-            <!-- Bouton enregistrer -->
-            <div class="mx-4 mt-6">
-                <button
-                    class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white"
-                    @click="handleSave"
-                >
-                    Enregistrer les modifications
+            <div class="mx-4 mt-3">
+                <button class="w-full rounded-2xl bg-primary py-3.5 text-sm font-semibold text-white" @click="handleSave">
+                    Enregistrer
                 </button>
             </div>
         </div>
