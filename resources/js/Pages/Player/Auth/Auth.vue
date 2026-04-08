@@ -16,7 +16,7 @@ const activeTab = ref('login');
     <PlayerLayout>
         <div class="relative h-56 overflow-hidden bg-gray-900">
             <img
-                src="/images/hero-badminton.png"
+                src="/images/muktasim-azlan-tkVwhG6yqKo-unsplash.jpg"
                 alt="Terrain de badminton"
                 class="absolute inset-0 h-full w-full object-cover"
             />

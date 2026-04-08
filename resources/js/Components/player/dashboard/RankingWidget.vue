@@ -34,7 +34,7 @@ const filteredPodiumOrder = computed(() =>
     <Card class="shadow-none">
         <CardContent class="p-4">
             <h3 class="text-lg font-semibold text-foreground">Classement</h3>
-            <p class="text-sm text-muted-foreground">8 premiers joueurs</p>
+            <p class="text-sm text-muted-foreground">{{ Math.min(players.length, 8) }} premiers joueurs</p>
 
             <!-- Podium -->
             <div v-if="players.length >= 2" class="mt-4 flex items-end justify-center gap-1.5">

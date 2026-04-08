@@ -119,7 +119,11 @@ const closeAddModal = () => {
 
 const confirmAdd = () => {
     addForm.post(route('admin.players.store'), {
-        onSuccess: () => closeAddModal(),
+        onSuccess: () => {
+                addForm.reset();
+                addForm.clearErrors();
+                closeAddModal();
+            },
         onError: () => toast.error('Erreur lors de l\'ajout du joueur.'),
     });
 };
