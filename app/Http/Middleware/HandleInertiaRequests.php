@@ -36,8 +36,15 @@ class HandleInertiaRequests extends Middleware
                 'error'   => fn () => $request->session()->get('error'),
             ],
             'hasActiveSession' => function () use ($request) {
+                // Contexte joueur
                 $player = $request->user('player')?->player;
                 $classId = $player?->selectedParticipation()?->school_class_id;
+
+                // Contexte admin (classe sélectionnée en session)
+                if (!$classId && $request->user('admin')) {
+                    $classId = $request->session()->get('admin_selected_class_id');
+                }
+
                 if (!$classId) return false;
                 return ClassSession::forClass($classId)->active()->exists();
             },
