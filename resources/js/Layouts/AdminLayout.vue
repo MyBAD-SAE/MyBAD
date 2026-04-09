@@ -65,7 +65,7 @@ const getInitials = (name) => {
         <aside class="flex w-[280px] shrink-0 flex-col bg-gray-50">
             <!-- Logo -->
             <div class="flex items-center gap-2.5 px-6 pt-6 pb-4">
-                <img src="/images/logo_mybad.png" alt="MyBAD" class="h-8 w-8 rounded-md" />
+                <img src="/images/logo_mybad.png" alt="MyBAD" class="h-10 w-10 rounded-lg" />
                 <span class="text-lg font-bold text-foreground">MyBAD</span>
             </div>
 
