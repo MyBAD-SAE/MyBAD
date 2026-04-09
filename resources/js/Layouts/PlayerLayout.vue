@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
-import { Monitor } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Monitor, Shield } from 'lucide-vue-next';
 import CreatePinModal from '@/Components/player/CreatePinModal.vue';
 
 const showPinModal = computed(() => usePage().props.auth.hasPin === false);
@@ -25,5 +25,12 @@ const showPinModal = computed(() => usePage().props.auth.hasPin === false);
             <Monitor class="h-5 w-5 text-muted-foreground" />
             <span class="text-sm text-muted-foreground">Desktop et tablette non supportés</span>
         </div>
+        <Link
+            :href="route('admin.login')"
+            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+        >
+            <Shield class="h-4 w-4" />
+            Accéder à l'espace administrateur
+        </Link>
     </div>
 </template>
