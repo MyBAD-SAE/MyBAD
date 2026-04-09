@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Models\AlgorithmParameter;
 use App\Models\ClassParticipant;
+use App\Models\ClassSession;
+use App\Models\GameMatch;
 use App\Models\SchoolClass;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -55,5 +58,33 @@ class AdminClassController extends Controller
         session(['admin_selected_class_id' => $class->id]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Cours créé avec succès.');
+    }
+
+    public function destroy(SchoolClass $class): RedirectResponse
+    {
+        $adminUser = auth('admin')->user()->adminUser;
+
+        $hasAccess = $adminUser->classParticipants()
+            ->where('school_class_id', $class->id)
+            ->exists();
+
+        if (!$hasAccess) {
+            abort(403);
+        }
+
+        DB::transaction(function () use ($class) {
+            GameMatch::forClass($class->id)->delete();
+            ClassSession::forClass($class->id)->delete();
+            ClassParticipant::forClass($class->id)->delete();
+            AlgorithmParameter::where('school_class_id', $class->id)->delete();
+            $class->publicView?->delete();
+            $class->delete();
+        });
+
+        if (session('admin_selected_class_id') === $class->id) {
+            session()->forget('admin_selected_class_id');
+        }
+
+        return redirect()->route('admin.dashboard')->with('success', 'Cours supprimé avec succès.');
     }
 }

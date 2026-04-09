@@ -1,11 +1,16 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import AdminClassPicker from '@/Components/admin/AdminClassPicker.vue';
 import AdminActionCard from '@/Components/admin/AdminActionCard.vue';
 import AdminRankingCard from '@/Components/admin/AdminRankingCard.vue';
 import { Button } from '@/Components/ui/button';
-import { Play, Users, Swords, Trophy, GraduationCap, Plus, ArrowRight } from 'lucide-vue-next';
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/Components/ui/alert-dialog';
+import { Play, Users, Swords, Trophy, GraduationCap, Plus, ArrowRight, Trash2, TriangleAlert } from 'lucide-vue-next';
 
 const props = defineProps({
     classes: { type: Array, default: () => [] },
@@ -19,6 +24,26 @@ const props = defineProps({
 
 function startSession() {
     router.visit(route('admin.session'));
+}
+
+const selectedClass = computed(() =>
+    props.classes.find((c) => c.id === props.selectedClassId) ?? null,
+);
+
+const showDeleteModal = ref(false);
+const deleteConfirmation = ref('');
+const canDelete = computed(() => deleteConfirmation.value === 'SUPPRIMER');
+
+const deleteForm = useForm({});
+
+function handleDeleteClass() {
+    if (!props.selectedClassId) return;
+    deleteForm.delete(route('admin.class.destroy', props.selectedClassId), {
+        onFinish: () => {
+            deleteConfirmation.value = '';
+            showDeleteModal.value = false;
+        },
+    });
 }
 </script>
 
@@ -96,6 +121,43 @@ function startSession() {
 
             <!-- Classement section -->
             <AdminRankingCard :players="rankingPlayers" :player-count="playerCount" :period="period" />
+
+            <!-- Zone de danger -->
+            <div>
+                <div class="mb-5">
+                    <h2 class="text-2xl font-bold text-foreground">Zone de danger</h2>
+                    <p class="mt-1 text-sm text-muted-foreground">Actions irréversibles sur ce cours</p>
+                </div>
+
+                <div class="rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
+                                <TriangleAlert class="h-5 w-5 text-destructive" />
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-foreground">
+                                    Supprimer ce cours<span v-if="selectedClass"> — {{ selectedClass.name }}</span>
+                                </h3>
+                                <p class="mt-1 text-xs text-muted-foreground">
+                                    Toutes les données associées (joueurs, matchs, séances, ELO, règles) seront définitivement perdues.
+                                </p>
+                            </div>
+                        </div>
+
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            class="shrink-0 rounded-xl gap-1.5"
+                            :disabled="!selectedClassId"
+                            @click="showDeleteModal = true"
+                        >
+                            <Trash2 class="h-4 w-4" />
+                            Supprimer le cours
+                        </Button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- État vide : aucun cours -->
@@ -118,5 +180,54 @@ function startSession() {
                 </Button>
             </div>
         </div>
+
+        <!-- Modal suppression cours -->
+        <AlertDialog :open="showDeleteModal" @update:open="(v) => { showDeleteModal = v; if (!v) deleteConfirmation = ''; }">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle class="flex items-center gap-2">
+                        <TriangleAlert class="h-5 w-5 text-destructive" />
+                        Supprimer ce cours ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Cette action est <strong>irréversible</strong>. En supprimant le cours<span v-if="selectedClass"> « {{ selectedClass.name }} »</span>, vous perdrez définitivement toutes ses données.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <div class="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
+                    <ul class="list-disc space-y-1 pl-5 text-xs text-destructive">
+                        <li>{{ playerCount }} joueur{{ playerCount > 1 ? 's' : '' }} associé{{ playerCount > 1 ? 's' : '' }}</li>
+                        <li>{{ matchCount }} match{{ matchCount > 1 ? 's' : '' }} et historiques ELO</li>
+                        <li>Toutes les séances et paramètres</li>
+                        <li>Les règles et défis du cours</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <label class="text-sm text-muted-foreground">
+                        Pour confirmer, tapez
+                        <span class="rounded-md border border-destructive/30 bg-destructive/10 px-1.5 py-0.5 text-xs font-semibold text-destructive">SUPPRIMER</span>
+                    </label>
+                    <input
+                        v-model="deleteConfirmation"
+                        type="text"
+                        placeholder="SUPPRIMER"
+                        class="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground shadow-none outline-none ring-0 placeholder:text-muted-foreground/50 focus:border-destructive/50 focus:ring-0"
+                    />
+                </div>
+
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction
+                        class="bg-destructive text-white hover:bg-destructive/90"
+                        :disabled="!canDelete || deleteForm.processing"
+                        @click="handleDeleteClass"
+                    >
+                        <Trash2 class="h-4 w-4" />
+                        {{ deleteForm.processing ? 'Suppression...' : 'Supprimer' }}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </AdminLayout>
 </template>

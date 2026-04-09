@@ -44,6 +44,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('class/select', [AdminDashboardController::class, 'selectClass'])->name('class.select');
         Route::get('class/create', [AdminClassController::class, 'create'])->name('class.create');
         Route::post('class', [AdminClassController::class, 'store'])->name('class.store');
+        Route::delete('class/{class}', [AdminClassController::class, 'destroy'])->name('class.destroy');
 
         Route::get('account', [AdminAccountController::class, 'index'])->name('account');
         Route::put('account/profile', [AdminAccountController::class, 'updateProfile'])->name('account.profile');
