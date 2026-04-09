@@ -82,12 +82,6 @@ const ruleForm = useForm({
     handicap_parameters: [],
 });
 
-const getDotColor = (value) => {
-    if (value < 0) return "bg-red-400";
-    if (value > 0) return "bg-emerald-400";
-    return "bg-gray-400";
-};
-
 const getPointColor = (value) => {
     if (value < 0) return "text-red-500";
     if (value > 0) return "text-emerald-500";
@@ -99,6 +93,23 @@ const getPointBg = (value) => {
     if (value > 0) return "bg-emerald-50";
     return "bg-gray-100";
 };
+
+// Paire les paramètres négatifs (perdant) et positifs (gagnant) en lignes de tableau
+const pairedRows = computed(() => {
+    const half = Math.floor(props.parameters.length / 2);
+    const rows = [];
+    for (let i = 0; i < half; i++) {
+        const loserIdx = half - 1 - i; // 2, 1, 0
+        const winnerIdx = half + i;     // 3, 4, 5
+        const w = props.parameters[winnerIdx];
+        rows.push({
+            label: `${w.minDiff} à ${w.maxDiff}`,
+            winnerFormIdx: winnerIdx,
+            loserFormIdx: loserIdx,
+        });
+    }
+    return rows;
+});
 
 const resetDefaults = () => {
     form.parameters.forEach((p, i) => {
@@ -182,63 +193,56 @@ const saveRule = () => {
                 </div>
 
                 <div class="rounded-2xl border border-border overflow-hidden">
-                    <!-- Table header -->
-                    <div
-                        class="flex items-center px-5 py-3 border-b border-border bg-gray-50/70"
-                    >
-                        <span
-                            class="flex-1 text-xs font-medium uppercase tracking-wider text-muted-foreground"
-                            >Écart de points lors du match</span
-                        >
-                        <span
-                            class="w-44 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                            >Points du vainqueur</span
-                        >
-                    </div>
-
-                    <!-- Parameter rows -->
-                    <div
-                        v-for="(param, index) in parameters"
-                        :key="param.id"
-                        class="flex items-center px-5 py-4"
-                        :class="
-                            index < parameters.length - 1
-                                ? 'border-b border-border'
-                                : ''
-                        "
-                    >
-                        <div class="flex items-center gap-3 flex-1">
-                            <span
-                                class="h-2.5 w-2.5 rounded-full shrink-0"
-                                :class="getDotColor(param.winnerPoints)"
-                            />
-                            <div>
-                                <p
-                                    class="text-sm font-semibold text-foreground"
-                                >
-                                    {{ param.minDiff }} à {{ param.maxDiff }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="w-32 flex justify-end">
-                            <input
-                                v-model.number="
-                                    form.parameters[index].winner_points
-                                "
-                                type="number"
-                                step="0.1"
-                                class="w-16 rounded-lg px-3 py-1.5 text-sm font-semibold text-center border border-border outline-none ring-0 focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                :class="[
-                                    getPointColor(
-                                        form.parameters[index].winner_points,
-                                    ),
-                                    getPointBg(
-                                        form.parameters[index].winner_points,
-                                    ),
-                                ]"
-                            />
-                        </div>
-                    </div>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-border bg-gray-50/70">
+                                <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                    Écart de score
+                                </th>
+                                <th class="px-5 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                    Points gagnant
+                                </th>
+                                <th class="px-5 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                    Points perdant
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(row, index) in pairedRows"
+                                :key="index"
+                                :class="index < pairedRows.length - 1 ? 'border-b border-border' : ''"
+                            >
+                                <td class="px-5 py-4 text-sm font-semibold text-foreground">
+                                    {{ row.label }}
+                                </td>
+                                <td class="px-5 py-4 text-center">
+                                    <input
+                                        v-model.number="form.parameters[row.winnerFormIdx].winner_points"
+                                        type="number"
+                                        step="0.1"
+                                        class="w-16 rounded-lg px-3 py-1.5 text-sm font-semibold text-center border border-border outline-none ring-0 focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        :class="[
+                                            getPointColor(form.parameters[row.winnerFormIdx].winner_points),
+                                            getPointBg(form.parameters[row.winnerFormIdx].winner_points),
+                                        ]"
+                                    />
+                                </td>
+                                <td class="px-5 py-4 text-center">
+                                    <input
+                                        v-model.number="form.parameters[row.loserFormIdx].winner_points"
+                                        type="number"
+                                        step="0.1"
+                                        class="w-16 rounded-lg px-3 py-1.5 text-sm font-semibold text-center border border-border outline-none ring-0 focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        :class="[
+                                            getPointColor(form.parameters[row.loserFormIdx].winner_points),
+                                            getPointBg(form.parameters[row.loserFormIdx].winner_points),
+                                        ]"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Action buttons -->
