@@ -9,7 +9,8 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/Components/ui/alert-dialog';
-import { LayoutDashboard, Users, Shield, Swords, Trophy, Plus, LogOut, Smartphone } from 'lucide-vue-next';
+import { LayoutDashboard, Users, Shield, Swords, Trophy, Plus, Play, LogOut, Smartphone } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 useFlashToast();
 
@@ -32,6 +33,7 @@ const adminUser = page.props.adminUser ?? {
 };
 
 const isPureAdmin = page.props.adminUser?.isPureAdmin ?? false;
+const hasActiveSession = computed(() => page.props.hasActiveSession);
 
 const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, routeName: 'admin.dashboard' },
@@ -75,9 +77,20 @@ const getInitials = (name) => {
 
             <!-- Nouvelle seance button -->
             <div class="px-4 pt-4 pb-4">
-                <button @click="startSession" class="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-primary px-5 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90">
-                    <Plus class="h-5 w-5" />
-                    Nouvelle séance
+                <button
+                    @click="startSession"
+                    class="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-5 py-3 text-base font-medium transition-colors"
+                    :class="hasActiveSession ? 'border border-primary bg-primary/5 text-primary hover:bg-primary/10' : 'bg-primary text-white hover:bg-primary/90'"
+                >
+                    <template v-if="hasActiveSession">
+                        <Play class="h-5 w-5" />
+                        Séance en cours
+                        <span class="ml-auto h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    </template>
+                    <template v-else>
+                        <Plus class="h-5 w-5" />
+                        Nouvelle séance
+                    </template>
                 </button>
             </div>
 
