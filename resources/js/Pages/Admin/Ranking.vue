@@ -6,6 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Crown, Layers, Lightbulb } from 'lucide-vue-next';
 import axios from 'axios';
 
+/*
+* Recupération des props depuis le controller
+ */
 const props = defineProps({
     classes: { type: Array, default: () => [] },
     selectedClassId: { type: Number, default: null },
@@ -16,6 +19,9 @@ const props = defineProps({
     groupSize: { type: Number, default: 8 },
 });
 
+/*
+* Création de variables réactive, initialisé avec les props précedentes
+ */
 const livePlayerCount = ref(props.playerCount);
 const liveRankingPlayers = ref(props.rankingPlayers);
 const liveEnableRankingGroups = ref(props.enableRankingGroups);
@@ -24,6 +30,9 @@ const liveGroupSize = ref(props.groupSize);
 
 let pollInterval = null;
 
+/*
+ * fonction de récuperation
+ */
 const fetchRanking = async () => {
     try {
         const { data } = await axios.get(route('admin.ranking.data'));
@@ -33,18 +42,27 @@ const fetchRanking = async () => {
         liveEnableEloHandicap.value = data.enableEloHandicap;
         liveGroupSize.value = data.groupSize;
     } catch (e) {
-        // silently ignore polling errors
+        // ignorer les erreurs du polling
     }
 };
 
+/*
+* Lancement de l'interval de 10sec, quand la page est lancée
+ */
 onMounted(() => {
     pollInterval = setInterval(fetchRanking, 10000);
 });
 
+/*
+* nettoyage de l'interval de 10sec, quand la page est arretee
+ */
 onUnmounted(() => {
     clearInterval(pollInterval);
 });
 
+/*
+*
+ */
 const podium = computed(() => {
     const len = liveRankingPlayers.value.length;
     if (len < 2) return [];
@@ -52,6 +70,7 @@ const podium = computed(() => {
     if (len === 2) return [top[1], top[0], null];
     return [top[1], top[0], top[2]];
 });
+
 
 const restPlayers = computed(() => liveRankingPlayers.value.slice(3));
 

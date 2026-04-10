@@ -42,17 +42,20 @@ class ClassParticipant extends Model
         return $this->hasMany(EloHistory::class, 'participant_id');
     }
 
+    // filtre les participants d'une classe précise
     public function scopeForClass(Builder $query, int $classId): Builder
     {
         return $query->where('school_class_id', $classId);
     }
 
+    // filtre sur un joueur spécifique
     public function scopeForPlayer(Builder $query, string $playerId): Builder
     {
         return $query->where('participantable_type', Player::class)
             ->where('participantable_id', $playerId);
     }
 
+    // filtre tous les participants qui sont des joueurs, et exclut les admins
     public function scopeForPlayerType(Builder $query): Builder
     {
         return $query->where('participantable_type', Player::class);

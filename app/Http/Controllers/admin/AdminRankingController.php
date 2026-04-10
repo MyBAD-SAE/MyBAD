@@ -16,11 +16,17 @@ class AdminRankingController extends Controller
         private readonly RankingService $rankingService,
     ) {}
 
+
+    /*
+     *  L'index va donner toutes les props initiales
+     */
     public function index(): Response
     {
+        // Récuperation de l'admin
         $user = auth('admin')->user();
         $adminUser = $user->adminUser;
 
+        // Récuperation de tous ses cours
         $classes = $adminUser->classParticipants()
             ->with('schoolClass')
             ->get()
@@ -31,8 +37,10 @@ class AdminRankingController extends Controller
             ->values()
             ->all();
 
+        // récuperation de la variable de session pour le cours séléctionné
         $selectedClassId = session('admin_selected_class_id');
 
+        // sinon on prend le premier
         if (!$selectedClassId || !collect($classes)->contains('id', $selectedClassId)) {
             $selectedClassId = $classes[0]['id'] ?? null;
         }
@@ -44,14 +52,19 @@ class AdminRankingController extends Controller
         $groupSize = 8;
 
         if ($selectedClassId) {
+            // compte le nombre de participants dans le cours
             $playerCount = ClassParticipant::forClass($selectedClassId)
                 ->forPlayerType()
                 ->count();
 
+
+            // Recupère le classement complet du cours
             $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId);
 
+            // Récuperation de l'enregistrement des defis pour ce cours
             $rule = Rule::where('school_class_id', $selectedClassId)->first();
 
+            //
             if ($rule) {
                 $enableRankingGroups = $rule->enable_ranking_groups;
                 $enableEloHandicap = $rule->enable_elo_handicap;
@@ -59,6 +72,7 @@ class AdminRankingController extends Controller
             }
         }
 
+        // retourne les props à la page Ranking.vue
         return Inertia::render('Admin/Ranking', [
             'classes'              => $classes,
             'selectedClassId'      => $selectedClassId,
@@ -70,6 +84,10 @@ class AdminRankingController extends Controller
         ]);
     }
 
+    /*
+     * data() retourne une réponse JSON avec uniquement les
+     * champs qui doivent être rafraîchis pour obtenir le classement dynamique
+     */
     public function data(): JsonResponse
     {
         $user = auth('admin')->user();
