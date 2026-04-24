@@ -1,0 +1,2656 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MyBAD",
+        "description": "Application de gestion de tournois de badminton en milieu scolaire. Développée avec Laravel 12, Vue 3 et Inertia.js. Les routes Inertia retournent leurs props en JSON lors des requêtes XHR (header X-Inertia: true).",
+        "contact": {
+            "name": "Maël Sellier",
+            "email": "selliermael@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://www.my-bad.local",
+            "description": "Serveur local Laragon"
+        }
+    ],
+    "paths": {
+        "/admin/account": {
+            "get": {
+                "tags": [
+                    "Admin - Compte"
+                ],
+                "summary": "Page du compte administrateur",
+                "operationId": "admin.account.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page compte",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/account/profile": {
+            "put": {
+                "tags": [
+                    "Admin - Compte"
+                ],
+                "summary": "Mettre à jour le profil administrateur",
+                "operationId": "admin.account.profile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Retour avec message de succès"
+                    },
+                    "422": {
+                        "description": "Email déjà utilisé ou données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/account/password": {
+            "put": {
+                "tags": [
+                    "Admin - Compte"
+                ],
+                "summary": "Changer le mot de passe administrateur",
+                "operationId": "admin.account.password",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Retour avec message de succès"
+                    },
+                    "422": {
+                        "description": "Mot de passe actuel incorrect"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/administrateurs": {
+            "get": {
+                "tags": [
+                    "Admin - Administrateurs"
+                ],
+                "summary": "Liste des co-administrateurs des cours",
+                "operationId": "admin.admins.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page administrateurs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "admins": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "userId": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "format": "email"
+                                                    },
+                                                    "avatar": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "isPlayer": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string"
+                                                    },
+                                                    "classes": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "adminCount": {
+                                            "type": "integer"
+                                        },
+                                        "currentUserId": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Accès réservé aux admins purs (non-joueurs)"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/administrateurs/{admin}": {
+            "delete": {
+                "tags": [
+                    "Admin - Administrateurs"
+                ],
+                "summary": "Retirer un administrateur",
+                "operationId": "admin.admins.destroy",
+                "parameters": [
+                    {
+                        "name": "admin",
+                        "in": "path",
+                        "description": "UUID de l'AdminUser",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Retour avec message de succès"
+                    },
+                    "422": {
+                        "description": "Impossible de se retirer soi-même"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/class/create": {
+            "get": {
+                "tags": [
+                    "Admin - Tableau de bord"
+                ],
+                "summary": "Formulaire de création d'un cours",
+                "operationId": "admin.class.create",
+                "responses": {
+                    "200": {
+                        "description": "Page de création d'un cours"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/class": {
+            "post": {
+                "tags": [
+                    "Admin - Tableau de bord"
+                ],
+                "summary": "Créer un nouveau cours",
+                "operationId": "admin.class.store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "school_year",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "school_year": {
+                                        "type": "string",
+                                        "example": "2024-2025",
+                                        "maxLength": 20
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Terminale A",
+                                        "maxLength": 100
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 1000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/dashboard"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/class/{class}": {
+            "delete": {
+                "tags": [
+                    "Admin - Tableau de bord"
+                ],
+                "summary": "Supprimer un cours (cascade complète)",
+                "operationId": "admin.class.destroy",
+                "parameters": [
+                    {
+                        "name": "class",
+                        "in": "path",
+                        "description": "ID du cours",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/dashboard"
+                    },
+                    "403": {
+                        "description": "Accès interdit"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin - Tableau de bord"
+                ],
+                "summary": "Tableau de bord administrateur",
+                "operationId": "admin.dashboard",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "description": "Période de stats : '30j' ou 'all'",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "30j",
+                            "enum": [
+                                "30j",
+                                "all"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia du tableau de bord",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "playerCount": {
+                                            "type": "integer"
+                                        },
+                                        "matchCount": {
+                                            "type": "integer"
+                                        },
+                                        "rankingPlayers": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "period": {
+                                            "type": "string"
+                                        },
+                                        "hasActiveSession": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "302": {
+                        "description": "Redirection vers /admin/login si non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/class/select": {
+            "post": {
+                "tags": [
+                    "Admin - Tableau de bord"
+                ],
+                "summary": "Sélectionner le cours actif en session",
+                "operationId": "admin.class.select",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "class_id"
+                                ],
+                                "properties": {
+                                    "class_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers la page précédente"
+                    },
+                    "403": {
+                        "description": "Accès interdit à ce cours"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/matchs": {
+            "get": {
+                "tags": [
+                    "Admin - Matchs"
+                ],
+                "summary": "Liste des matchs par séance",
+                "operationId": "admin.matches.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page matchs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sessions": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "date": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    },
+                                                    "match_count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "matches": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "number": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "player1": {
+                                                                    "type": "object"
+                                                                },
+                                                                "player2": {
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "totalMatchCount": {
+                                            "type": "integer"
+                                        },
+                                        "topMatchesPlayer": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "topWinsPlayer": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "selectedClass": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/matchs/{gameMatch}": {
+            "put": {
+                "tags": [
+                    "Admin - Matchs"
+                ],
+                "summary": "Modifier les scores d'un match (recalcule l'ELO)",
+                "operationId": "admin.matches.update",
+                "parameters": [
+                    {
+                        "name": "gameMatch",
+                        "in": "path",
+                        "description": "ID du match",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "player1_id",
+                                    "player2_id",
+                                    "score1",
+                                    "score2"
+                                ],
+                                "properties": {
+                                    "player1_id": {
+                                        "type": "integer"
+                                    },
+                                    "player2_id": {
+                                        "type": "integer"
+                                    },
+                                    "score1": {
+                                        "type": "integer",
+                                        "maximum": 30,
+                                        "minimum": 0
+                                    },
+                                    "score2": {
+                                        "type": "integer",
+                                        "maximum": 30,
+                                        "minimum": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/matchs"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Matchs"
+                ],
+                "summary": "Supprimer un match (annule les ELO associés)",
+                "operationId": "admin.matches.destroy",
+                "parameters": [
+                    {
+                        "name": "gameMatch",
+                        "in": "path",
+                        "description": "ID du match",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/matchs"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/joueurs": {
+            "get": {
+                "tags": [
+                    "Admin - Joueurs"
+                ],
+                "summary": "Liste des joueurs du cours sélectionné",
+                "operationId": "admin.players.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page joueurs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "players": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "elo": {
+                                                        "type": "number"
+                                                    },
+                                                    "rank": {
+                                                        "type": "integer"
+                                                    },
+                                                    "isActive": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "playerCount": {
+                                            "type": "integer"
+                                        },
+                                        "activePlayerCount": {
+                                            "type": "integer"
+                                        },
+                                        "matchCount": {
+                                            "type": "integer"
+                                        },
+                                        "averageElo": {
+                                            "type": "number"
+                                        },
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Joueurs"
+                ],
+                "summary": "Ajouter un joueur au cours via son code",
+                "operationId": "admin.players.store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "elo"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "description": "Code unique du joueur",
+                                        "type": "string",
+                                        "example": "ABC123",
+                                        "maxLength": 6,
+                                        "minLength": 6
+                                    },
+                                    "elo": {
+                                        "type": "number",
+                                        "example": 1000,
+                                        "minimum": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/joueurs"
+                    },
+                    "422": {
+                        "description": "Code inconnu ou joueur déjà dans le cours"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/joueurs/{participant}": {
+            "put": {
+                "tags": [
+                    "Admin - Joueurs"
+                ],
+                "summary": "Modifier l'ELO et le statut d'un joueur",
+                "operationId": "admin.players.update",
+                "parameters": [
+                    {
+                        "name": "participant",
+                        "in": "path",
+                        "description": "ID du ClassParticipant",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "elo",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "elo": {
+                                        "type": "number",
+                                        "example": 1050,
+                                        "minimum": 0
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "make_admin": {
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "user_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/joueurs"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Joueurs"
+                ],
+                "summary": "Retirer un joueur du cours",
+                "operationId": "admin.players.destroy",
+                "parameters": [
+                    {
+                        "name": "participant",
+                        "in": "path",
+                        "description": "ID du ClassParticipant",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/joueurs"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/classement": {
+            "get": {
+                "tags": [
+                    "Admin - Classement"
+                ],
+                "summary": "Page classement ELO du cours",
+                "operationId": "admin.ranking.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page classement",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "playerCount": {
+                                            "type": "integer"
+                                        },
+                                        "rankingPlayers": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "enableRankingGroups": {
+                                            "type": "boolean"
+                                        },
+                                        "enableEloHandicap": {
+                                            "type": "boolean"
+                                        },
+                                        "groupSize": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/classement/data": {
+            "get": {
+                "tags": [
+                    "Admin - Classement"
+                ],
+                "summary": "Données JSON fraîches du classement (polling temps réel)",
+                "operationId": "admin.ranking.data",
+                "responses": {
+                    "200": {
+                        "description": "Données du classement en JSON",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "playerCount": {
+                                            "type": "integer"
+                                        },
+                                        "rankingPlayers": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "enableRankingGroups": {
+                                            "type": "boolean"
+                                        },
+                                        "enableEloHandicap": {
+                                            "type": "boolean"
+                                        },
+                                        "groupSize": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/regles": {
+            "get": {
+                "tags": [
+                    "Admin - Règles"
+                ],
+                "summary": "Page de configuration des règles ELO",
+                "operationId": "admin.rules.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page règles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "parameters": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "minDiff": {
+                                                        "type": "integer"
+                                                    },
+                                                    "maxDiff": {
+                                                        "type": "integer"
+                                                    },
+                                                    "winnerPoints": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "rule": {
+                                            "properties": {
+                                                "enableRankingGroups": {
+                                                    "type": "boolean"
+                                                },
+                                                "enableEloHandicap": {
+                                                    "type": "boolean"
+                                                },
+                                                "groupSize": {
+                                                    "type": "integer"
+                                                },
+                                                "handicapParameters": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Règles"
+                ],
+                "summary": "Mettre à jour les points ELO par tranche de différence",
+                "operationId": "admin.rules.update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "parameters"
+                                ],
+                                "properties": {
+                                    "parameters": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "id",
+                                                "winner_points"
+                                            ],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "winner_points": {
+                                                    "type": "number",
+                                                    "example": 0.5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/regles"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/regles/defis": {
+            "put": {
+                "tags": [
+                    "Admin - Règles"
+                ],
+                "summary": "Mettre à jour les options de défis (groupes, handicap ELO)",
+                "operationId": "admin.rules.updateRule",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "enableRankingGroups": {
+                                        "type": "boolean"
+                                    },
+                                    "enableEloHandicap": {
+                                        "type": "boolean"
+                                    },
+                                    "groupSize": {
+                                        "type": "integer",
+                                        "minimum": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/regles"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/session": {
+            "get": {
+                "tags": [
+                    "Admin - Séance"
+                ],
+                "summary": "Afficher la séance en cours (la crée si inexistante)",
+                "operationId": "admin.session.show",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page séance",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "session": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "rankingPlayers": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "playerCount": {
+                                            "type": "integer"
+                                        },
+                                        "recentMatches": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "player1": {
+                                                        "type": "object"
+                                                    },
+                                                    "player2": {
+                                                        "type": "object"
+                                                    },
+                                                    "winnerIndex": {
+                                                        "type": "integer",
+                                                        "nullable": true
+                                                    },
+                                                    "timeAgo": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "302": {
+                        "description": "Redirection vers /admin/dashboard si aucun cours sélectionné"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Séance"
+                ],
+                "summary": "Démarrer une nouvelle séance",
+                "operationId": "admin.session.store",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/session"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/session/close": {
+            "post": {
+                "tags": [
+                    "Admin - Séance"
+                ],
+                "summary": "Clôturer la séance en cours",
+                "operationId": "admin.session.close",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/dashboard"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/login": {
+            "get": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Page de connexion administrateur",
+                "operationId": "admin.login.form",
+                "responses": {
+                    "200": {
+                        "description": "Page de connexion rendue par Inertia"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Connexion administrateur",
+                "operationId": "admin.login.submit",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.fr"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "motdepasse123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/dashboard"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects ou compte non-admin"
+                    }
+                }
+            }
+        },
+        "/admin/logout": {
+            "post": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Déconnexion administrateur",
+                "operationId": "admin.logout",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/login"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/admin/forgot-password": {
+            "get": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Afficher le formulaire mot de passe oublié (admin)",
+                "operationId": "admin.password.request",
+                "responses": {
+                    "200": {
+                        "description": "Page Inertia Admin/Auth/ForgotPassword"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Envoyer le lien de réinitialisation à l'admin",
+                "operationId": "admin.password.email",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection avec message de succès"
+                    },
+                    "422": {
+                        "description": "Email invalide ou introuvable"
+                    }
+                }
+            }
+        },
+        "/admin/reset-password/{token}": {
+            "get": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Afficher le formulaire de réinitialisation (admin)",
+                "operationId": "admin.password.reset",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "email"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia du formulaire de réinitialisation admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Réinitialiser le mot de passe de l'admin",
+                "operationId": "admin.password.update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/login après succès"
+                    },
+                    "422": {
+                        "description": "Token invalide ou email incorrect"
+                    }
+                }
+            }
+        },
+        "/admin/register": {
+            "post": {
+                "tags": [
+                    "Auth Admin"
+                ],
+                "summary": "Inscription d'un nouvel administrateur",
+                "operationId": "admin.register",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "Marie",
+                                        "maxLength": 255
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Dupont",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "marie@example.fr"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /admin/dashboard"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                }
+            }
+        },
+        "/joueur/profil": {
+            "get": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Page de profil joueur",
+                "operationId": "player.account.index",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page profil"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Supprimer son compte joueur",
+                "operationId": "player.account.destroy",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /player/login"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/joueur/profil/infos": {
+            "get": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Informations personnelles du joueur",
+                "operationId": "player.account.infos",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page informations personnelles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Mettre à jour les informations personnelles",
+                "operationId": "player.account.update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /joueur/profil/infos"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/joueur/profil/confidentialite": {
+            "get": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Page confidentialité avec résumé des données personnelles",
+                "operationId": "player.account.privacy",
+                "responses": {
+                    "200": {
+                        "description": "Résumé des données personnelles"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/joueur/profil/download": {
+            "get": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Télécharger ses données personnelles (JSON)",
+                "operationId": "player.account.download",
+                "responses": {
+                    "200": {
+                        "description": "Export JSON des données du joueur (Content-Disposition: attachment)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/joueur/classe": {
+            "post": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Sélectionner la classe active du joueur",
+                "operationId": "player.class.select",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "class_id"
+                                ],
+                                "properties": {
+                                    "class_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Retour vers la page précédente"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/joueur/profil/photo": {
+            "post": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Mettre à jour la photo de profil",
+                "operationId": "player.account.photo",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "photo"
+                                ],
+                                "properties": {
+                                    "photo": {
+                                        "description": "Fichier image (jpg/png/gif, max 2Mo)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Retour vers la page précédente"
+                    },
+                    "422": {
+                        "description": "Fichier invalide"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/player/login": {
+            "get": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Page de connexion joueur",
+                "operationId": "player.login.form",
+                "responses": {
+                    "200": {
+                        "description": "Page de connexion rendue par Inertia"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Connexion joueur",
+                "operationId": "player.login.submit",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "joueur@example.fr"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects ou compte non associé à un joueur"
+                    }
+                }
+            }
+        },
+        "/joueur/profil/logout": {
+            "post": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Déconnexion joueur",
+                "operationId": "player.logout",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /player/login"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/player/auth/google/redirect": {
+            "get": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Redirection vers Google OAuth",
+                "operationId": "player.google.redirect",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers l'URL d'autorisation Google"
+                    }
+                }
+            }
+        },
+        "/player/auth/google/callback": {
+            "get": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Callback Google OAuth — connexion ou création du joueur",
+                "operationId": "player.google.callback",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Code OAuth2 Google",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "error",
+                        "in": "query",
+                        "description": "Erreur retournée par Google",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers / (succès) ou /player/login (erreur ou annulation)"
+                    }
+                }
+            }
+        },
+        "/player/auth/mot-de-passe-oublie": {
+            "post": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Envoyer le lien de réinitialisation de mot de passe",
+                "operationId": "player.password.email",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "joueur@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection avec message de succès"
+                    },
+                    "422": {
+                        "description": "Email invalide ou introuvable"
+                    }
+                }
+            }
+        },
+        "/player/auth/reset-password/{token}": {
+            "get": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Afficher le formulaire de réinitialisation de mot de passe",
+                "operationId": "player.password.reset",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "email"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia du formulaire de réinitialisation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/player/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Réinitialiser le mot de passe du joueur",
+                "operationId": "player.password.update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /player/login après succès"
+                    },
+                    "422": {
+                        "description": "Token invalide ou email incorrect"
+                    }
+                }
+            }
+        },
+        "/player/register": {
+            "post": {
+                "tags": [
+                    "Auth Joueur"
+                ],
+                "summary": "Inscription d'un nouveau joueur",
+                "operationId": "player.register",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "Léa",
+                                        "maxLength": 255
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Martin",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "lea@example.fr"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /"
+                    },
+                    "422": {
+                        "description": "Données invalides ou email déjà utilisé"
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "tags": [
+                    "Joueur - Tableau de bord"
+                ],
+                "summary": "Tableau de bord joueur",
+                "operationId": "player.dashboard",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia du tableau de bord joueur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "rankingPlayers": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "302": {
+                        "description": "Redirection vers /player/login si non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/elo-details": {
+            "get": {
+                "tags": [
+                    "Joueur - Classement"
+                ],
+                "summary": "Historique ELO détaillé du joueur",
+                "operationId": "player.elo.details",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page détail ELO",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/declarer-un-match": {
+            "get": {
+                "tags": [
+                    "Joueur - Matchs"
+                ],
+                "summary": "Page de déclaration de match",
+                "operationId": "player.match.declare",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page déclaration",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "currentPlayer": {
+                                            "type": "object"
+                                        },
+                                        "activeSession": {
+                                            "description": "ID de la séance active",
+                                            "type": "integer",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Joueur - Matchs"
+                ],
+                "summary": "Enregistrer un match et recalculer les ELO",
+                "operationId": "player.match.store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "opponent_id",
+                                    "my_score",
+                                    "opponent_score"
+                                ],
+                                "properties": {
+                                    "opponent_id": {
+                                        "type": "integer"
+                                    },
+                                    "my_score": {
+                                        "type": "integer",
+                                        "example": 15,
+                                        "maximum": 21,
+                                        "minimum": 0
+                                    },
+                                    "opponent_score": {
+                                        "description": "Au moins un des deux scores doit être ≥ 15",
+                                        "type": "integer",
+                                        "example": 10,
+                                        "maximum": 21,
+                                        "minimum": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Match enregistré avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "eloChange": {
+                                            "description": "Variation d'ELO du joueur courant",
+                                            "type": "number"
+                                        },
+                                        "eloChangeOpponent": {
+                                            "type": "number"
+                                        },
+                                        "match_id": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Aucune séance active, déjà joué contre cet adversaire, ou scores invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/declarer-un-match/adversaires": {
+            "get": {
+                "tags": [
+                    "Joueur - Matchs"
+                ],
+                "summary": "Liste des adversaires disponibles dans la séance active",
+                "operationId": "player.match.opponents",
+                "responses": {
+                    "200": {
+                        "description": "Liste des adversaires et ELO courant du joueur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "opponents": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "currentElo": {
+                                            "type": "number"
+                                        },
+                                        "error": {
+                                            "description": "Message d'erreur si aucune séance active",
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/declarer-un-match/verify-pin": {
+            "post": {
+                "tags": [
+                    "Joueur - Matchs"
+                ],
+                "summary": "Vérifier le PIN de l'adversaire",
+                "operationId": "player.match.verifyPin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "player_id",
+                                    "pin"
+                                ],
+                                "properties": {
+                                    "player_id": {
+                                        "description": "ID du joueur adverse",
+                                        "type": "integer"
+                                    },
+                                    "pin": {
+                                        "type": "string",
+                                        "example": "1234",
+                                        "maxLength": 4,
+                                        "minLength": 4
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Résultat de la vérification",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "valid": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/historique-matchs": {
+            "get": {
+                "tags": [
+                    "Joueur - Matchs"
+                ],
+                "summary": "Historique des matchs du joueur",
+                "operationId": "player.matches.history",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page historique",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "matches": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/joueur/pin": {
+            "post": {
+                "tags": [
+                    "Joueur - Compte"
+                ],
+                "summary": "Définir ou modifier le PIN du joueur",
+                "operationId": "player.pin.store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pin"
+                                ],
+                                "properties": {
+                                    "pin": {
+                                        "description": "Code PIN à 4 chiffres",
+                                        "type": "string",
+                                        "pattern": "^\\\\d{4}$",
+                                        "example": "1234",
+                                        "maxLength": 4,
+                                        "minLength": 4
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Retour vers la page précédente"
+                    },
+                    "422": {
+                        "description": "Le PIN doit être 4 chiffres"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/classements": {
+            "get": {
+                "tags": [
+                    "Joueur - Classement"
+                ],
+                "summary": "Classement ELO du cours du joueur",
+                "operationId": "player.ranking",
+                "responses": {
+                    "200": {
+                        "description": "Props Inertia de la page classement",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "players": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "classes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "selectedClassId": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "session": {
+                "type": "apiKey",
+                "description": "Session Laravel (cookie HTTP-only)",
+                "name": "laravel_session",
+                "in": "cookie"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth Admin",
+            "description": "Authentification des administrateurs"
+        },
+        {
+            "name": "Admin - Tableau de bord",
+            "description": "Tableau de bord et sélection de cours"
+        },
+        {
+            "name": "Admin - Joueurs",
+            "description": "Gestion des joueurs d'un cours"
+        },
+        {
+            "name": "Admin - Matchs",
+            "description": "Consultation et modification des matchs"
+        },
+        {
+            "name": "Admin - Classement",
+            "description": "Classement ELO de la classe"
+        },
+        {
+            "name": "Admin - Règles",
+            "description": "Paramètres ELO et règles des défis"
+        },
+        {
+            "name": "Admin - Séance",
+            "description": "Démarrage et clôture d'une séance"
+        },
+        {
+            "name": "Admin - Compte",
+            "description": "Gestion du profil administrateur"
+        },
+        {
+            "name": "Admin - Administrateurs",
+            "description": "Gestion des co-administrateurs"
+        },
+        {
+            "name": "Auth Joueur",
+            "description": "Authentification des joueurs"
+        },
+        {
+            "name": "Joueur - Tableau de bord",
+            "description": "Tableau de bord joueur"
+        },
+        {
+            "name": "Joueur - Matchs",
+            "description": "Déclaration et historique des matchs"
+        },
+        {
+            "name": "Joueur - Classement",
+            "description": "Classement ELO et historique"
+        },
+        {
+            "name": "Joueur - Compte",
+            "description": "Gestion du profil joueur"
+        }
+    ]
+}
