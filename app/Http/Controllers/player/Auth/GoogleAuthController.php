@@ -13,11 +13,31 @@ use Laravel\Socialite\Two\InvalidStateException;
 
 class GoogleAuthController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/player/auth/google/redirect",
+     *     tags={"Auth Joueur"},
+     *     summary="Redirection vers Google OAuth",
+     *     operationId="player.google.redirect",
+     *     @OA\Response(response=302, description="Redirection vers l'URL d'autorisation Google")
+     * )
+     */
     public function redirect(): RedirectResponse
     {
         return Socialite::driver('google')->redirect();
     }
 
+    /**
+     * @OA\Get(
+     *     path="/player/auth/google/callback",
+     *     tags={"Auth Joueur"},
+     *     summary="Callback Google OAuth — connexion ou création du joueur",
+     *     operationId="player.google.callback",
+     *     @OA\Parameter(name="code", in="query", required=false, description="Code OAuth2 Google", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="error", in="query", required=false, description="Erreur retournée par Google", @OA\Schema(type="string")),
+     *     @OA\Response(response=302, description="Redirection vers / (succès) ou /player/login (erreur ou annulation)")
+     * )
+     */
     public function callback(): RedirectResponse
     {
         if (request()->has('error')) {

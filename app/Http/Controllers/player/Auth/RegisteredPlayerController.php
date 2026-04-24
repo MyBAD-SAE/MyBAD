@@ -13,6 +13,27 @@ use Illuminate\Support\Str;
 class RegisteredPlayerController extends Controller
 {
 
+    /**
+     * @OA\Post(
+     *     path="/player/register",
+     *     tags={"Auth Joueur"},
+     *     summary="Inscription d'un nouveau joueur",
+     *     operationId="player.register",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"first_name","last_name","email","password","password_confirmation"},
+     *             @OA\Property(property="first_name", type="string", maxLength=255, example="Léa"),
+     *             @OA\Property(property="last_name", type="string", maxLength=255, example="Martin"),
+     *             @OA\Property(property="email", type="string", format="email", example="lea@example.fr"),
+     *             @OA\Property(property="password", type="string", format="password", minLength=8),
+     *             @OA\Property(property="password_confirmation", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /"),
+     *     @OA\Response(response=422, description="Données invalides ou email déjà utilisé")
+     * )
+     */
     public function store(StorePlayerRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();

@@ -18,6 +18,36 @@ class AdminMatchesController extends Controller
 {
     public function __construct(private readonly EloService $eloService) {}
 
+    /**
+     * @OA\Get(
+     *     path="/admin/matchs",
+     *     tags={"Admin - Matchs"},
+     *     summary="Liste des matchs par séance",
+     *     operationId="admin.matches.index",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page matchs",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="sessions", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="date", type="string", format="date"),
+     *                 @OA\Property(property="match_count", type="integer"),
+     *                 @OA\Property(property="matches", type="array", @OA\Items(
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="number", type="integer"),
+     *                     @OA\Property(property="player1", type="object"),
+     *                     @OA\Property(property="player2", type="object")
+     *                 ))
+     *             )),
+     *             @OA\Property(property="totalMatchCount", type="integer"),
+     *             @OA\Property(property="topMatchesPlayer", type="string", nullable=true),
+     *             @OA\Property(property="topWinsPlayer", type="string", nullable=true),
+     *             @OA\Property(property="selectedClass", type="object", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function index(): Response
     {
         $user = Auth::guard('admin')->user();
@@ -126,6 +156,28 @@ class AdminMatchesController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/admin/matchs/{gameMatch}",
+     *     tags={"Admin - Matchs"},
+     *     summary="Modifier les scores d'un match (recalcule l'ELO)",
+     *     operationId="admin.matches.update",
+     *     security={{"session":{}}},
+     *     @OA\Parameter(name="gameMatch", in="path", required=true, description="ID du match", @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"player1_id","player2_id","score1","score2"},
+     *             @OA\Property(property="player1_id", type="integer"),
+     *             @OA\Property(property="player2_id", type="integer"),
+     *             @OA\Property(property="score1", type="integer", minimum=0, maximum=30),
+     *             @OA\Property(property="score2", type="integer", minimum=0, maximum=30)
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/matchs"),
+     *     @OA\Response(response=422, description="Données invalides")
+     * )
+     */
     public function update(Request $request, GameMatch $gameMatch): RedirectResponse
     {
         $validated = $request->validate([
@@ -168,6 +220,17 @@ class AdminMatchesController extends Controller
         return redirect()->route('admin.matches')->with('success', 'Match mis à jour avec succès.');
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/admin/matchs/{gameMatch}",
+     *     tags={"Admin - Matchs"},
+     *     summary="Supprimer un match (annule les ELO associés)",
+     *     operationId="admin.matches.destroy",
+     *     security={{"session":{}}},
+     *     @OA\Parameter(name="gameMatch", in="path", required=true, description="ID du match", @OA\Schema(type="integer")),
+     *     @OA\Response(response=302, description="Redirection vers /admin/matchs")
+     * )
+     */
     public function destroy(GameMatch $gameMatch): RedirectResponse
     {
         $schoolClassId = $gameMatch->classSession->school_class_id;

@@ -14,7 +14,13 @@ use Inertia\Response;
 class AdminAuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * @OA\Get(
+     *     path="/admin/login",
+     *     tags={"Auth Admin"},
+     *     summary="Page de connexion administrateur",
+     *     operationId="admin.login.form",
+     *     @OA\Response(response=200, description="Page de connexion rendue par Inertia")
+     * )
      */
     public function create(): Response
     {
@@ -24,7 +30,22 @@ class AdminAuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * @OA\Post(
+     *     path="/admin/login",
+     *     tags={"Auth Admin"},
+     *     summary="Connexion administrateur",
+     *     operationId="admin.login.submit",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="admin@example.fr"),
+     *             @OA\Property(property="password", type="string", format="password", example="motdepasse123")
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/dashboard"),
+     *     @OA\Response(response=422, description="Identifiants incorrects ou compte non-admin")
+     * )
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -46,7 +67,14 @@ class AdminAuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * @OA\Post(
+     *     path="/admin/logout",
+     *     tags={"Auth Admin"},
+     *     summary="Déconnexion administrateur",
+     *     operationId="admin.logout",
+     *     security={{"session":{}}},
+     *     @OA\Response(response=302, description="Redirection vers /admin/login")
+     * )
      */
     public function destroy(Request $request): RedirectResponse
     {

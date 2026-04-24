@@ -20,6 +20,28 @@ class AdminRankingController extends Controller
     /*
      *  L'index va donner toutes les props initiales
      */
+    /**
+     * @OA\Get(
+     *     path="/admin/classement",
+     *     tags={"Admin - Classement"},
+     *     summary="Page classement ELO du cours",
+     *     operationId="admin.ranking.index",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page classement",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="classes", type="array", @OA\Items(@OA\Property(property="id",type="integer"),@OA\Property(property="name",type="string"))),
+     *             @OA\Property(property="selectedClassId", type="integer", nullable=true),
+     *             @OA\Property(property="playerCount", type="integer"),
+     *             @OA\Property(property="rankingPlayers", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="enableRankingGroups", type="boolean"),
+     *             @OA\Property(property="enableEloHandicap", type="boolean"),
+     *             @OA\Property(property="groupSize", type="integer")
+     *         )
+     *     )
+     * )
+     */
     public function index(): Response
     {
         // Récuperation de l'admin
@@ -87,6 +109,26 @@ class AdminRankingController extends Controller
     /*
      * data() retourne une réponse JSON avec uniquement les
      * champs qui doivent être rafraîchis pour obtenir le classement dynamique
+     */
+    /**
+     * @OA\Get(
+     *     path="/admin/classement/data",
+     *     tags={"Admin - Classement"},
+     *     summary="Données JSON fraîches du classement (polling temps réel)",
+     *     operationId="admin.ranking.data",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Données du classement en JSON",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="playerCount", type="integer"),
+     *             @OA\Property(property="rankingPlayers", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="enableRankingGroups", type="boolean"),
+     *             @OA\Property(property="enableEloHandicap", type="boolean"),
+     *             @OA\Property(property="groupSize", type="integer")
+     *         )
+     *     )
+     * )
      */
     public function data(): JsonResponse
     {

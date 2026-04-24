@@ -18,6 +18,35 @@ class AdminRulesController extends Controller
         private readonly RuleService $ruleService,
     ) {}
 
+    /**
+     * @OA\Get(
+     *     path="/admin/regles",
+     *     tags={"Admin - Règles"},
+     *     summary="Page de configuration des règles ELO",
+     *     operationId="admin.rules.index",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page règles",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="classes", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="selectedClassId", type="integer", nullable=true),
+     *             @OA\Property(property="parameters", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="minDiff", type="integer"),
+     *                 @OA\Property(property="maxDiff", type="integer"),
+     *                 @OA\Property(property="winnerPoints", type="number")
+     *             )),
+     *             @OA\Property(property="rule", type="object", nullable=true,
+     *                 @OA\Property(property="enableRankingGroups", type="boolean"),
+     *                 @OA\Property(property="enableEloHandicap", type="boolean"),
+     *                 @OA\Property(property="groupSize", type="integer"),
+     *                 @OA\Property(property="handicapParameters", type="array", @OA\Items(type="object"))
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(): Response
     {
         $user = auth('admin')->user();
@@ -80,6 +109,28 @@ class AdminRulesController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/admin/regles",
+     *     tags={"Admin - Règles"},
+     *     summary="Mettre à jour les points ELO par tranche de différence",
+     *     operationId="admin.rules.update",
+     *     security={{"session":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"parameters"},
+     *             @OA\Property(property="parameters", type="array", @OA\Items(
+     *                 required={"id","winner_points"},
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="winner_points", type="number", example=0.5)
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/regles"),
+     *     @OA\Response(response=422, description="Données invalides")
+     * )
+     */
     public function update(Request $request): RedirectResponse
     {
         $request->validate([
@@ -111,6 +162,24 @@ class AdminRulesController extends Controller
         return redirect()->route('admin.rules')->with('success', 'Règles enregistrées avec succès.');
     }
 
+    /**
+     * @OA\Put(
+     *     path="/admin/regles/defis",
+     *     tags={"Admin - Règles"},
+     *     summary="Mettre à jour les options de défis (groupes, handicap ELO)",
+     *     operationId="admin.rules.updateRule",
+     *     security={{"session":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="enableRankingGroups", type="boolean"),
+     *             @OA\Property(property="enableEloHandicap", type="boolean"),
+     *             @OA\Property(property="groupSize", type="integer", minimum=2)
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/regles")
+     * )
+     */
     public function updateRule(UpdateRuleRequest $request): RedirectResponse
     {
         $selectedClassId = session('admin_selected_class_id');

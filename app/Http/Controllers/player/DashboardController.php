@@ -15,6 +15,23 @@ class DashboardController extends Controller
         private readonly RankingService $rankingService,
     ) {}
 
+    /**
+     * @OA\Get(
+     *     path="/",
+     *     tags={"Joueur - Tableau de bord"},
+     *     summary="Tableau de bord joueur",
+     *     operationId="player.dashboard",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia du tableau de bord joueur",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="rankingPlayers", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /player/login si non authentifié")
+     * )
+     */
     public function index(): Response
     {
         $user    = auth('player')->user();

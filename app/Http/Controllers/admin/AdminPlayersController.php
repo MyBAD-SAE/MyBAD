@@ -22,6 +22,34 @@ class AdminPlayersController extends Controller
         private readonly RankingService $rankingService,
     ) {}
 
+    /**
+     * @OA\Get(
+     *     path="/admin/joueurs",
+     *     tags={"Admin - Joueurs"},
+     *     summary="Liste des joueurs du cours sélectionné",
+     *     operationId="admin.players.index",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page joueurs",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="players", type="array", @OA\Items(type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="elo", type="number"),
+     *                 @OA\Property(property="rank", type="integer"),
+     *                 @OA\Property(property="isActive", type="boolean")
+     *             )),
+     *             @OA\Property(property="playerCount", type="integer"),
+     *             @OA\Property(property="activePlayerCount", type="integer"),
+     *             @OA\Property(property="matchCount", type="integer"),
+     *             @OA\Property(property="averageElo", type="number"),
+     *             @OA\Property(property="classes", type="array", @OA\Items(@OA\Property(property="id",type="integer"),@OA\Property(property="name",type="string"))),
+     *             @OA\Property(property="selectedClassId", type="integer", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function index(): Response
     {
         $user = auth('admin')->user();
@@ -76,6 +104,25 @@ class AdminPlayersController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/joueurs",
+     *     tags={"Admin - Joueurs"},
+     *     summary="Ajouter un joueur au cours via son code",
+     *     operationId="admin.players.store",
+     *     security={{"session":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"code","elo"},
+     *             @OA\Property(property="code", type="string", minLength=6, maxLength=6, example="ABC123", description="Code unique du joueur"),
+     *             @OA\Property(property="elo", type="number", minimum=0, example=1000)
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/joueurs"),
+     *     @OA\Response(response=422, description="Code inconnu ou joueur déjà dans le cours")
+     * )
+     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -122,6 +169,28 @@ class AdminPlayersController extends Controller
         return redirect()->route('admin.players')->with('success', 'Joueur ajouté avec succès.');
     }
 
+    /**
+     * @OA\Put(
+     *     path="/admin/joueurs/{participant}",
+     *     tags={"Admin - Joueurs"},
+     *     summary="Modifier l'ELO et le statut d'un joueur",
+     *     operationId="admin.players.update",
+     *     security={{"session":{}}},
+     *     @OA\Parameter(name="participant", in="path", required=true, description="ID du ClassParticipant", @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"elo","is_active"},
+     *             @OA\Property(property="elo", type="number", minimum=0, example=1050),
+     *             @OA\Property(property="is_active", type="boolean", example=true),
+     *             @OA\Property(property="make_admin", type="boolean", example=false),
+     *             @OA\Property(property="user_id", type="string", format="uuid")
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/joueurs"),
+     *     @OA\Response(response=422, description="Données invalides")
+     * )
+     */
     public function update(Request $request, ClassParticipant $participant): RedirectResponse
     {
         $validated = $request->validate([
@@ -191,6 +260,17 @@ class AdminPlayersController extends Controller
         return redirect()->route('admin.players')->with('success', 'Joueur mis à jour avec succès.');
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/admin/joueurs/{participant}",
+     *     tags={"Admin - Joueurs"},
+     *     summary="Retirer un joueur du cours",
+     *     operationId="admin.players.destroy",
+     *     security={{"session":{}}},
+     *     @OA\Parameter(name="participant", in="path", required=true, description="ID du ClassParticipant", @OA\Schema(type="integer")),
+     *     @OA\Response(response=302, description="Redirection vers /admin/joueurs")
+     * )
+     */
     public function destroy(ClassParticipant $participant): RedirectResponse
     {
         $participant->eloHistories()->delete();
