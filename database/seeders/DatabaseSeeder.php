@@ -237,12 +237,12 @@ class DatabaseSeeder extends Seeder
 
         // 5. Paramètres d'algorithme ELO
         $algoParams = [
-            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -0.7],
-            ['min_diff' => -11, 'max_diff' => -7,  'winner_points' => -0.2],
-            ['min_diff' => -6,  'max_diff' => -1,  'winner_points' => 0.0],
-            ['min_diff' => 0,   'max_diff' => 6,   'winner_points' => 0.5],
-            ['min_diff' => 7,   'max_diff' => 11,  'winner_points' => 1.0],
-            ['min_diff' => 12,  'max_diff' => 20,  'winner_points' => 1.6],
+            ['min_diff' => -20, 'max_diff' => -12, 'winner_points' => -7],
+            ['min_diff' => -11, 'max_diff' => -7,  'winner_points' => -2],
+            ['min_diff' => -6,  'max_diff' => -1,  'winner_points' => 0],
+            ['min_diff' => 0,   'max_diff' => 6,   'winner_points' => 5],
+            ['min_diff' => 7,   'max_diff' => 11,  'winner_points' => 10],
+            ['min_diff' => 12,  'max_diff' => 20,  'winner_points' => 16],
         ];
         DB::table('algorithm_parameters')->insert(
             array_map(fn($p) => [...$p, 'school_class_id' => $classId, 'created_at' => now(), 'updated_at' => now()], $algoParams)
@@ -269,10 +269,10 @@ class DatabaseSeeder extends Seeder
             array_map(fn($h) => [...$h, 'rule_id' => $ruleId, 'created_at' => now(), 'updated_at' => now()], $defaultHandicaps)
         );
 
-        // 7. Participants de la classe (tout le monde commence à 100 Elo)
+        // 7. Participants de la classe (tout le monde commence à 1000 Elo)
         $elos = [];
         foreach ($playerIds as $pid) {
-            $elos[$pid] = 100;
+            $elos[$pid] = 1000;
         }
 
         $participants = [];
@@ -280,7 +280,7 @@ class DatabaseSeeder extends Seeder
             $participants[] = [
                 'participantable_type' => 'App\\Models\\Player',
                 'participantable_id' => $pid,
-                'elo_rating' => 100,
+                'elo_rating' => 1000,
                 'school_class_id' => $classId,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -331,9 +331,28 @@ class DatabaseSeeder extends Seeder
             $playerIds[10] => 62, // Quentin Uguen - au-dessus moyenne
         ];
 
+        $simulateEloChange = function (int $myScore, int $opponentScore) use ($algoParams): int {
+            if ($myScore === $opponentScore) return 0;
+            $isWinner   = $myScore > $opponentScore;
+            $winnerScore = $isWinner ? $myScore : $opponentScore;
+            $loserScore  = $isWinner ? $opponentScore : $myScore;
+            $scoreDiff   = $winnerScore - $loserScore;
+            $getBase = function (int $diff) use ($algoParams): float {
+                foreach ($algoParams as $p) {
+                    if ($p['min_diff'] <= $diff && $diff <= $p['max_diff']) {
+                        return $p['winner_points'];
+                    }
+                }
+                return 50;
+            };
+            if ($isWinner) {
+                return (int) round($getBase($scoreDiff) + $scoreDiff);
+            }
+            return (int) round($getBase(-$scoreDiff) - $scoreDiff);
+        };
+
         $matchPlayers = [];
         $eloHistories = [];
-        $kFactor = 25.0; // K = sensibilité (correspond à winner_points dans algorithm_parameters)
 
         // Pré-définir des matchups par session pour que chaque joueur joue 2-3 matchs
         $allMatchups = [
@@ -405,20 +424,11 @@ class DatabaseSeeder extends Seeder
                     'updated_at' => now(),
                 ];
 
-                // Calcul Elo officiel
-                // E_A = 1 / (1 + 10^((R_B - R_A) / 400))
-                // R_A' = R_A + K × (S_A - E_A)
                 $eloBefore1 = $elos[$p1];
                 $eloBefore2 = $elos[$p2];
 
-                $expectedA = 1 / (1 + pow(10, ($eloBefore2 - $eloBefore1) / 400));
-                $expectedB = 1 - $expectedA;
-
-                $scoreA = $score1 > $score2 ? 1 : 0;
-                $scoreB = 1 - $scoreA;
-
-                $elos[$p1] = (int) round($eloBefore1 + $kFactor * ($scoreA - $expectedA));
-                $elos[$p2] = (int) round($eloBefore2 + $kFactor * ($scoreB - $expectedB));
+                $elos[$p1] = max(0, $eloBefore1 + $simulateEloChange($score1, $score2));
+                $elos[$p2] = max(0, $eloBefore2 + $simulateEloChange($score2, $score1));
 
                 $eloHistories[] = [
                     'participant_id' => $participantIdByPlayer[$p1],

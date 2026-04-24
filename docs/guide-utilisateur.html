@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Utilisateur — MyBAD</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=poppins:400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:      #27BDAE;
+      --primary-bg:   #e6f7f6;
+      --primary-border: #9dddd8;
+      --bg:           #fafaf9;
+      --card:         #ffffff;
+      --foreground:   #352B2B;
+      --muted:        #f5f5f4;
+      --muted-fg:     #78716c;
+      --border:       #e7e5e4;
+      --purple:       #7c3aed;
+      --purple-bg:    #ede9fe;
+      --purple-border:#c4b5fd;
+      --orange-bg:    #fff7ed;
+      --orange:       #f97316;
+      --green-bg:     #f0fdf4;
+      --green:        #16a34a;
+      --destructive:  #D32F2F;
+      --radius:       10px;
+      --sidebar-w:    280px;
+      --font:         'Poppins', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font);
+      color: var(--foreground);
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SIDEBAR ── */
+    nav {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--muted);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-subtitle {
+      font-size: 11px;
+      color: var(--muted-fg);
+      margin-top: 6px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-group { padding: 16px 16px 4px; }
+    .nav-group-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted-fg);
+      padding: 0 12px;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .nav-group.player .nav-group-label { color: var(--primary); }
+    .nav-group.admin  .nav-group-label { color: var(--purple); }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted-fg);
+      text-decoration: none;
+      transition: color 0.15s, background 0.15s;
+      line-height: 1.4;
+    }
+    nav a:hover { color: var(--foreground); background: var(--border); }
+    .nav-group.player a:hover { color: var(--primary); background: var(--primary-bg); }
+    .nav-group.admin  a:hover { color: var(--purple);  background: var(--purple-bg); }
+    nav a .num { font-size: 11px; color: var(--muted-fg); min-width: 20px; }
+
+    /* ── MAIN WRAPPER ── */
+    .main-wrapper {
+      flex: 1;
+      min-width: 0;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    main {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 56px;
+      max-width: 860px;
+      min-height: calc(100vh - 48px);
+    }
+
+    /* ── COVER ── */
+    .cover {
+      text-align: center;
+      padding: 48px 0 56px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+    .cover-badge {
+      display: inline-block;
+      background: var(--primary-bg);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 14px;
+      margin-bottom: 20px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .cover h1 {
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .cover h1 span { color: var(--primary); }
+    .cover p {
+      font-size: 15px;
+      color: var(--muted-fg);
+      margin-top: 14px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+    .cover-profiles {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 32px;
+    }
+    .profile-card {
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      text-align: left;
+      min-width: 200px;
+      border: 1px solid var(--border);
+      background: var(--muted);
+    }
+    .profile-card.player { background: var(--primary-bg); border-color: var(--primary-border); }
+    .profile-card.admin  { background: var(--purple-bg);  border-color: var(--purple-border); }
+    .profile-card .icon { font-size: 24px; margin-bottom: 10px; }
+    .profile-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; border: none; padding: 0; display: block; }
+    .profile-card.player h3 { color: var(--primary); }
+    .profile-card.admin h3  { color: var(--purple); }
+    .profile-card p { font-size: 13px; color: var(--muted-fg); margin: 0; }
+
+    /* ── SECTIONS ── */
+    section { margin-bottom: 64px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 36px;
+      background: var(--muted);
+    }
+    .section-header.player { background: var(--primary-bg); border-color: var(--primary-border); }
+    .section-header.admin  { background: var(--purple-bg);  border-color: var(--purple-border); }
+    .section-header .emoji { font-size: 30px; }
+    .section-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .section-header.player h2 { color: var(--primary); }
+    .section-header.admin h2  { color: var(--purple); }
+    .section-header p { font-size: 13px; color: var(--muted-fg); margin-top: 2px; }
+
+    /* ── SUBSECTIONS ── */
+    .sub { margin-bottom: 44px; }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h3 .anchor { font-size: 13px; color: var(--muted-fg); font-weight: 400; text-decoration: none; }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin: 20px 0 8px;
+    }
+
+    p { font-size: 14px; line-height: 1.75; color: var(--muted-fg); margin-bottom: 12px; }
+
+    /* ── STEPS ── */
+    .steps { list-style: none; counter-reset: step; margin: 14px 0 18px; }
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .steps li::before {
+      content: counter(step);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .player .steps li::before { background: var(--primary); color: #fff; }
+    .admin  .steps li::before { background: var(--purple);  color: #fff; }
+    .steps li p { margin: 0; }
+
+    /* ── BULLETS ── */
+    ul.bullets { list-style: none; margin: 10px 0 14px; }
+    ul.bullets li {
+      padding: 5px 0 5px 18px;
+      position: relative;
+      font-size: 14px;
+      color: var(--muted-fg);
+      line-height: 1.65;
+    }
+    ul.bullets li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 600;
+      top: 5px;
+    }
+    ul.bullets li strong { color: var(--foreground); font-weight: 600; }
+
+    /* ── TIP / WARNING ── */
+    .tip, .warning, .info {
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid transparent;
+    }
+    .tip     { background: var(--primary-bg); border-color: var(--primary-border); color: #0f766e; }
+    .warning { background: var(--orange-bg);  border-color: #fed7aa;               color: #9a3412; }
+    .info    { background: var(--green-bg);   border-color: #bbf7d0;               color: #14532d; }
+    .tip .ic, .warning .ic, .info .ic { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .tip p, .warning p, .info p { margin: 0; color: inherit; font-size: 13px; }
+
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0 20px; }
+    th {
+      background: var(--muted);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted-fg);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── CODE ── */
+    code {
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--foreground);
+      font-weight: 500;
+    }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      nav { width: 100%; height: auto; position: static; }
+      .main-wrapper { padding: 16px; }
+      main { padding: 24px 20px; min-height: unset; }
+      .cover h1 { font-size: 26px; }
+      .cover-profiles { flex-direction: column; align-items: stretch; }
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      nav { display: none; }
+      body { display: block; }
+      .main-wrapper { padding: 0; }
+      main { border: none; padding: 0; max-width: 100%; }
+      section { page-break-inside: avoid; }
+      .sub { page-break-inside: avoid; }
+      h3 { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ SIDEBAR ══════════════════════════════════════ -->
+<nav>
+  <div class="nav-header">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <img src="../public/images/logo_mybad.png" alt="MyBAD" style="height:36px;width:36px;border-radius:8px;">
+      <span style="font-size:18px;font-weight:700;color:var(--foreground);letter-spacing:-0.3px;">MyBAD</span>
+    </div>
+    <div class="nav-subtitle">Guide Utilisateur</div>
+  </div>
+
+  <div class="nav-group player">
+    <div class="nav-group-label">🏸 Guide Joueur</div>
+    <a href="#j-intro"><span class="num">1.</span> Introduction</a>
+    <a href="#j-premiers-pas"><span class="num">2.</span> Premiers pas</a>
+    <a href="#j-dashboard"><span class="num">3.</span> Tableau de bord</a>
+    <a href="#j-declarer"><span class="num">4.</span> Déclarer un match</a>
+    <a href="#j-historique"><span class="num">5.</span> Historique des matchs</a>
+    <a href="#j-classement"><span class="num">6.</span> Classement</a>
+    <a href="#j-elo"><span class="num">7.</span> Détails ELO</a>
+    <a href="#j-profil"><span class="num">8.</span> Mon profil</a>
+  </div>
+
+  <div class="nav-group admin">
+    <div class="nav-group-label">🎓 Guide Admin</div>
+    <a href="#a-intro"><span class="num">1.</span> Introduction</a>
+    <a href="#a-premiers-pas"><span class="num">2.</span> Premiers pas</a>
+    <a href="#a-cours"><span class="num">3.</span> Créer un cours</a>
+    <a href="#a-joueurs"><span class="num">4.</span> Gérer les joueurs</a>
+    <a href="#a-seance"><span class="num">5.</span> Lancer une séance</a>
+    <a href="#a-matchs"><span class="num">6.</span> Gérer les matchs</a>
+    <a href="#a-classement"><span class="num">7.</span> Classement en direct</a>
+    <a href="#a-regles"><span class="num">8.</span> Règles et défis</a>
+    <a href="#a-compte"><span class="num">9.</span> Mon compte</a>
+    <a href="#a-admins"><span class="num">10.</span> Co-administrateurs</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════ MAIN ══════════════════════════════════════ -->
+<div class="main-wrapper">
+<main>
+
+  <!-- COVER -->
+  <div class="cover">
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:24px;">
+      <img src="../public/images/logo_mybad.png" alt="MyBAD" style="height:56px;width:56px;border-radius:12px;">
+      <span style="font-size:36px;font-weight:700;color:var(--foreground);letter-spacing:-1px;">MyBAD</span>
+    </div>
+    <div class="cover-badge">Documentation Utilisateur — v1.0</div>
+    <h1>Guide d'utilisation<br><span>MyBAD</span></h1>
+    <p>Application de gestion de tournois de badminton en milieu scolaire. Ce guide vous accompagne de la création de votre compte jusqu'à la clôture d'une séance.</p>
+    <div class="cover-profiles">
+      <div class="profile-card player">
+        <div class="icon">🏸</div>
+        <h3>Joueurs (élèves)</h3>
+        <p>Interface mobile — déclarez vos matchs, suivez votre ELO et votre classement.</p>
+      </div>
+      <div class="profile-card admin">
+        <div class="icon">🎓</div>
+        <h3>Administrateurs (profs)</h3>
+        <p>Interface desktop — gérez vos cours, vos séances et les règles ELO.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ GUIDE JOUEUR ══════════ -->
+  <section class="player" id="joueur">
+
+    <div class="section-header player">
+      <div class="emoji">🏸</div>
+      <div>
+        <h2>Guide Joueur</h2>
+        <p>Application mobile — à utiliser sur smartphone uniquement</p>
+      </div>
+    </div>
+
+    <!-- 1. INTRODUCTION -->
+    <div class="sub" id="j-intro">
+      <h3>1. Introduction</h3>
+      <p>MyBAD est une application qui permet de gérer les tournois de badminton de votre cours. Elle calcule automatiquement vos points <strong>ELO</strong> après chaque match, tient à jour un classement en temps réel et conserve l'historique de toutes vos parties.</p>
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p><strong>Application mobile uniquement.</strong> MyBAD est conçue pour être utilisée sur smartphone. Ouvrez-la dans le navigateur de votre téléphone (Chrome, Safari…) à l'adresse fournie par votre professeur.</p>
+      </div>
+
+      <h4>Qu'est-ce que l'ELO ?</h4>
+      <p>L'ELO est un système de points utilisé pour évaluer le niveau des joueurs. Chaque victoire vous rapporte des points, chaque défaite vous en retire. Plus vous gagnez avec une différence de score élevée, plus la victoire est récompensée. Votre classement évolue en permanence au fil des matchs.</p>
+    </div>
+
+    <!-- 2. PREMIERS PAS -->
+    <div class="sub" id="j-premiers-pas">
+      <h3>2. Premiers pas</h3>
+
+      <h4>Créer un compte</h4>
+      <p>Rendez-vous sur la page de connexion de MyBAD. Sélectionnez l'onglet <strong>Inscription</strong> et renseignez :</p>
+      <ul class="bullets">
+        <li><strong>Prénom</strong> et <strong>Nom</strong></li>
+        <li><strong>Adresse email</strong></li>
+        <li><strong>Mot de passe</strong> (8 caractères minimum)</li>
+      </ul>
+      <p>Vous pouvez aussi vous inscrire directement avec votre compte <strong>Google</strong> en appuyant sur le bouton dédié.</p>
+
+      <img src="screen/joueur/inscription-joueur.png" alt="Page de connexion — onglets Connexion / Inscription, bouton Google" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Se connecter</h4>
+      <ol class="steps">
+        <li><p>Ouvrez MyBAD sur votre smartphone.</p></li>
+        <li><p>Saisissez votre <strong>email</strong> et votre <strong>mot de passe</strong>, puis appuyez sur <em>Se connecter</em>.</p></li>
+        <li><p>Ou appuyez sur <strong>Continuer avec Google</strong> si vous vous êtes inscrit avec Google.</p></li>
+      </ol>
+
+      <h4>Mot de passe oublié</h4>
+      <p>Sur la page de connexion, appuyez sur <em>Mot de passe oublié ?</em>. Saisissez votre email : vous recevrez un lien de réinitialisation valable quelques heures.</p>
+
+      <h4>Créer votre code PIN</h4>
+      <p>Lors de votre première connexion, l'application vous demande de définir un <strong>code PIN à 4 chiffres</strong>. Ce code sert à valider les matchs que vos adversaires déclarent contre vous — vous devrez le saisir pour confirmer le résultat.</p>
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p>Vous pourrez modifier votre PIN à tout moment depuis <em>Mon profil → Informations personnelles</em>.</p>
+      </div>
+      <img src="screen/joueur/pin.png" alt="Écran de création du code PIN" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>En attente d'un cours</h4>
+      <p>Après votre première connexion, si vous n'êtes inscrit dans aucun cours, l'application affiche un écran d'attente avec votre <strong>code joueur</strong> unique à 6 chiffres.</p>
+
+      <img src="screen/joueur/attente.png" alt="Écran d'attente — code joueur affiché en grand (format XXX XXX)" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p><strong>Donnez votre code à votre professeur.</strong> C'est le seul moyen pour lui de vous ajouter à un cours. Vous pouvez appuyer sur le code pour le copier dans le presse-papier.</p>
+      </div>
+    </div>
+
+    <!-- 3. TABLEAU DE BORD -->
+    <div class="sub" id="j-dashboard">
+      <h3>3. Tableau de bord</h3>
+      <p>Une fois inscrit dans un cours, le tableau de bord devient votre page d'accueil. Il centralise toutes vos informations en un coup d'œil.</p>
+
+      <img src="screen/joueur/dashboard.png" alt="Tableau de bord — carte ELO, statistiques, widget classement, derniers matchs" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Carte ELO</h4>
+      <p>Votre score ELO actuel est affiché en haut. La variation (ex : <code>+12</code> ou <code>-8</code>) indique l'évolution de votre ELO sur vos 4 dernières séances.</p>
+
+      <h4>Statistiques</h4>
+      <ul class="bullets">
+        <li><strong>Total de matchs</strong> joués dans ce cours</li>
+        <li><strong>Victoires</strong> et <strong>Défaites</strong></li>
+        <li><strong>Taux de victoires</strong> en pourcentage</li>
+      </ul>
+
+      <h4>Widget classement</h4>
+      <p>Les 8 premiers joueurs du cours sont affichés avec leur rang et leur ELO. Votre position dans le classement est mise en évidence.</p>
+
+      <h4>Derniers matchs</h4>
+      <p>Les matchs les plus récents apparaissent en bas du tableau de bord. Pour voir l'intégralité de l'historique, rendez-vous dans l'onglet <strong>Matchs</strong>.</p>
+
+      <h4>Changer de cours</h4>
+      <p>Si vous êtes inscrit dans plusieurs cours, un sélecteur apparaît en haut de l'écran. Appuyez dessus pour basculer d'un cours à l'autre.</p>
+      <img src="screen/joueur/selecteur.png" alt="Sélecteur de cours" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+    </div>
+
+    <!-- 4. DÉCLARER UN MATCH -->
+    <div class="sub" id="j-declarer">
+      <h3>4. Déclarer un match</h3>
+
+      <div class="warning">
+        <span class="ic">⚠️</span>
+        <p><strong>Prérequis :</strong> votre professeur doit avoir lancé une séance. Le bouton de déclaration est grisé si aucune séance n'est active.</p>
+      </div>
+
+      <p>Pour déclarer un match, appuyez sur le bouton <strong>+</strong> au centre de la barre de navigation. Le formulaire se déroule en 4 étapes.</p>
+
+      <img src="screen/joueur/navbar.png" alt="Barre de navigation — bouton + central mis en évidence" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Étape 1 — Choisir votre adversaire</h4>
+      <p>La liste affiche tous les joueurs présents dans la séance active. Appuyez sur le joueur contre lequel vous venez de jouer.</p>
+
+      <img src="screen/joueur/step1.png" alt="Étape 1 — liste des adversaires disponibles dans la séance" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Étape 2 — Saisir les scores</h4>
+      <p>Entrez le score de chaque joueur. Au moins un des deux scores doit être supérieur ou égal à 15.</p>
+
+      <img src="screen/joueur/step2.png" alt="Étape 2 — deux champs de saisie des scores, votre score à gauche" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Étape 3 — Valider avec le PIN de l'adversaire</h4>
+      <p>Pour confirmer le résultat, votre adversaire doit saisir son <strong>code PIN à 4 chiffres</strong>. Passez le téléphone à votre adversaire le temps qu'il entre son PIN. Appuyez sur <em>Valider les résultats</em> pour enregistrer définitivement le match.</p>
+
+      <img src="screen/joueur/step3.png" alt="Étape 3 — clavier PIN 4 chiffres à saisir par l'adversaire" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Étape 4 — Résumé et confirmation</h4>
+      <p>Un résumé affiche le match (joueurs, scores) et la <strong>variation ELO</strong> pour chacun. </p>
+
+      <img src="screen/joueur/step4.png" alt="Étape 4 — résumé du match avec variation ELO en vert/rouge" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Erreurs fréquentes</h4>
+      <table>
+        <thead><tr><th>Message</th><th>Cause</th><th>Solution</th></tr></thead>
+        <tbody>
+          <tr><td>Aucune séance active</td><td>Le professeur n'a pas lancé de séance</td><td>Attendez que la séance soit ouverte</td></tr>
+          <tr><td>Déjà joué contre cet adversaire</td><td>Un match contre ce joueur existe déjà dans la séance</td><td>Choisissez un autre adversaire</td></tr>
+          <tr><td>PIN incorrect</td><td>Mauvais code saisi</td><td>L'adversaire re-saisit son PIN</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. HISTORIQUE DES MATCHS -->
+    <div class="sub" id="j-historique">
+      <h3>5. Historique des matchs</h3>
+      <p>Appuyez sur l'icône <strong>Matchs</strong> dans la barre de navigation pour consulter tous vos matchs joués.</p>
+
+      <img src="screen/joueur/matchs.png" alt="Historique — liste des matchs avec score, variation ELO colorée et date" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Filtrer les matchs</h4>
+      <ul class="bullets">
+        <li>Appuyez sur <strong>Tous</strong> pour voir l'ensemble des matchs</li>
+        <li>Appuyez sur <strong>Victoires</strong> pour n'afficher que les victoires</li>
+        <li>Appuyez sur <strong>Défaites</strong> pour n'afficher que les défaites</li>
+      </ul>
+
+      <h4>Rechercher un adversaire</h4>
+      <p>Utilisez la barre de recherche en haut pour filtrer par nom d'adversaire.</p>
+
+      <h4>Lire une ligne de match</h4>
+      <ul class="bullets">
+        <li><strong>Icône verte</strong> = victoire / <strong>icône rouge</strong> = défaite</li>
+        <li>Score : votre score – score de l'adversaire</li>
+        <li>Variation ELO : <code>+12</code> en vert ou <code>-8</code> en rouge</li>
+        <li>Date du match</li>
+      </ul>
+    </div>
+
+    <!-- 6. CLASSEMENT -->
+    <div class="sub" id="j-classement">
+      <h3>6. Classement</h3>
+      <p>Appuyez sur l'icône <strong>Trophée</strong> dans la barre de navigation pour accéder au classement général du cours.</p>
+
+      <img src="screen/joueur/classement.png" alt="Classement — liste triée par ELO, médailles top 3, badge Vous" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Lire le classement</h4>
+      <table>
+        <thead><tr><th>Élément</th><th>Signification</th></tr></thead>
+        <tbody>
+          <tr><td>🥇 🥈 🥉</td><td>Médailles pour les 3 premiers</td></tr>
+          <tr><td>Badge <em>Vous</em></td><td>Votre position dans le classement</td></tr>
+          <tr><td>V · D</td><td>Nombre de victoires et de défaites</td></tr>
+          <tr><td>Flèche ↑ / ↓</td><td>Tendance (montée ou descente au classement)</td></tr>
+          <tr><td>Point coloré</td><td>Taux de victoires (vert = bon, orange = moyen, rouge = faible)</td></tr>
+          <tr><td>Score ELO</td><td>Votre score de classement actuel</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 7. DÉTAILS ELO -->
+    <div class="sub" id="j-elo">
+      <h3>7. Détails ELO</h3>
+      <p>Accessible depuis le tableau de bord en appuyant sur votre carte ELO. Cette page vous donne une vue détaillée de l'évolution de votre score.</p>
+
+      <img src="screen/joueur/elo.png" alt="Détails ELO — graphique d'évolution, meilleur ELO, rang actuel" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Graphique d'évolution</h4>
+      <p>Le graphique montre l'évolution de votre ELO dans le temps. Utilisez les boutons <strong>30j</strong> (30 derniers jours) ou <strong>Tout</strong> pour ajuster la période affichée. Appuyez sur un point du graphique pour afficher la valeur exacte à cette date.</p>
+
+      <h4>Statistiques clés</h4>
+      <ul class="bullets">
+        <li><strong>ELO actuel</strong> : votre score du moment</li>
+        <li><strong>Meilleur ELO</strong> : votre record historique dans ce cours</li>
+        <li><strong>Classement actuel</strong> : votre rang parmi tous les joueurs</li>
+      </ul>
+    </div>
+
+    <!-- 8. MON PROFIL -->
+    <div class="sub" id="j-profil">
+      <h3>8. Mon profil</h3>
+      <p>Appuyez sur l'icône <strong>Profil</strong> (dernière icône à droite de la barre de navigation) pour accéder à votre espace personnel.</p>
+
+      <img src="screen/joueur/profil.png" alt="Page Profil — avatar, nom, code joueur, menu avec les différentes options" style="width:320px;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Modifier la photo de profil</h4>
+      <p>Appuyez sur l'icône caméra sur votre avatar pour sélectionner une nouvelle photo depuis votre galerie. Les formats JPG, PNG et WebP sont acceptés.</p>
+
+      <h4>Informations personnelles</h4>
+      <p>Dans <em>Informations personnelles</em>, vous pouvez modifier :</p>
+      <ul class="bullets">
+        <li><strong>Nom et prénom</strong></li>
+        <li><strong>Adresse email</strong></li>
+        <li><strong>Mot de passe</strong> (un indicateur de force vous guide)</li>
+      </ul>
+      <p>Appuyez sur <em>Enregistrer</em> pour valider les modifications.</p>
+
+      <h4>Configurer son PIN</h4>
+      <p>Le PIN est un code à 4 chiffres que vos adversaires doivent saisir pour valider un match que vous avez joué. Il est indispensable pour déclarer des matchs.</p>
+      <ol class="steps">
+        <li><p>Allez dans <em>Informations personnelles</em>.</p></li>
+        <li><p>Dans la section <em>Code PIN</em>, saisissez votre PIN actuel puis le nouveau PIN.</p></li>
+        <li><p>Confirmez le nouveau PIN et appuyez sur <em>Enregistrer</em>.</p></li>
+      </ol>
+
+      <div class="warning">
+        <span class="ic">⚠️</span>
+        <p>Ne communiquez votre PIN à personne. Le PIN sert uniquement à valider les déclarations de matchs — il n'est pas lié à votre connexion.</p>
+      </div>
+
+      <h4>Changer de cours actif</h4>
+      <p>Si vous êtes inscrit dans plusieurs cours, vous pouvez choisir le cours affiché sur votre tableau de bord depuis l'option <em>Cours actif</em> dans votre profil.</p>
+
+      <h4>Se déconnecter</h4>
+      <p>Appuyez sur le bouton <strong>Déconnexion</strong> en bas de votre profil. Une confirmation vous sera demandée.</p>
+
+      <h4>Télécharger mes données (RGPD)</h4>
+      <p>MyBAD vous permet de télécharger l'ensemble des données vous concernant. Dans votre profil, appuyez sur <em>Confidentialité</em> pour accéder à cette option.</p>
+
+      <h4>Supprimer mon compte</h4>
+      <p>La suppression du compte est définitive et irréversible. Toutes vos données (matchs, ELO, profil) seront effacées. Pour procéder, rendez-vous dans votre profil et appuyez sur <em>Supprimer mon compte</em>.</p>
+
+      <div class="warning">
+        <span class="ic">⚠️</span>
+        <p>La suppression de votre compte supprime également votre historique de matchs et vos points ELO dans tous les cours auxquels vous participez. Cette action est irréversible.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <hr>
+
+  <!-- ══════════ GUIDE ADMIN ══════════ -->
+  <section class="admin" id="admin">
+
+    <div class="section-header admin">
+      <div class="emoji">🎓</div>
+      <div>
+        <h2>Guide Administrateur</h2>
+        <p>Interface desktop — à utiliser sur ordinateur uniquement</p>
+      </div>
+    </div>
+
+    <!-- 1. INTRODUCTION -->
+    <div class="sub" id="a-intro">
+      <h3>1. Introduction</h3>
+      <p>L'espace administrateur est dédié aux professeurs et responsables de cours. Il permet de créer et gérer des cours, d'organiser des séances de jeu, de suivre les matchs et de configurer les règles ELO.</p>
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p><strong>Interface desktop uniquement.</strong> L'espace administrateur est optimisé pour les écrans d'ordinateur. L'accès depuis un smartphone affiche un message d'erreur.</p>
+      </div>
+
+      <h4>Déroulement type d'une séance</h4>
+      <ol class="steps">
+        <li><p>Créez un cours et ajoutez vos joueurs.</p></li>
+        <li><p>Lancez une séance depuis le tableau de bord.</p></li>
+        <li><p>Les élèves déclarent leurs matchs sur leur téléphone pendant la séance.</p></li>
+        <li><p>Clôturez la séance en fin de cours.</p></li>
+        <li><p>Consultez le classement mis à jour.</p></li>
+      </ol>
+    </div>
+
+    <!-- 2. PREMIERS PAS -->
+    <div class="sub" id="a-premiers-pas">
+      <h3>2. Premiers pas</h3>
+
+      <h4>Créer un compte administrateur</h4>
+      <p>Rendez-vous à l'adresse <code>/admin/login</code> depuis un navigateur desktop. Sélectionnez l'onglet <strong>Inscription</strong> et renseignez vos informations (nom, prénom, email, mot de passe).</p>
+
+      <img src="screen/admin/inscription.png" alt="Page de connexion admin — onglets Connexion / Inscription" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Se connecter</h4>
+      <p>Saisissez votre email et mot de passe puis appuyez sur <em>Se connecter</em>. Vous arrivez directement sur le tableau de bord administrateur.</p>
+
+      <h4>Navigation</h4>
+      <p>La barre latérale gauche donne accès à toutes les sections :</p>
+      <ul class="bullets">
+        <li><strong>Dashboard</strong> — vue d'ensemble du cours sélectionné</li>
+        <li><strong>Joueurs</strong> — gérer les participants</li>
+        <li><strong>Matchs</strong> — consulter et modifier les matchs</li>
+        <li><strong>Règles et défis</strong> — configurer les points ELO</li>
+        <li><strong>Administrateurs</strong> — gérer les co-admins (si vous êtes l'admin principal)</li>
+      </ul>
+
+      <img src="screen/admin/dashboard.png" alt="Interface admin — sidebar avec navigation, tableau de bord avec sélecteur de cours" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+    </div>
+
+    <!-- 3. CRÉER UN COURS -->
+    <div class="sub" id="a-cours">
+      <h3>3. Créer un cours</h3>
+      <p>Lors de votre première connexion, aucun cours n'existe. Cliquez sur <strong>Créer mon premier cours</strong> depuis le tableau de bord.</p>
+
+      <h4>Remplir le formulaire</h4>
+      <table>
+        <thead><tr><th>Champ</th><th>Exemple</th><th>Obligatoire</th></tr></thead>
+        <tbody>
+          <tr><td>Nom du cours</td><td>Badminton L3 S2</td><td>Oui</td></tr>
+          <tr><td>Année scolaire</td><td>2025/2026</td><td>Oui</td></tr>
+          <tr><td>Lieu</td><td>Gymnase A</td><td>Non</td></tr>
+          <tr><td>Description</td><td>Cours du mardi 10h-12h</td><td>Non</td></tr>
+        </tbody>
+      </table>
+
+      <p>Cliquez sur <strong>Créer le cours</strong>. Le cours apparaît immédiatement dans le sélecteur de classe du tableau de bord.</p>
+
+      <img src="screen/admin/nouveau-cours.png" alt="Formulaire de création de cours — 4 champs, bouton Créer" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p>Vous pouvez créer autant de cours que nécessaire. Basculez entre vos cours avec le sélecteur en haut du tableau de bord.</p>
+      </div>
+
+      <h4>Supprimer un cours</h4>
+      <p>Dans le tableau de bord, faites défiler jusqu'à la section <em>Zone de danger</em> en bas de page. Cliquez sur <em>Supprimer ce cours</em>, lisez les avertissements, tapez <code>SUPPRIMER</code> pour confirmer.</p>
+
+      <div class="warning">
+        <span class="ic">⚠️</span>
+        <p>La suppression d'un cours efface définitivement tous les joueurs, matchs, séances et données ELO associés. Cette action est irréversible.</p>
+      </div>
+    </div>
+
+    <!-- 4. GÉRER LES JOUEURS -->
+    <div class="sub" id="a-joueurs">
+      <h3>4. Gérer les joueurs</h3>
+      <p>Accédez à la page <strong>Joueurs</strong> depuis la sidebar. Vous y retrouvez la liste complète des participants au cours sélectionné.</p>
+
+      <img src="screen/admin/joueurs.png" alt="Page Joueurs — liste avec ELO, rang, statistiques, boutons Éditer/Supprimer" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Ajouter un joueur</h4>
+      <ol class="steps">
+        <li><p>Demandez à l'élève son <strong>code joueur à 6 chiffres</strong> (affiché sur son tableau de bord ou son profil).</p></li>
+        <li><p>Cliquez sur <strong>Ajouter un joueur</strong> en haut à droite.</p></li>
+        <li><p>Saisissez le code et l'<strong>ELO de départ</strong> (1 000 par défaut).</p></li>
+        <li><p>Cliquez sur <em>Ajouter</em>.</p></li>
+      </ol>
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p>L'ELO de départ peut être ajusté pour les joueurs ayant déjà un niveau connu. Laissez 1 000 si vous partez sur une base équitable pour tous.</p>
+      </div>
+
+      <h4>Modifier un joueur</h4>
+      <p>Cliquez sur l'icône <strong>crayon</strong> à droite du joueur. Vous pouvez :</p>
+      <ul class="bullets">
+        <li>Ajuster manuellement l'<strong>ELO</strong> (une entrée sera créée dans l'historique)</li>
+        <li>Activer ou <strong>désactiver</strong> le joueur</li>
+        <li><strong>Nommer co-administrateur</strong> : le joueur aura accès à l'espace admin pour ce cours</li>
+      </ul>
+
+      <h4>Retirer un joueur</h4>
+      <p>Cliquez sur l'icône <strong>poubelle</strong> à droite du joueur, puis confirmez. Ses matchs et son historique ELO dans ce cours sont supprimés.</p>
+    </div>
+
+    <!-- 5. LANCER UNE SÉANCE -->
+    <div class="sub" id="a-seance">
+      <h3>5. Lancer une séance</h3>
+      <p>Une séance représente une session de jeu pendant laquelle les élèves peuvent déclarer leurs matchs. Sans séance active, les joueurs ne peuvent pas enregistrer de résultats.</p>
+
+      <h4>Démarrer une séance</h4>
+      <ol class="steps">
+        <li><p>Depuis le <strong>tableau de bord</strong>, cliquez sur la carte <em>Nouvelle séance</em>. Ou cliquez directement sur <em>Séance</em> dans la sidebar.</p></li>
+        <li><p>Cliquez sur <strong>Lancer une nouvelle séance</strong>.</p></li>
+        <li><p>La séance est immédiatement active — les joueurs peuvent commencer à déclarer leurs matchs.</p></li>
+      </ol>
+
+      <img src="screen/admin/seance.png" alt="Page Séance active — classement en temps réel à gauche, derniers matchs à droite, bouton Clôturer" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Pendant la séance</h4>
+      <p>La page Séance affiche en temps réel :</p>
+      <ul class="bullets">
+        <li>Le <strong>classement mis à jour</strong> (podium + grille)</li>
+        <li>Les <strong>derniers matchs déclarés</strong> (les 10 plus récents)</li>
+      </ul>
+
+        <div class="warning">
+            <span class="ic">⚠️</span>
+            <p>La page Séance n'affiche que les données et statistiques de la séance en cours, pas globales.</p>
+        </div>
+
+      <p>Vous pouvez également ouvrir le classement en plein écran pour le projeter au tableau.</p>
+
+      <div class="info">
+        <span class="ic">✅</span>
+        <p>Une icône verte sur la carte Séance du dashboard indique qu'une séance est en cours. Les joueurs voient le bouton <strong>+</strong> activé sur leur téléphone.</p>
+      </div>
+
+      <h4>Clôturer la séance</h4>
+      <ol class="steps">
+        <li><p>Cliquez sur <strong>Clôturer la séance</strong> en bas à droite de la page Séance.</p></li>
+        <li><p>Confirmez dans la fenêtre de dialogue.</p></li>
+        <li><p>Les ELO sont définitivement enregistrés. Les joueurs ne peuvent plus déclarer de matchs pour cette séance.</p></li>
+      </ol>
+
+      <div class="warning">
+        <span class="ic">⚠️</span>
+        <p>Une fois clôturée, une séance ne peut pas être rouverte. Si un match a été oublié, vous pouvez toujours le corriger depuis la page <em>Matchs</em> (les ELO seront recalculés automatiquement).</p>
+      </div>
+    </div>
+
+    <!-- 6. GÉRER LES MATCHS -->
+    <div class="sub" id="a-matchs">
+      <h3>6. Gérer les matchs</h3>
+      <p>La page <strong>Matchs</strong> liste l'ensemble des matchs joués, regroupés par séance.</p>
+
+      <img src="screen/admin/matchs.png" alt="Page Matchs — onglets par séance, liste des matchs avec scores et boutons Éditer/Supprimer" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Naviguer entre les séances</h4>
+      <p>Des onglets horizontaux en haut de la liste permettent de filtrer par séance. L'onglet <strong>Tout</strong> affiche tous les matchs de toutes les séances confondues.</p>
+
+      <h4>Modifier un match</h4>
+      <p>Cliquez sur l'icône <strong>crayon</strong> à droite du match. Ajustez les scores des deux joueurs et validez. <strong>Les points ELO sont automatiquement recalculés</strong> selon les nouvelles valeurs.</p>
+
+      <h4>Supprimer un match</h4>
+      <p>Cliquez sur l'icône <strong>poubelle</strong>, confirmez. Les ELO des deux joueurs concernés sont recalculés sans ce match.</p>
+
+      <h4>Recherche et tri</h4>
+      <ul class="bullets">
+        <li>Utilisez la <strong>barre de recherche</strong> pour filtrer par nom de joueur</li>
+        <li>Le menu <strong>Tri</strong> permet de classer par date croissante ou décroissante</li>
+      </ul>
+    </div>
+
+    <!-- 7. CLASSEMENT EN DIRECT -->
+    <div class="sub" id="a-classement">
+      <h3>7. Classement en direct</h3>
+      <p>Accessible via la sidebar (<em>Classement</em>) ou depuis le tableau de bord. Le classement se met à jour automatiquement toutes les 10 secondes.</p>
+
+      <img src="screen/admin/classement.png" alt="Classement — podium top 3 avec médailles, grille des joueurs suivants" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Projection en cours</h4>
+      <p>Pendant une séance, cliquez sur <strong>Voir en plein écran</strong> depuis la page Séance pour afficher le classement en mode projecteur.</p>
+
+      <h4>Badges du classement</h4>
+      <ul class="bullets">
+        <li><strong>Groupes de N</strong> : indique que les joueurs sont divisés en groupes (voir Règles)</li>
+        <li><strong>Handicap actif</strong> : indique que le handicap de rang est activé (voir Règles)</li>
+      </ul>
+    </div>
+
+    <!-- 8. RÈGLES ET DÉFIS -->
+    <div class="sub" id="a-regles">
+      <h3>8. Règles et défis</h3>
+      <p>La page <strong>Règles et défis</strong> vous permet de personnaliser entièrement le système de points ELO et les mécaniques de jeu de votre cours.</p>
+
+      <img src="screen/admin/regles.png" alt="Page Règles — tableau des points ELO, toggles Groupes et Handicap" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Points ELO</h4>
+      <p>Le tableau définit les points distribués selon l'écart de score entre les deux joueurs.</p>
+      <table>
+        <thead><tr><th>Écart de score</th><th>Points Gagnant</th><th>Points Perdant</th></tr></thead>
+        <tbody>
+          <tr><td>0 à 6</td><td>Configurable</td><td>Configurable</td></tr>
+          <tr><td>7 à 11</td><td>Configurable</td><td>Configurable</td></tr>
+          <tr><td>12 à 20</td><td>Configurable</td><td>Configurable</td></tr>
+        </tbody>
+      </table>
+      <p>Modifiez les valeurs directement dans le tableau et cliquez sur <strong>Sauvegarder les points</strong>. Le bouton <em>Réinitialiser</em> restaure les valeurs par défaut.</p>
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p>Les valeurs négatives (points perdant) représentent une perte d'ELO. Elles s'affichent en rouge dans le tableau.</p>
+      </div>
+
+      <h4>Groupes de classement</h4>
+      <p>Activez ce défi avec le toggle <strong>Groupes de classement</strong>. Quand il est actif :</p>
+      <ul class="bullets">
+        <li>Les joueurs sont divisés en groupes consécutifs selon leur rang (ex : groupe 1 = rangs 1 à 8)</li>
+        <li>Un joueur ne peut défier que les joueurs de son groupe</li>
+        <li>Vous choisissez la <strong>taille des groupes</strong> (nombre de joueurs par groupe)</li>
+      </ul>
+      <p>Un aperçu des groupes s'affiche en temps réel quand vous ajustez la taille.</p>
+
+      <h4>Handicap de rang</h4>
+      <p>Activez ce défi avec le toggle <strong>Handicap de rang</strong>. Quand il est actif :</p>
+      <ul class="bullets">
+        <li>Si un joueur mieux classé défie quelqu'un de moins bien classé, il démarre le match avec un <strong>malus de points</strong></li>
+        <li>Plus l'écart de rang est grand, plus le malus est élevé</li>
+        <li>Le tableau de handicap est entièrement configurable</li>
+      </ul>
+
+      <div class="info">
+        <span class="ic">✅</span>
+        <p>Ces deux mécaniques encouragent les joueurs à se défier entre pairs de même niveau, rendant les matchs plus équilibrés et motivants.</p>
+      </div>
+    </div>
+
+    <!-- 9. MON COMPTE -->
+    <div class="sub" id="a-compte">
+      <h3>9. Mon compte</h3>
+      <p>Cliquez sur votre nom en bas de la sidebar, ou accédez à <em>Mon compte</em> pour modifier vos informations personnelles.</p>
+
+      <img src="screen/admin/profil.png" alt="Page Mon compte — deux colonnes : Informations personnelles et Modifier le mot de passe" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Modifier le profil</h4>
+      <p>Mettez à jour votre prénom, nom et email puis cliquez sur <strong>Enregistrer</strong>.</p>
+
+      <h4>Changer le mot de passe</h4>
+      <p>Saisissez votre mot de passe actuel, puis le nouveau mot de passe (à confirmer). Cliquez sur <strong>Changer le mot de passe</strong>.</p>
+
+      <h4>Se déconnecter</h4>
+      <p>Cliquez sur le bouton <strong>Déconnexion</strong> en bas de la page (ou depuis la sidebar). Une confirmation vous sera demandée.</p>
+    </div>
+
+    <!-- 10. CO-ADMINISTRATEURS -->
+    <div class="sub" id="a-admins">
+      <h3>10. Gérer les co-administrateurs</h3>
+
+      <div class="tip">
+        <span class="ic">💡</span>
+        <p>Cette section est uniquement visible si vous êtes l'<strong>administrateur principal</strong> du cours. Un joueur administrateur temporairement n'y aura pas accès.</p>
+      </div>
+
+      <p>La page <strong>Administrateurs</strong> dans la sidebar liste tous les comptes ayant accès à l'espace admin.</p>
+
+      <img src="screen/admin/admin.png" alt="Page Administrateurs — liste avec avatar, nom, email, cours assignés et bouton supprimer" style="width:100%;border-radius:12px;margin:20px 0;display:block;">
+
+      <h4>Ajouter un co-administrateur</h4>
+      <p>Un co-administrateur est un joueur promu depuis la page <strong>Joueurs</strong>. Éditez un joueur et activez l'option <em>Nommer administrateur</em>. Il aura alors accès à l'espace admin pour ce cours.</p>
+
+      <h4>Retirer un co-administrateur</h4>
+      <p>Sur la page Administrateurs, cliquez sur l'icône <strong>poubelle</strong> à droite de l'admin concerné, puis confirmez. Son accès admin est révoqué (son compte joueur reste intact).</p>
+
+      <div class="warning">
+        <span class="ic">⚠️</span>
+        <p>Vous ne pouvez pas supprimer votre propre compte administrateur depuis cette page.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <div style="text-align:center; padding: 40px 0 24px; color: var(--gray-400); font-size: 13px; border-top: 1px solid var(--gray-200); margin-top: 40px;">
+    MyBAD — Documentation Utilisateur v1.0 &nbsp;·&nbsp; Mise à jour : Avril 2026
+  </div>
+
+</main>
+</div>
+</body>
+</html>
