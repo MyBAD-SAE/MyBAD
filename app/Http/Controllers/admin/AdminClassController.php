@@ -17,11 +17,42 @@ use Inertia\Response;
 
 class AdminClassController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/admin/class/create",
+     *     tags={"Admin - Tableau de bord"},
+     *     summary="Formulaire de création d'un cours",
+     *     operationId="admin.class.create",
+     *     security={{"session":{}}},
+     *     @OA\Response(response=200, description="Page de création d'un cours")
+     * )
+     */
     public function create(): Response
     {
         return Inertia::render('Admin/Class/Create');
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/class",
+     *     tags={"Admin - Tableau de bord"},
+     *     summary="Créer un nouveau cours",
+     *     operationId="admin.class.store",
+     *     security={{"session":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"school_year","name"},
+     *             @OA\Property(property="school_year", type="string", maxLength=20, example="2024-2025"),
+     *             @OA\Property(property="name", type="string", maxLength=100, example="Terminale A"),
+     *             @OA\Property(property="address", type="string", nullable=true, maxLength=255),
+     *             @OA\Property(property="description", type="string", nullable=true, maxLength=1000)
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/dashboard"),
+     *     @OA\Response(response=422, description="Données invalides")
+     * )
+     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -60,6 +91,18 @@ class AdminClassController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Cours créé avec succès.');
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/admin/class/{class}",
+     *     tags={"Admin - Tableau de bord"},
+     *     summary="Supprimer un cours (cascade complète)",
+     *     operationId="admin.class.destroy",
+     *     security={{"session":{}}},
+     *     @OA\Parameter(name="class", in="path", required=true, description="ID du cours", @OA\Schema(type="integer")),
+     *     @OA\Response(response=302, description="Redirection vers /admin/dashboard"),
+     *     @OA\Response(response=403, description="Accès interdit")
+     * )
+     */
     public function destroy(SchoolClass $class): RedirectResponse
     {
         $adminUser = auth('admin')->user()->adminUser;

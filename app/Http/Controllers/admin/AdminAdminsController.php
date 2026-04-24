@@ -11,6 +11,34 @@ use Inertia\Response;
 
 class AdminAdminsController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/admin/administrateurs",
+     *     tags={"Admin - Administrateurs"},
+     *     summary="Liste des co-administrateurs des cours",
+     *     operationId="admin.admins.index",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page administrateurs",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="admins", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="string", format="uuid"),
+     *                 @OA\Property(property="userId", type="string", format="uuid"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="email", type="string", format="email"),
+     *                 @OA\Property(property="avatar", type="string", nullable=true),
+     *                 @OA\Property(property="isPlayer", type="boolean"),
+     *                 @OA\Property(property="createdAt", type="string"),
+     *                 @OA\Property(property="classes", type="array", @OA\Items(type="object"))
+     *             )),
+     *             @OA\Property(property="adminCount", type="integer"),
+     *             @OA\Property(property="currentUserId", type="string", format="uuid")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Accès réservé aux admins purs (non-joueurs)")
+     * )
+     */
     public function index(): Response
     {
         $user = auth('admin')->user();
@@ -63,6 +91,18 @@ class AdminAdminsController extends Controller
     }
 
 
+    /**
+     * @OA\Delete(
+     *     path="/admin/administrateurs/{admin}",
+     *     tags={"Admin - Administrateurs"},
+     *     summary="Retirer un administrateur",
+     *     operationId="admin.admins.destroy",
+     *     security={{"session":{}}},
+     *     @OA\Parameter(name="admin", in="path", required=true, description="UUID de l'AdminUser", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(response=302, description="Retour avec message de succès"),
+     *     @OA\Response(response=422, description="Impossible de se retirer soi-même")
+     * )
+     */
     public function destroy(AdminUser $admin): RedirectResponse
     {
         $currentUser = auth('admin')->user();

@@ -14,7 +14,13 @@ use Inertia\Response;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * @OA\Get(
+     *     path="/player/login",
+     *     tags={"Auth Joueur"},
+     *     summary="Page de connexion joueur",
+     *     operationId="player.login.form",
+     *     @OA\Response(response=200, description="Page de connexion rendue par Inertia")
+     * )
      */
     public function create(): Response
     {
@@ -24,7 +30,22 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * @OA\Post(
+     *     path="/player/login",
+     *     tags={"Auth Joueur"},
+     *     summary="Connexion joueur",
+     *     operationId="player.login.submit",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="joueur@example.fr"),
+     *             @OA\Property(property="password", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /"),
+     *     @OA\Response(response=422, description="Identifiants incorrects ou compte non associé à un joueur")
+     * )
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -46,7 +67,14 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * @OA\Post(
+     *     path="/joueur/profil/logout",
+     *     tags={"Auth Joueur"},
+     *     summary="Déconnexion joueur",
+     *     operationId="player.logout",
+     *     security={{"session":{}}},
+     *     @OA\Response(response=302, description="Redirection vers /player/login")
+     * )
      */
     public function destroy(Request $request): RedirectResponse
     {

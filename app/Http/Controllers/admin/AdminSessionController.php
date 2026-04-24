@@ -17,6 +17,36 @@ class AdminSessionController extends Controller
         private readonly RankingService $rankingService,
     ) {}
 
+    /**
+     * @OA\Get(
+     *     path="/admin/session",
+     *     tags={"Admin - Séance"},
+     *     summary="Afficher la séance en cours (la crée si inexistante)",
+     *     operationId="admin.session.show",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page séance",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="session", type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="date", type="string", format="date-time"),
+     *                 @OA\Property(property="is_active", type="boolean")
+     *             ),
+     *             @OA\Property(property="rankingPlayers", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="playerCount", type="integer"),
+     *             @OA\Property(property="recentMatches", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="player1", type="object"),
+     *                 @OA\Property(property="player2", type="object"),
+     *                 @OA\Property(property="winnerIndex", type="integer", nullable=true),
+     *                 @OA\Property(property="timeAgo", type="string")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/dashboard si aucun cours sélectionné")
+     * )
+     */
     public function show(): Response|RedirectResponse
     {
         $adminUser = auth('admin')->user()->adminUser;
@@ -81,6 +111,16 @@ class AdminSessionController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/session",
+     *     tags={"Admin - Séance"},
+     *     summary="Démarrer une nouvelle séance",
+     *     operationId="admin.session.store",
+     *     security={{"session":{}}},
+     *     @OA\Response(response=302, description="Redirection vers /admin/session")
+     * )
+     */
     public function store(): RedirectResponse
     {
         $adminUser = auth('admin')->user()->adminUser;
@@ -120,6 +160,16 @@ class AdminSessionController extends Controller
         return redirect()->route('admin.session')->with('success', 'Séance lancée avec succès.');
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/session/close",
+     *     tags={"Admin - Séance"},
+     *     summary="Clôturer la séance en cours",
+     *     operationId="admin.session.close",
+     *     security={{"session":{}}},
+     *     @OA\Response(response=302, description="Redirection vers /admin/dashboard")
+     * )
+     */
     public function close(): RedirectResponse
     {
         $adminUser = auth('admin')->user()->adminUser;

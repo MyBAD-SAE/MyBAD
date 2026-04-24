@@ -16,6 +16,24 @@ class MatchHistoryController extends Controller
         private readonly PlayerProfileService $profileService,
     ) {}
 
+    /**
+     * @OA\Get(
+     *     path="/historique-matchs",
+     *     tags={"Joueur - Matchs"},
+     *     summary="Historique des matchs du joueur",
+     *     operationId="player.matches.history",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page historique",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="matches", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="classes", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="selectedClassId", type="integer", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function index(): Response
     {
         $player  = Auth::guard('player')->user()->player;

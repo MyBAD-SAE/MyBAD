@@ -16,6 +16,24 @@ class RankingController extends Controller
         private readonly PlayerProfileService $profileService,
     ) {}
 
+    /**
+     * @OA\Get(
+     *     path="/classements",
+     *     tags={"Joueur - Classement"},
+     *     summary="Classement ELO du cours du joueur",
+     *     operationId="player.ranking",
+     *     security={{"session":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia de la page classement",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="players", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="classes", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="selectedClassId", type="integer", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function index(): Response
     {
         $user    = Auth::guard('player')->user();

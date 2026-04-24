@@ -12,11 +12,37 @@ use Inertia\Inertia;
 
 class AdminPasswordResetController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/admin/forgot-password",
+     *     tags={"Auth Admin"},
+     *     summary="Afficher le formulaire mot de passe oublié (admin)",
+     *     operationId="admin.password.request",
+     *     @OA\Response(response=200, description="Page Inertia Admin/Auth/ForgotPassword")
+     * )
+     */
     public function showForgotForm()
     {
         return Inertia::render('Admin/Auth/ForgotPassword');
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/forgot-password",
+     *     tags={"Auth Admin"},
+     *     summary="Envoyer le lien de réinitialisation à l'admin",
+     *     operationId="admin.password.email",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email", example="admin@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection avec message de succès"),
+     *     @OA\Response(response=422, description="Email invalide ou introuvable")
+     * )
+     */
     public function sendResetLink(Request $request)
     {
         $request->validate([
@@ -34,6 +60,24 @@ class AdminPasswordResetController extends Controller
         return back()->withErrors(['email' => __($status)]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/admin/reset-password/{token}",
+     *     tags={"Auth Admin"},
+     *     summary="Afficher le formulaire de réinitialisation (admin)",
+     *     operationId="admin.password.reset",
+     *     @OA\Parameter(name="token", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="email", in="query", required=false, @OA\Schema(type="string", format="email")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Props Inertia du formulaire de réinitialisation admin",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string"),
+     *             @OA\Property(property="email", type="string", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function showResetForm(Request $request, string $token)
     {
         return Inertia::render('Admin/Auth/ResetPassword', [
@@ -42,6 +86,26 @@ class AdminPasswordResetController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/reset-password",
+     *     tags={"Auth Admin"},
+     *     summary="Réinitialiser le mot de passe de l'admin",
+     *     operationId="admin.password.update",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"token","email","password","password_confirmation"},
+     *             @OA\Property(property="token", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string", minLength=8),
+     *             @OA\Property(property="password_confirmation", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=302, description="Redirection vers /admin/login après succès"),
+     *     @OA\Response(response=422, description="Token invalide ou email incorrect")
+     * )
+     */
     public function reset(Request $request)
     {
         $request->validate([
