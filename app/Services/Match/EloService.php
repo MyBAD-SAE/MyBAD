@@ -79,6 +79,6 @@ class EloService
                 ->first();
         }
 
-        return $param?->winner_points ?? 5;
+        return $param?->winner_points ?? 50;
     }
 }
