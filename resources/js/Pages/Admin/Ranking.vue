@@ -30,9 +30,17 @@ const liveGroupSize = ref(props.groupSize);
 
 let pollInterval = null;
 
+
 /*
- * fonction de récuperation
+* Lancement de l'interval de 10sec, quand la page est lancée
  */
+onMounted(() => {
+    pollInterval = setInterval(fetchRanking, 10000);
+});
+
+/*
+* fonction de récuperation
+*/
 const fetchRanking = async () => {
     try {
         const { data } = await axios.get(route('admin.ranking.data'));
@@ -45,13 +53,6 @@ const fetchRanking = async () => {
         // ignorer les erreurs du polling
     }
 };
-
-/*
-* Lancement de l'interval de 10sec, quand la page est lancée
- */
-onMounted(() => {
-    pollInterval = setInterval(fetchRanking, 10000);
-});
 
 /*
 * nettoyage de l'interval de 10sec, quand la page est arretee

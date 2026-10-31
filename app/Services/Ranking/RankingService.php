@@ -31,16 +31,19 @@ class RankingService
      */
     public function getRankingForClassId(int $classId, ?\Carbon\Carbon $since = null, ?int $sessionId = null): array
     {
+        // Récupération des participants de la classe
         $participants = ClassParticipant::forClass($classId)
             ->forPlayerType()
             ->with('participantable.user.adminUser')
             ->orderByDesc('elo_rating')
             ->get();
 
+
         $playerIds = $participants->pluck('participantable_id');
         $matchStats = $this->getBulkMatchStats($playerIds, $classId, $since, $sessionId);
         $eloTrends = $this->getBulkEloTrends($participants, $since, $sessionId);
 
+        // Récupération des IDs des adminUsers dans la classe
         $adminUserIdsInClass = ClassParticipant::forClass($classId)
             ->where('participantable_type', \App\Models\AdminUser::class)
             ->with('participantable')
@@ -49,6 +52,7 @@ class RankingService
             ->filter()
             ->all();
 
+        // Map des participants en données de classement
         $ranked = $participants->values()->map(function (ClassParticipant $participant) use ($matchStats, $eloTrends, $adminUserIdsInClass) {
             $playerId = $participant->participantable_id;
             $user = $participant->participantable->user;
@@ -57,6 +61,7 @@ class RankingService
             $losses = $matchStats[$playerId]['losses'] ?? 0;
             $total = $wins + $losses;
 
+            // Données du joueur
             return [
                 'participantId' => $participant->id,
                 'userId'  => $user->id,

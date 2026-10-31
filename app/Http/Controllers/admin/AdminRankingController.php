@@ -90,9 +90,11 @@ class AdminRankingController extends Controller
      */
     public function data(): JsonResponse
     {
+        // Récuperation de l'admin connecté
         $user = auth('admin')->user();
         $adminUser = $user->adminUser;
 
+        // récuperation de la variable de session pour le cours séléctionné
         $selectedClassId = session('admin_selected_class_id');
 
         if (!$selectedClassId) {
@@ -109,12 +111,15 @@ class AdminRankingController extends Controller
         $groupSize = 8;
 
         if ($selectedClassId) {
+            // compte le nombre de participants dans le cours
             $playerCount = ClassParticipant::forClass($selectedClassId)
                 ->forPlayerType()
                 ->count();
 
+            // Recupère le classement complet du cours
             $rankingPlayers = $this->rankingService->getRankingForClassId($selectedClassId);
 
+            // Récuperation de l'enregistrement des defis pour ce cours
             $rule = Rule::where('school_class_id', $selectedClassId)->first();
 
             if ($rule) {
@@ -124,6 +129,7 @@ class AdminRankingController extends Controller
             }
         }
 
+        // retourne les données JSON nécessaires à la page Ranking.vue
         return response()->json([
             'playerCount'         => $playerCount,
             'rankingPlayers'      => $rankingPlayers,
